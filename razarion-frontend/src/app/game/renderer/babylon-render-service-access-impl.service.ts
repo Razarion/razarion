@@ -185,6 +185,11 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   /** Live acknowledgement pulses on attack/harvest targets. They remove themselves when done. */
   private commandTargetMarkers: CommandTargetMarker[] = [];
   baseItemPlacerActive = false;
+  /**
+   * Where the start placer opened, while it is open: the place the base belongs. Set by the placer
+   * presenter. The minimap does not jump while it is set, see RadarComponent.onMapClicke.
+   */
+  startPlacerHome: { x: number, y: number } | null = null;
   // ----- Terrain no-go cursor state (see updateTerrainCursor) -----
   private moveCursorActive = false;
   /** Whether the current selection can harvest at all - no harvester, no collect cursor. */
@@ -998,6 +1003,17 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
 
   /** The follow under way, see {@link followViewFieldCenter}. */
   private cameraFollow: { frame: number, stop: () => void } | null = null;
+  /** Where the arrow's "go there" chip puts the camera for a target, see OrderFollowService. */
+  private arrowJumpFraming: ((x: number, y: number) => { x: number, y: number }) | null = null;
+
+  setArrowJumpFraming(framing: ((x: number, y: number) => { x: number, y: number }) | null): void {
+    this.arrowJumpFraming = framing;
+  }
+
+  /** A follow moves the camera every frame; listeners that redo work on each view change can wait. */
+  isCameraFollowing(): boolean {
+    return this.cameraFollow !== null;
+  }
 
   /**
    * Keeps the camera on a point that moves - the builder driving to the spot it was sent to - until
@@ -1431,7 +1447,8 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     if (markerConfig && target) {
       this.outOfViewJump.show(target, angle, (x, y) => {
         this.firstInteractionTrackerService.report('ARROW_JUMP');
-        this.setViewFieldCenter(x, y);
+        const center = this.arrowJumpFraming ? this.arrowJumpFraming(x, y) : {x, y};
+        this.setViewFieldCenter(center.x, center.y);
       });
     } else {
       this.outOfViewJump.hide();

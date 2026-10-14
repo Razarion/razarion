@@ -42,6 +42,7 @@ import com.btxtech.shared.gameengine.planet.pathing.PathingService;
 import com.btxtech.shared.gameengine.planet.projectile.ProjectileService;
 import com.btxtech.shared.gameengine.planet.quest.BaseItemCountComparison;
 import com.btxtech.shared.gameengine.planet.quest.BaseItemPositionComparison;
+import com.btxtech.shared.gameengine.planet.quest.RegionClearedComparison;
 import com.btxtech.shared.gameengine.planet.quest.BaseItemTypeComparison;
 import com.btxtech.shared.gameengine.planet.quest.CountComparison;
 import com.btxtech.shared.gameengine.planet.quest.CountPositionComparison;
@@ -397,6 +398,13 @@ public class GameEngineConfiguration {
 
     @Bean
     @Scope("prototype")
+    public RegionClearedComparison regionClearedComparison(GameLogicService gameLogicService,
+                                                           BaseItemService baseItemService) {
+        return new RegionClearedComparison(gameLogicService, baseItemService);
+    }
+
+    @Bean
+    @Scope("prototype")
     public CountPositionComparison countPositionComparison(GameLogicService gameLogicService,
                                                            BaseItemService baseItemService) {
         return new CountPositionComparison(gameLogicService, baseItemService);
@@ -438,13 +446,15 @@ public class GameEngineConfiguration {
                                      jakarta.inject.Provider<BaseItemTypeComparison> baseItemTypeComparisonProvider,
                                      jakarta.inject.Provider<InventoryItemCountComparison> inventoryItemCountComparisonnProvider,
                                      jakarta.inject.Provider<CountComparison> countComparisonProvider,
+                                     jakarta.inject.Provider<RegionClearedComparison> regionClearedComparisonProvider,
                                      ItemTypeService itemTypeService) {
         return new QuestService(baseItemPositionComparisonProvider::get,
                 countPositionComparisonProvider::get,
                 baseItemCountComparisonProvider::get,
                 baseItemTypeComparisonProvider::get,
                 inventoryItemCountComparisonnProvider::get,
-                countComparisonProvider::get, itemTypeService);
+                countComparisonProvider::get,
+                regionClearedComparisonProvider::get, itemTypeService);
     }
 
     @Bean

@@ -334,6 +334,15 @@
     z-index: 21;
   }
 
+  /* Under a button at the top of the screen, pointing up at it. */
+  .compact-callout-below {
+    left: auto;
+    right: 0;
+    bottom: auto;
+    top: calc(100% + 6px);
+    align-items: flex-end;
+  }
+
   .compact-callout-text {
     padding: 5px 10px;
     border: solid 1px var(--p-emerald-600, #059669);

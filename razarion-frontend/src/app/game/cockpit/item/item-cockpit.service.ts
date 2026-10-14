@@ -1,4 +1,4 @@
-import {Injectable, NgZone} from '@angular/core';
+import {inject, Injectable, NgZone} from '@angular/core';
 import {
   BaseItemType,
   BaseItemUiService,
@@ -16,6 +16,7 @@ import {BabylonAudioService} from '../../renderer/babylon-audio.service';
 import {BabylonBaseItemImpl} from '../../renderer/babylon-base-item.impl';
 import {CompactLayoutService} from '../compact-layout.service';
 import {cancelOpenPlacer, onNextPlacement} from '../../renderer/placer-release';
+import {ActionService} from '../../action.service';
 
 // --- View-Model Interfaces ---
 
@@ -110,6 +111,8 @@ export class ItemCockpitService {
     }
     return this.otherItemCockpit?.itemTypeName ?? 'Selection';
   }
+
+  private readonly actionService = inject(ActionService);
 
   constructor(
     private selectionService: SelectionService,
@@ -600,10 +603,11 @@ export class ItemCockpitService {
     }
 
     if (baseItemType.getBuilderType() != null) {
-      // Placed, the builder is put down: it drives to the site and builds on its own, and while the
-      // player waits for it a tap on the ground would be a move order that throws the build away
-      // (phone test, quest 386, 2026-10-02). Only if the selection is still this builder.
-      onNextPlacement(() => this.deselectIfStill(selectedIds));
+      // Placed, the builder stays selected - the camera goes along with it and the brackets say whom
+      // it follows (2026-10-14). Until 2026-10-14 it was put down here: while the player waits for it
+      // a tap on the ground would be a move order that throws the build away (phone test, quest 386,
+      // 2026-10-02). The action service now takes that tap as putting it down instead.
+      onNextPlacement(() => this.actionService.guardBuildOrder(selectedIds));
       this.buildPlacerBuilderIds = selectedIds;
       this.itemCockpitBridge.requestBuild(firstId, itemTypeId);
     } else if (baseItemType.getFactoryType() != null) {
@@ -627,13 +631,6 @@ export class ItemCockpitService {
     const other = this.selectionService.getSelectedOtherDiplomacy();
     const now = selected.length > 0 ? 'own' : other ? other.toLowerCase() : 'none';
     cancelOpenPlacer('deselect sel=' + now);
-  }
-
-  private deselectIfStill(ids: number[]): void {
-    const now = this.selectionService.getSelectedOwnItemIds();
-    if (now.length === ids.length && ids.every(id => now.includes(id))) {
-      this.selectionService.clearSelection();
-    }
   }
 
   onCancelQueue(queueIndex: number): void {

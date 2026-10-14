@@ -7,7 +7,6 @@ import com.btxtech.server.service.ContentDigest;
 import com.btxtech.server.service.NoSuchEntityException;
 import com.btxtech.server.service.engine.PlanetCrudService;
 import com.btxtech.server.service.ui.ImageService;
-import com.btxtech.server.service.ui.StarterMiniMapService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,45 +42,9 @@ public class ImageController {
     private final ImageService imageService;
     private final PlanetCrudService planetCrudPersistence;
 
-    private final StarterMiniMapService starterMiniMapService;
-
-    public ImageController(ImageService imageService, PlanetCrudService planetCrudPersistence,
-                           StarterMiniMapService starterMiniMapService) {
+    public ImageController(ImageService imageService, PlanetCrudService planetCrudPersistence) {
         this.imageService = imageService;
         this.planetCrudPersistence = planetCrudPersistence;
-        this.starterMiniMapService = starterMiniMapService;
-    }
-
-    /**
-     * Noob Island from the starter planet's minimap, for the loading screen's map arm (index.html).
-     * Asked for before the page knows the player's planet, like the terrain prefetch. Conditional
-     * like the whole minimap: the tag follows the source image.
-     */
-    @GetMapping(value = "minimap/starter/noob", produces = MediaType.IMAGE_PNG_VALUE)
-    public ResponseEntity<byte[]> getStarterNoobMiniMap(@RequestHeader(value = HttpHeaders.IF_NONE_MATCH, required = false)
-                                                        String ifNoneMatch) {
-        try {
-            String digest = starterMiniMapService.getNoobDigest();
-            if (digest == null) {
-                return ResponseEntity.notFound().build();
-            }
-            String eTag = ContentDigest.eTag(digest);
-            if (ContentDigest.matches(ifNoneMatch, eTag)) {
-                return ResponseEntity.status(HttpStatus.NOT_MODIFIED).eTag(eTag).cacheControl(REVALIDATE).build();
-            }
-            byte[] png = starterMiniMapService.getNoobImage();
-            if (png == null) {
-                return ResponseEntity.notFound().build();
-            }
-            return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_TYPE, MediaType.IMAGE_PNG_VALUE)
-                    .eTag(eTag)
-                    .cacheControl(REVALIDATE)
-                    .body(png);
-        } catch (Throwable e) {
-            logger.warn("Can not load the starter planet's noob minimap", e);
-            throw e;
-        }
     }
 
     /**

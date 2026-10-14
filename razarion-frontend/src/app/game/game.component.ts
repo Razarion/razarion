@@ -37,6 +37,7 @@ import {SelectionShortcutsService} from './selection-shortcuts.service';
 import {TouchSelectionModeService} from './renderer/touch-selection-mode.service';
 import {RadarState} from '../gwtangular/GwtAngularFacade';
 import {notifyAngularReady} from '../wasm-boot';
+import {OrderFollowService} from './order-follow.service';
 
 
 @Component({
@@ -170,6 +171,8 @@ export class GameComponent implements OnInit {
     this.gwtAngularService.gwtAngularFacade.serverRestartPresenter = this.serverRestartComponent;
     this.gwtAngularService.gwtAngularFacade.baseItemPlacerPresenter = this.babylonRenderServiceAccessImpl.createBaseItemPlacerPresenter();
     this.actionService.setRendererService(this.babylonRenderServiceAccessImpl);
+    // Created with the game: from here on the camera goes along with the orders of a guided quest.
+    this.injector.get(OrderFollowService);
 
     if (environment.gwtMock) {
       // Fetched only in the mock build. Injected in the constructor, this service was created for

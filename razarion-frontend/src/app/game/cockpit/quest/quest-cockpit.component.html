@@ -25,6 +25,16 @@
         {{ timeRow }}
       </div>
     }
+    <!-- A region-clearing quest sells everything there in one go: see ClearRegionService. -->
+    @if (clearRegion.offer(); as offer) {
+      <!-- The tip of this quest: the button is all there is to do (decideClear). -->
+      <div class="quest-row" style="color: #fde047">
+        <i class="pi pi-lightbulb"></i> Sell everything on the island in one go:
+      </div>
+      <p-button type="button" icon="pi pi-dollar" styleClass="p-button-sm quest-clear-button"
+        [label]="'Sell all ' + offer.count + ' (+' + offer.refund + ')'" (onClick)="clearRegion.sellAll('panel')">
+      </p-button>
+    }
   </div>
   <div class="quest-box flex bg-surface-800 p-3 rounded-xl border border-surface-500 items-center gap-2 bg-surface-100">
     <!-- The switch used to stand there unlabelled, which is a riddle on a desktop and a smaller

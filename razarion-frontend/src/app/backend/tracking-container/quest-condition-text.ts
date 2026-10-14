@@ -44,6 +44,8 @@ function triggerText(trigger: ConditionTrigger | null,
       return `${countOrTypes('Load', 'units', comparison, itemTypeNames)} into a transporter`;
     case ConditionTrigger.LOADED_CONTAINER_POSITION:
       return `${countOrTypes('Sail', 'transporters', comparison, itemTypeNames)} loaded to a region`;
+    case ConditionTrigger.REGION_CLEARED:
+      return 'Clear a region of own units and buildings';
     case ConditionTrigger.HARVEST:
       return `Harvest ${comparison?.count ?? '?'} razarion`;
     case ConditionTrigger.BASE_KILLED:

@@ -70,7 +70,7 @@ public class TransportQuestUnitTest {
             }
         };
         questService = new QuestService(() -> new BaseItemPositionComparison(gameLogicService, baseItemService),
-                null, null, null, null, null, itemTypeService);
+                null, null, null, null, null, null, itemTypeService);
         questService.addQuestListener((userId, questConfig) -> passed.add(questConfig));
     }
 

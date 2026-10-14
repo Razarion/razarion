@@ -41,6 +41,7 @@ interface RememberedOrder extends PendingOrder {
  */
 export class TipGuide implements ViewFieldListener {
   private static readonly EVALUATE_MILLIS = 500;
+  private static readonly FOLLOW_EVALUATE_MILLIS = 150;
   /**
    * How long an order may take to show up in the engine before it is taken as never arrived. The
    * transport decides how long a tick takes: without SharedArrayBuffer (Meta webview) it is seconds.
@@ -69,6 +70,8 @@ export class TipGuide implements ViewFieldListener {
   private placeConfig: PlaceConfig | null = null;
   private region: TipRegion | null = null;
   private timer: ReturnType<typeof setTimeout> | null = null;
+  /** See onViewFieldChanged. */
+  private followEvaluation: ReturnType<typeof setTimeout> | null = null;
   private readonly orders = new Map<number, RememberedOrder>();
   private markedTargetId: number | null = null;
   private placerTypeId: number | null = null;
@@ -124,6 +127,10 @@ export class TipGuide implements ViewFieldListener {
     if (this.timer !== null) {
       clearTimeout(this.timer);
       this.timer = null;
+    }
+    if (this.followEvaluation !== null) {
+      clearTimeout(this.followEvaluation);
+      this.followEvaluation = null;
     }
     if (!this.quest) {
       return;
@@ -196,7 +203,21 @@ export class TipGuide implements ViewFieldListener {
 
   onViewFieldChanged(_viewField: ViewField): void {
     this.view.onViewFieldChanged();
+    // While the camera follows a unit it moves every frame, and the snapshot of the whole planet
+    // was taken every frame with it. A few times a second keeps up with a driving unit.
+    if (this.deps.renderService.isCameraFollowing?.()) {
+      this.followEvaluation ??= setTimeout(() => {
+        this.followEvaluation = null;
+        this.evaluate();
+      }, TipGuide.FOLLOW_EVALUATE_MILLIS);
+      return;
+    }
     this.evaluate();
+  }
+
+  /** Whether a quest is being guided. */
+  isActive(): boolean {
+    return this.quest !== null;
   }
 
   private evaluate(): void {

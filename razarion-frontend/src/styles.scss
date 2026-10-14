@@ -38,3 +38,14 @@
     max-width: 100%;
   }
 }
+
+/* The quest panel's "sell all there" button of a region-clearing quest is the tip itself
+   (decideClear): it pulses while there is something left to sell. */
+.quest-clear-button {
+  animation: quest-clear-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes quest-clear-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(250, 204, 21, 0.7); }
+  50% { box-shadow: 0 0 0 6px rgba(250, 204, 21, 0); }
+}

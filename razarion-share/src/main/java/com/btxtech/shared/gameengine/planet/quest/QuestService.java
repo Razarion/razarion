@@ -41,6 +41,7 @@ public class QuestService {
     private final Provider<BaseItemCountComparison> baseItemCountComparisonProvider;
     private final Provider<BaseItemPositionComparison> baseItemPositionComparisonProvider;
     private final Provider<CountPositionComparison> countPositionComparisonProvider;
+    private final Provider<RegionClearedComparison> regionClearedComparisonProvider;
     private final Collection<QuestListener> questListeners = new ArrayList<>();
     private final Map<String, AbstractConditionProgress> progressMap = new HashMap<>();
     private int tickCount;
@@ -52,6 +53,7 @@ public class QuestService {
                         Provider<BaseItemTypeComparison> baseItemTypeComparisonProvider,
                         Provider<InventoryItemCountComparison> inventoryItemCountComparisonnProvider,
                         Provider<CountComparison> countComparisonProvider,
+                        Provider<RegionClearedComparison> regionClearedComparisonProvider,
                         ItemTypeService itemTypeService) {
         this.baseItemPositionComparisonProvider = baseItemPositionComparisonProvider;
         this.countPositionComparisonProvider = countPositionComparisonProvider;
@@ -59,6 +61,7 @@ public class QuestService {
         this.baseItemTypeComparisonProvider = baseItemTypeComparisonProvider;
         this.inventoryItemCountComparisonnProvider = inventoryItemCountComparisonnProvider;
         this.countComparisonProvider = countComparisonProvider;
+        this.regionClearedComparisonProvider = regionClearedComparisonProvider;
         this.itemTypeService = itemTypeService;
     }
 
@@ -281,6 +284,14 @@ public class QuestService {
                     return loadedContainerComparison;
                 } else {
                     throw new UnsupportedOperationException();
+                }
+            case REGION_CLEARED:
+                if (comparisonConfig.getPlaceConfig() != null) {
+                    RegionClearedComparison regionClearedComparison = regionClearedComparisonProvider.get();
+                    regionClearedComparison.init(comparisonConfig.getPlaceConfig(), userId);
+                    return regionClearedComparison;
+                } else {
+                    throw new UnsupportedOperationException("REGION_CLEARED needs a place");
                 }
             default:
                 throw new IllegalArgumentException("QuestService.createAbstractComparison() Unknown conditionTrigger: " + conditionTrigger);

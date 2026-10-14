@@ -1,4 +1,4 @@
-import {Component, NgZone, OnDestroy, TemplateRef, ViewChild} from "@angular/core";
+import {Component, inject, NgZone, OnDestroy, TemplateRef, ViewChild} from "@angular/core";
 import {
   ConditionConfig,
   QuestCockpit,
@@ -18,6 +18,7 @@ import {ToggleSwitchModule} from 'primeng/toggleswitch';
 import {FormsModule} from '@angular/forms';
 import {CockpitDisplayService} from '../cockpit-display.service';
 import {TipService} from '../../tip/tip.service';
+import {ClearRegionService} from './clear-region.service';
 import {BabylonAudioService} from '../../renderer/babylon-audio.service';
 import {CompactLayoutService} from '../compact-layout.service';
 import {QuestMarkerService} from '../main/radar/quest-marker.service';
@@ -83,6 +84,8 @@ export class QuestCockpitComponent implements QuestCockpit, OnDestroy {
   private questDescriptionConfig?: QuestDescriptionConfig;
   private conditionConfig?: ConditionConfig;
   private questProgressInfo?: QuestProgressInfo;
+  /** The "sell everything there" button of a quest that clears a region; GameComponent reads it too. */
+  readonly clearRegion = inject(ClearRegionService);
 
   constructor(private gwtAngularService: GwtAngularService,
               public cockpitDisplayService: CockpitDisplayService,
@@ -120,6 +123,11 @@ export class QuestCockpitComponent implements QuestCockpit, OnDestroy {
         this.questProgressInfo = undefined;
         this.setupTitle();
         this.setupProgress();
+        if (this.conditionConfig && GwtHelper.gwtIssue(this.conditionConfig.getConditionTrigger()) === ConditionTrigger.REGION_CLEARED) {
+          this.clearRegion.activate(this.conditionConfig.getComparisonConfig().getPlaceConfig());
+        } else {
+          this.clearRegion.deactivate();
+        }
         const questId = questDescriptionConfig ? GwtHelper.gwtIssueNumber(questDescriptionConfig.getId()) : null;
         if (questId !== null && questId !== this.shownQuestId) {
           this.shownQuestId = questId;
@@ -340,6 +348,18 @@ export class QuestCockpitComponent implements QuestCockpit, OnDestroy {
         this.specificOrCount("Units or buildings sold", "sold");
         break;
       }
+      case ConditionTrigger.REGION_CLEARED: {
+        // The count is what is still there, and nobody knows the total beforehand: no meter.
+        const left = GwtHelper.gwtIssueNumberNull(this.questProgressInfo?.getCount()) ?? this.clearRegion.offer()?.count ?? null;
+        this.progressRows.push({
+          text: left === null ? 'Sell what is still there' : left === 0 ? 'Nothing left there' : `${left} still there`,
+          done: left === 0,
+          actual: 0,
+          target: 0,
+          meter: null
+        });
+        break;
+      }
       default: {
         console.warn(`Unknown ConditionTrigger ${this.conditionConfig.getConditionTrigger()}`)
         this.progressRows.push({text: `???`, done: false, actual: 0, target: 0, meter: null})
@@ -478,6 +498,9 @@ export class QuestCockpitComponent implements QuestCockpit, OnDestroy {
       }
       case ConditionTrigger.SELL: {
         return "Sell";
+      }
+      case ConditionTrigger.REGION_CLEARED: {
+        return "Clear the island";
       }
       default: {
         console.warn(`Unknown conditionTrigger ${conditionTrigger}`)

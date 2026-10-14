@@ -459,6 +459,7 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
         this.rendererService.reportFirstInteraction('BUILD_PLACER_REJECTED', this.buildTypeDetail + ' reason=' + reason);
       } else {
         this.rendererService.reportFirstInteraction('PLACER_REJECTED', reason);
+        this.bringStartPlacerHome(baseItemPlacer, reason);
       }
       baseItemPlacer.onInvalidPlaceAttempt();
       return;
@@ -682,6 +683,23 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
     this.pressMouseVisualization = null;
   }
 
+  /**
+   * The start base dragged outside the start region: ghost and camera go back to where the placer
+   * opened, instead of a red refusal far from anywhere the base may stand. On PROD 05.-14.10.2026 all
+   * 80 sessions refused with "Outside the allowed area" had first jumped away on the minimap, and 4
+   * of them placed a base after that.
+   */
+  private bringStartPlacerHome(baseItemPlacer: BaseItemPlacer, reason: string): void {
+    const home = this.rendererService.startPlacerHome;
+    if (!home || !reason.startsWith('Outside the allowed area')) {
+      return;
+    }
+    const height = this.rendererService.getTerrainHeightAt(home.x, home.y) ?? 0;
+    this.setPosition(baseItemPlacer, new Vector3(home.x, height, home.y));
+    this.rendererService.flyViewFieldCenter(home.x, home.y);
+    this.rendererService.reportFirstInteraction('PLACER_BROUGHT_HOME');
+  }
+
   deactivate(): void {
     markPlacerClosed();
     notifyPlacement(false); // closed without a placement - after one, the callback is already spent
@@ -692,6 +710,7 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
       setTimeout(() => this.flushAbandon(null), 0);
     }
     this.buildPlacer = false;
+    this.rendererService.startPlacerHome = null;
     setOpenPlacerCancel(null);
     this.cleanupPreviousPlacer();
     // Defer clearing so ActionManager handlers (terrain/water click) that fire
@@ -750,6 +769,17 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
    * ghost themselves, where it sits is their decision and moving it would be rude.
    */
   private openAt(baseItemPlacer: BaseItemPlacer, pickedPoint: Vector3): void {
+    try {
+      this.openAtPosition(baseItemPlacer, pickedPoint);
+    } finally {
+      // The start placer's first spot is where the base belongs: inside the start region, on screen.
+      if (!this.buildPlacer && this.currentPosition && !this.rendererService.startPlacerHome) {
+        this.rendererService.startPlacerHome = {x: this.currentPosition.x, y: this.currentPosition.z};
+      }
+    }
+  }
+
+  private openAtPosition(baseItemPlacer: BaseItemPlacer, pickedPoint: Vector3): void {
     this.setPosition(baseItemPlacer, pickedPoint);
     if (this.movedByPlayer || baseItemPlacer.isPositionValid()) {
       return;

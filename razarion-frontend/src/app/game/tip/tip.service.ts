@@ -81,6 +81,11 @@ export class TipService {
     this.guide.deactivate();
   }
 
+  /** Whether a quest tip is running: the guided part of the game. */
+  public isActive(): boolean {
+    return this.guide.isActive();
+  }
+
   public setItemCockpit(itemCockpit: ItemCockpitComponent | null) {
     this.itemCockpit = itemCockpit;
   }

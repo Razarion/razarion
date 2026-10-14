@@ -45,6 +45,16 @@ export class RadarComponent implements ViewFieldListener, OnInit, OnChanges, OnD
   public static readonly MINI_MAP_IMAGE_HEIGHT = 1000;
   private static readonly ZOOM_ANIMATION_DURATION_MS = 2000;
   /**
+   * The reveal flies in more slowly than the start: the whole planet is the point of it, and with
+   * the ease-in it stays out there for most of this time.
+   */
+  private static readonly REVEAL_ANIMATION_DURATION_MS = 4000;
+  /**
+   * A reveal this soon after the map started is a reload of a player who already has a radar (the
+   * radar and the level both arrive a moment after the map), not a radar built in front of them.
+   */
+  private static readonly REVEAL_TEASER_MIN_RUNNING_MS = 10000;
+  /**
    * Edge length of the map in pixels. The cockpit leaves it at the desktop's 200; the phone corner
    * runs it far smaller and swaps the value when the player expands the map, which is why this is
    * an input the component follows rather than a constant.
@@ -89,6 +99,7 @@ export class RadarComponent implements ViewFieldListener, OnInit, OnChanges, OnD
   private static readonly PULSE_FRAME_MS = 33;
   private readonly markerListener = () => this.updateQuestMarker();
   private zoomAnimationId: number | null = null;
+  private startedAt = 0;
 
   @ViewChild('miniMapElement', { static: true })
   miniMapElement!: ElementRef<HTMLDivElement>;
@@ -144,6 +155,7 @@ export class RadarComponent implements ViewFieldListener, OnInit, OnChanges, OnD
     this.miniQuestMarker = new MiniQuestMarker(facade.gameUiControl, this.renderService);
     this.miniFog = new MiniFog(facade.gameUiControl, this.renderService);
     this.started = true;
+    this.startedAt = performance.now();
     this.zoom = 1;
     this.miniTerrain.init(this.miniTerrainElement.nativeElement, this.size, this.size, this.zoom);
     this.miniFog.init(this.miniFogElement.nativeElement, this.size, this.size, this.zoom);
@@ -160,7 +172,7 @@ export class RadarComponent implements ViewFieldListener, OnInit, OnChanges, OnD
 
     this.miniTerrain.show(() => {
       this.updateMiniMap();
-      this.animateZoomIn();
+      this.animateZoomIn(RadarComponent.DEFAULT_ZOOM, RadarComponent.ZOOM_ANIMATION_DURATION_MS);
     });
     this.miniItemView.startUpdater();
   }
@@ -180,6 +192,13 @@ export class RadarComponent implements ViewFieldListener, OnInit, OnChanges, OnD
     if (changes['mapRevealed'] && !changes['mapRevealed'].firstChange) {
       this.miniFog.setRevealed(this.mapRevealed);
       this.miniFog.update();
+      // The first radar opens the planet, and the map shows it the way it once did on the radar
+      // itself: from the whole planet down to the player. Since the map is on screen from level 1
+      // the radar no longer appeared, so the size of the world went by unseen (2026-10-12).
+      if (this.mapRevealed && performance.now() - this.startedAt >= RadarComponent.REVEAL_TEASER_MIN_RUNNING_MS) {
+        this.cancelZoomAnimation();
+        this.animateZoomIn(Math.max(this.zoom, RadarComponent.DEFAULT_ZOOM), RadarComponent.REVEAL_ANIMATION_DURATION_MS);
+      }
     }
     if (changes['size'] && !changes['size'].firstChange) {
       this.miniTerrain.resize(this.size, this.size);
@@ -213,6 +232,14 @@ export class RadarComponent implements ViewFieldListener, OnInit, OnChanges, OnD
 
   onMapClicke(pointerEvent: MouseEvent) {
     if (!this.started) {
+      return;
+    }
+    // No jumping away before the base stands. On PROD 05.-14.10.2026, 222 sessions tapped the map
+    // while the start placer was open - often their first tap - and 20 % of them placed a base, against
+    // 76 % of those who did not: the ghost stayed behind, and dragged to where the map had taken them it
+    // was outside the start region. The map still shows where the player is.
+    if (this.renderService.startPlacerHome) {
+      this.renderService.reportFirstInteraction('MINIMAP_JUMP', 'blocked=start');
       return;
     }
     let real = this.miniViewField.canvasToReal(pointerEvent.offsetX, pointerEvent.offsetY)
@@ -259,10 +286,8 @@ export class RadarComponent implements ViewFieldListener, OnInit, OnChanges, OnD
     this.changeZoom();
   }
 
-  private animateZoomIn() {
+  private animateZoomIn(targetZoom: number, duration: number) {
     const startZoom = 1;
-    const targetZoom = RadarComponent.DEFAULT_ZOOM;
-    const duration = RadarComponent.ZOOM_ANIMATION_DURATION_MS;
     const startTime = performance.now();
 
     const step = (now: number) => {
@@ -281,7 +306,8 @@ export class RadarComponent implements ViewFieldListener, OnInit, OnChanges, OnD
       }
     };
 
-    this.zoomAnimationId = requestAnimationFrame(step);
+    // Outside Angular like the pulse: nothing a frame of it changes is in a template.
+    this.zoomAnimationId = this.zone.runOutsideAngular(() => requestAnimationFrame(step));
   }
 
   private cancelZoomAnimation() {

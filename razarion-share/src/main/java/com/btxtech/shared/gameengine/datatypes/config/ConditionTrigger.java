@@ -107,6 +107,16 @@ public enum ConditionTrigger {
         public AbstractConditionProgress createConditionProgress(AbstractComparison abstractComparison) {
             return new BaseItemConditionProgress(this, abstractComparison);
         }
+    },
+    /**
+     * Nothing of the player's own left in the place - sold, destroyed or never there. Level 9 starts by
+     * clearing the noob island this way (2026-10-14). The progress count is what is still left.
+     */
+    REGION_CLEARED(true) {
+        @Override
+        public AbstractConditionProgress createConditionProgress(AbstractComparison abstractComparison) {
+            return new TickConditionProgress(this, abstractComparison);
+        }
     };
 
     private final boolean comparisonNeeded;

@@ -15,7 +15,7 @@ import {TipStallReason, TipTaskName} from '../tip-stall';
  * LOAD, SAIL and UNLOAD are the three steps off the noob island (quest 392 split in three): the
  * actor is the unit that crosses, the container is whatever can carry it.
  */
-export type TipKind = 'BUILD' | 'FABRICATE' | 'HARVEST' | 'ATTACK' | 'LOAD' | 'SAIL' | 'UNLOAD' | 'SELL';
+export type TipKind = 'BUILD' | 'FABRICATE' | 'HARVEST' | 'ATTACK' | 'LOAD' | 'SAIL' | 'UNLOAD' | 'SELL' | 'CLEAR';
 
 export interface TipQuestSpec {
   questId: number | null;
@@ -156,6 +156,8 @@ export function decide(input: DecisionInput): Decision {
       return decideTransport(input);
     case 'SELL':
       return decideSell(input);
+    case 'CLEAR':
+      return decideClear(input);
   }
 }
 
@@ -506,6 +508,19 @@ function sailStep(input: DecisionInput, ship: TipItemState, selected: boolean): 
 }
 
 // --- SELL -----------------------------------------------------------------------------------------
+
+/**
+ * Clearing a region of everything the player owns there - level 9 clears the noob island (2026-10-14).
+ * The quest panel has the button that sells it all, and that button pulses for as long as there is
+ * something to sell (ClearRegionService): nothing to point at in the world, so the tip stays quiet
+ * and only tells the stall watchdog what it waits for.
+ */
+function decideClear(input: DecisionInput): Decision {
+  const left = input.items.some(item => item.own && input.regionDistance({x: item.x, y: item.y}) === 0);
+  return left
+    ? quiet(TipTaskName.SEND_SELL_COMMAND, TipStallReason.AWAIT_SELL_CLICK)
+    : quiet(TipTaskName.SEND_SELL_COMMAND, TipStallReason.AWAIT_IDLE); // cleared: passes with the next tick
+}
 
 /**
  * Selling a building to move the base (393 the factory, 401 the dockyard). The building stands on

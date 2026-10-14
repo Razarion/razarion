@@ -102,6 +102,9 @@ export type InteractionKind =
 /** The placement went through. The base exists from here on. Carries `glb=1` when every model had
  *  arrived by then and `glb=0` when the builder it spawns will have none to be drawn with. */
   | 'PLACER_CONFIRMED'
+  /** A start base dragged outside the start region was put back where the placer opened, camera and
+   *  all (2026-10-14). */
+  | 'PLACER_BROUGHT_HOME'
   /*
    * The first building, from the button to the ground (2026-10-05). Before these, the placer kinds
    * above were reported by every placer, but the start placer always comes first and the tracker
@@ -131,7 +134,8 @@ export type InteractionKind =
   | 'CAMERA_PINCH'
   | 'CAMERA_KEYBOARD'
   | 'CAMERA_WHEEL'
-  /** A tap or click on the minimap that moved the camera there. */
+  /** A tap or click on the minimap that moved the camera there; `blocked=start` when it did not, because
+   *  the start placer was open (2026-10-14). */
   | 'MINIMAP_JUMP'
   /** A tap on the quest line or the quest panel's "go there" button, which takes the camera to the
    *  quest's target (2026-09-30). `target=none` when there was nowhere to go. */
@@ -144,6 +148,16 @@ export type InteractionKind =
   | 'BUILD_CAMERA_FLIGHT'
   /** A tap or click on the "go there" chip beside the tip's out-of-view arrow (2026-09-25). */
   | 'ARROW_JUMP'
+  /** The camera went along with an order, `kind=move|attack|...` (2026-10-14, OrderFollowService).
+   *  Not a player action: the game moved the camera. */
+  | 'ORDER_FOLLOW'
+  /** The player moved the camera during such a follow and so ended it, `kind=<order> after=0-2|3-9|10+`
+   *  seconds. Taken over at once, again and again, would say the follow is in the way. */
+  | 'ORDER_FOLLOW_TAKEOVER'
+  /** The "sell everything there" button of a region-clearing quest - the card, the phone's quest line or the quest panel, `count=<items> from=card|strip|panel` (2026-10-14). */
+  | 'CLEAR_REGION_SOLD'
+  /** The card offering that sale was closed without selling. */
+  | 'CLEAR_REGION_CARD_CLOSED'
   /** A unit or building was picked. On a phone this can only come from a tap: the marquee ignores
    *  touch pointers and there is no keyboard, so it doubles as proof the tap path works. */
   | 'SELECT'
@@ -280,7 +294,7 @@ export class FirstInteractionTrackerService {
     'POINTER_DOWN', 'POINTER_DOWN_PAGE', 'CAMERA_PAN_TOUCH', 'CAMERA_PINCH', 'CAMERA_KEYBOARD',
     'CAMERA_WHEEL', 'MINIMAP_JUMP', 'ARROW_JUMP', 'QUEST_JUMP', 'SELECT_ALL', 'SELECT', 'COMMAND', 'SELECT_GROUP', 'COMMAND_GROUP', 'SELECTION_BOX_ARMED',
     'PLACER_CONFIRMED', 'PLACER_REJECTED', 'TECH_TREE_OPENED', 'ORDER', 'BUILD_BUTTON',
-    'BUILD_PLACER_REJECTED', 'BUILD_PLACER_CONFIRMED']);
+    'BUILD_PLACER_REJECTED', 'BUILD_PLACER_CONFIRMED', 'CLEAR_REGION_SOLD', 'CLEAR_REGION_CARD_CLOSED']);
 
   /** When the player last did anything at all, or 0 if they never have. */
   public get lastPlayerAction(): number {

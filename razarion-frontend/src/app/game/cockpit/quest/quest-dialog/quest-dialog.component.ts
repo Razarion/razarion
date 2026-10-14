@@ -115,6 +115,9 @@ export class QuestDialogComponent implements OnInit {
       case ConditionTrigger.LOADED_CONTAINER_POSITION: {
         return this.specificOrCount("loaded transporters on position", "loaded on region", questConfig);
       }
+      case ConditionTrigger.REGION_CLEARED: {
+        return 'Sell everything of yours in the region';
+      }
       case ConditionTrigger.BOX_PICKED: {
         return `Boxes picked ${questConfig.conditionConfig.comparisonConfig.count}`;
       }

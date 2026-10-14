@@ -13,6 +13,28 @@
     <div class="director-indicator" [class.ok]="directorChannelOk">{{ directorChannel }}</div>
   }
 
+  <!-- Level 9 starts by leaving the noob island: a card in the middle offers to sell all that is still
+       there, because the button in the quest line alone is easily missed (ClearRegionService). -->
+  @if (questCockpitContainer.clearRegion.offer(); as offer) {
+    <!-- After the level-up splash, not under it: both sit in the middle of the screen. -->
+    @if (!questCockpitContainer.clearRegion.cardClosed() && !modelDialogPresenter.title && !modelDialogPresenter.showNext) {
+      <div class="fixed inset-0 z-50 flex items-center justify-center pointer-events-none p-4">
+        <div class="pointer-events-auto relative flex flex-col items-center gap-3 rounded-xl border border-emerald-500 bg-black/85 px-6 py-5 text-center max-w-sm">
+          <button type="button" class="absolute top-2 right-3 text-surface-400" aria-label="Close"
+                  (click)="questCockpitContainer.clearRegion.closeCard()">
+            <i class="pi pi-times"></i>
+          </button>
+          <div class="text-lg font-bold text-emerald-300">Leave the Noob Island</div>
+          <div class="text-surface-200">Sell everything you left there: {{ offer.count }} items, +{{ offer.refund }} Razarion for your new base.</div>
+          <button type="button" class="quest-clear-button rounded-lg bg-emerald-600 px-6 py-2 text-lg font-bold text-white"
+                  (click)="questCockpitContainer.clearRegion.sellAll('card')">
+            <i class="pi pi-dollar"></i> Sell all
+          </button>
+        </div>
+      </div>
+    }
+  }
+
   <div [style]="{height:'100%'}" class="flex card-container overflow-hidden align-items-stretch">
     <div #canvasDiv [style]="{width: '100%', height:'100%'}">
       <canvas #canvas class="canvas" [style]="{width: '100%', height:'100%'}"></canvas>
@@ -199,6 +221,22 @@
           <span class="compact-quest-progress">{{ questCockpitContainer.progressSummary }}</span>
           <i class="pi pi-map-marker"></i>
         </button>
+        <!-- Clearing the noob island: one tap sells all that is still there (ClearRegionService). -->
+        @if (questCockpitContainer.clearRegion.offer(); as offer) {
+          <span class="compact-icon-anchor">
+            <button type="button" class="compact-quest-choose quest-clear-button" [attr.aria-label]="'Sell all ' + offer.count"
+                    (click)="questCockpitContainer.clearRegion.sellAll('strip')">
+              <i class="pi pi-dollar"></i> {{ offer.count }}
+            </button>
+            <!-- The tip of this quest: the button is all there is to do (decideClear). -->
+            <div class="compact-callout compact-callout-below" role="status">
+              <svg class="compact-callout-arrow" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M12 2 20.5 12H15v10H9V12H3.5z"/>
+              </svg>
+              <span class="compact-callout-text">Tap to sell all {{ offer.count }} on the island (+{{ offer.refund }})</span>
+            </div>
+          </span>
+        }
         @if (questCockpitContainer.showQuestSelectionButton) {
           <button type="button" class="compact-quest-choose" aria-label="Choose another quest"
                   (click)="cockpitDisplayService.showQuestDialog = true">

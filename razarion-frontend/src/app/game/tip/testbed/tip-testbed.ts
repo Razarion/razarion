@@ -182,12 +182,12 @@ export class TipTestbed {
     this.world.renderer.selectionHooks = this.selection;
     const gwtAngularService = {gwtAngularFacade: this.createFacade()};
     this.cockpit = new FakeItemCockpit(this.world);
-    this.cockpit.selection = this.selection;
     // First, like ItemCockpitService, which exists before any tip does.
     this.selection.addSelectionListener(() => this.cockpit.rebuild(this.selection.getSelectedOwnItems()));
     this.action = new ActionService(gwtAngularService as any, audio as any, this.selection, tracker);
     // Not setRendererService(): that also hooks the Escape key on the window, once per test.
     (this.action as any).rendererService = this.world.renderer;
+    this.cockpit.action = this.action;
     const uiSettings = {
       tipsVisible$: this.tipsVisible$,
       get tipsVisible() {

@@ -62,10 +62,7 @@ describe('Tip test bed - rebuild', () => {
     bed.runUntil(built(bed, ItemTypeId.RADAR, builder), 30000, 'radar built');
     bed.run(1500);
     bed.check(!bed.questPassed, 'one of two is not the quest');
-    // The builder was put down when the radar was placed (2026-10-02): select it again first.
-    bed.check(bed.showsOnly('Click to select', builder.id), '"Click to select" on the builder');
-    bed.click(builder);
-    bed.run(1500);
+    // The builder stays selected after placing (2026-10-14): straight on to the next button.
     bed.check(bed.view().cockpitHintTypeId === ItemTypeId.POWERPLANT, 'hint moved on to the powerplant button');
 
     build(bed, ItemTypeId.POWERPLANT, 94, 66);
@@ -83,9 +80,7 @@ describe('Tip test bed - rebuild', () => {
       && bed.view().cockpitHintTypeId === null, 'no hint that fights the player\'s choice');
     bed.runUntil(built(bed, ItemTypeId.POWERPLANT, builder), 30000, 'powerplant built');
     bed.run(1500);
-    bed.check(bed.showsOnly('Click to select', builder.id), 'the builder was put down: "Click to select" first');
-    bed.click(builder);
-    bed.run(1500);
+    // Still selected (2026-10-14): straight on to the radar button.
     bed.check(bed.view().cockpitHintTypeId === ItemTypeId.RADAR, 'then the radar');
   });
 

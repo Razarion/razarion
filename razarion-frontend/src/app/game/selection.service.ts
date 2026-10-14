@@ -31,7 +31,11 @@ export class SelectionService {
     this.firstInteractionTrackerService.report('SELECT');
   }
 
+  /** Counts the times own units were picked - by a tap, a box or a chip - not the other changes. */
+  ownSelectionCount = 0;
+
   selectOwnItems(items: BabylonBaseItemImpl[]): void {
+    this.ownSelectionCount++;
     if (items.length) {
       this.reportSelected();
     }

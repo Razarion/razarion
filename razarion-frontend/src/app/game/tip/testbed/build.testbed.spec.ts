@@ -80,14 +80,15 @@ describe('Tip test bed - build', () => {
    * builder, still selected - and the next tap on the ground was a move order that threw the build
    * away. Placed, the builder is put down; a tap while it drives does nothing to it.
    */
-  tipCase('BLD-17 placed: the builder is put down, a tap on the ground while it drives does not stop the build', bed => {
+  tipCase('BLD-17 placed: the builder stays selected, a tap on the ground while it drives puts it down and does not stop the build', bed => {
     const builder = base(bed);
     bed.activateQuest(358);
     placeFactory(bed, builder, 20, 12);
     bed.run(500);
-    bed.check(bed.selection.getSelectedOwnItemIds().length === 0, 'the builder is no longer selected');
+    bed.check(bed.selection.getSelectedOwnItemIds().includes(builder.id), 'the builder is still selected');
 
     bed.clickTerrain(-8, -5);
+    bed.check(bed.selection.getSelectedOwnItemIds().length === 0, 'the tap put the builder down');
     bed.runUntil(() => bed.questPassed, 30000, 'quest 358 passing - the builder built on');
   });
 
@@ -109,7 +110,8 @@ describe('Tip test bed - build', () => {
     bed.activateQuest(358);
     placeFactory(bed, builder, 20, 12);
     bed.run(1000);
-    // Placed, the builder is put down (2026-10-02): sending it elsewhere takes selecting it again.
+    // Placed, the builder stays selected but a tap on the ground only puts it down (2026-10-14):
+    // picking it again is what makes the tap a move.
     bed.click(builder);
     bed.run(500);
     bed.clickTerrain(-8, -5);
@@ -131,7 +133,8 @@ describe('Tip test bed - build', () => {
     placeFactory(bed, builder, 8, 5);
     bed.runUntil(() => siteOf(bed, ItemTypeId.FACTORY) !== undefined, 10000, 'site laid down');
     bed.run(1000);
-    // Placed, the builder is put down (2026-10-02): sending it elsewhere takes selecting it again.
+    // Placed, the builder stays selected but a tap on the ground only puts it down (2026-10-14):
+    // picking it again is what makes the tap a move.
     bed.click(builder);
     bed.run(500);
     bed.clickTerrain(-10, -8);
@@ -158,10 +161,7 @@ describe('Tip test bed - build', () => {
     bed.world.kill(siteOf(bed, ItemTypeId.FACTORY)!.id);
     bed.run(5000);
 
-    // The builder was put down when it was placed: the way back to placing starts at selecting it.
-    bed.check(bed.showsOnly('Click to select', builder.id), '"Click to select" on the builder');
-    bed.click(builder);
-    bed.run(1500);
+    // The builder stayed selected (2026-10-14): the way back to placing starts at the button.
     bed.check(bed.view().cockpitHintTypeId === ItemTypeId.FACTORY, 'hint on the factory button');
   });
 

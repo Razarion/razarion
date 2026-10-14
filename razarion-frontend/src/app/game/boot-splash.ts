@@ -9,7 +9,8 @@
  * canvas and asked to be told the engine's real progress and the moment the terrain was on
  * screen, so that it could dissolve into the running game instead of being cut away. It was
  * measured against this one and lost by six points - see the epitaph in index.html - and the
- * three functions that served it went with it.
+ * three functions that served it went with it. So did a map of Noob Island below the card, which
+ * drew level with the card alone (2026-09-28 to 10-14, see index.html).
  */
 
 /**
@@ -18,31 +19,4 @@
  */
 export function removeSplash(): void {
   document.getElementById('raz-boot')?.remove();
-}
-
-/**
- * Size the loading-screen map (bmap=map, index.html) to the room left under the card. The page
- * defines it, because it has to run before Angular exists; absent outside the map arm.
- */
-export function fitBootMap(): void {
-  (window as { RAZ_fitBootMap?: () => void }).RAZ_fitBootMap?.();
-}
-
-/** As long as the cover's own fade (.cover-panel-fadeout), so the map and the card leave together. */
-const BOOT_MAP_FADE_MS = 2000;
-
-/**
- * Take the loading-screen map away (the bmap=map arm, see index.html). It outlives the splash on
- * purpose and goes with Angular's cover, once the game runs: faded like the cover, then removed.
- */
-export function removeBootMap(): void {
-  const map = document.getElementById('raz-bmap');
-  if (!map) {
-    return;
-  }
-  map.style.opacity = '0';
-  setTimeout(() => {
-    map.remove();
-    document.documentElement.classList.remove('raz-bmap');
-  }, BOOT_MAP_FADE_MS);
 }

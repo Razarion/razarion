@@ -488,6 +488,9 @@ export enum Tip {
   UNLOAD = 'UNLOAD',
   /** Selling a building to move the base (level 9); the actor is the building. */
   SELL = 'SELL',
+  /** Clearing a region of everything own there (REGION_CLEARED, level 9); the quest panel's button
+   *  is the hint, the actor is not used. */
+  CLEAR = 'CLEAR',
 }
 
 export interface TipConfig {

@@ -1138,8 +1138,8 @@ export class FakeItemCockpit {
   private cockpitItemIds: number[] = [];
   private buildClickCallback: ((model: { itemTypeId: number }) => void) | null = null;
   private buildPreparation: ((itemTypeId: number) => Promise<void> | null) | null = null;
-  /** The selection the live ItemCockpitService puts the builder down in after placing; set by the test bed. */
-  selection: { getSelectedOwnItemIds(): number[], clearSelection(): void } | null = null;
+  /** The action service the live ItemCockpitService hands the placed builder to; set by the test bed. */
+  action: { guardBuildOrder(builderIds: number[]): void } | null = null;
 
   constructor(private readonly world: World) {
   }
@@ -1283,14 +1283,10 @@ export class FakeItemCockpit {
       // The live component waits for the preparation before the placer opens; the fake flight below
       // is over at once, so the placer opens where the camera has arrived.
       this.buildPreparation?.(itemTypeId);
-      // As ItemCockpitService.onBuild: placed, the builder is put down if it is still the selection.
+      // As ItemCockpitService.onBuild: placed, the builder stays selected and a tap on the ground puts
+      // it down while it builds (since 2026-10-14).
       const builderIds = [...this.cockpitItemIds];
-      onNextPlacement(() => {
-        const now = this.selection?.getSelectedOwnItemIds() ?? [];
-        if (now.length === builderIds.length && builderIds.every(id => now.includes(id))) {
-          this.selection?.clearSelection();
-        }
-      });
+      onNextPlacement(() => this.action?.guardBuildOrder(builderIds));
       renderer.activatePlacer(itemTypeId, this.cockpitItemIds);
     } else {
       this.world.fabricate(this.cockpitItemIds, itemTypeId);

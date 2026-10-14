@@ -16,6 +16,13 @@ export interface OrderNote {
   unitIds: number[];
   targetId: number | null;
   targetTypeId: number | null;
+  /** Where the order goes on the ground: the spot of a move, the clicked item otherwise. */
+  target?: { x: number, y: number } | null;
+}
+
+function groundOf(item: { getPosition(): Vertex | null }): { x: number, y: number } | null {
+  const position = item.getPosition();
+  return position ? {x: position.getX(), y: position.getY()} : null;
 }
 
 export class SelectionInfo {
@@ -44,6 +51,9 @@ export class ActionService {
    * before assuming the acknowledgement is lost and opening the gate ourselves.
    */
   private static readonly MOVE_ACK_TIMEOUT_MS = 2000;
+  /** Builders sent to a placed building, see guardBuildOrder. */
+  private guardedBuilderIds: number[] | null = null;
+  private guardedSelectionCount = 0;
   /** A move goes to a spot, not to a thing, so its ring has no target radius to take. */
   private static readonly MOVE_MARKER_RADIUS = 1.5;
 
@@ -105,6 +115,11 @@ export class ActionService {
     if (movableIds.length === 0) {
       return;
     }
+    if (this.buildUnderWay(movableIds)) {
+      // The tap puts the builder down rather than taking it off its building.
+      this.tsSelectionService.clearSelection();
+      return;
+    }
 
     this.babylonAudioService.speakCommand('Moving out');
     // Shown for a queued move too: the click was understood, only its sending waits for the gate.
@@ -116,6 +131,42 @@ export class ActionService {
     } else {
       this.sendMoveCommand(movableIds, xTerrainPosition, yTerrainPosition);
     }
+  }
+
+  /**
+   * The builders just sent to build what the player placed. They stay selected, and while they are
+   * on their way or building, a tap on the ground puts them down instead of moving them: a move
+   * throws the build away, and a player waiting for the builder taps the ground without meaning to
+   * (phone test, quest 386, 2026-10-02). Once they stand again, or once the player picks units
+   * again, a tap moves them as usual.
+   */
+  guardBuildOrder(builderIds: number[]): void {
+    this.guardedBuilderIds = [...builderIds];
+    this.guardedSelectionCount = this.tsSelectionService.ownSelectionCount;
+  }
+
+  private buildUnderWay(movableIds: number[]): boolean {
+    const guarded = this.guardedBuilderIds;
+    if (!guarded || movableIds.length !== guarded.length || !guarded.every(id => movableIds.includes(id))) {
+      return false;
+    }
+    // Picked again by the player: then a tap on the ground is meant.
+    if (this.tsSelectionService.ownSelectionCount !== this.guardedSelectionCount) {
+      this.guardedBuilderIds = null;
+      return false;
+    }
+    let busy = false;
+    try {
+      const ids = new Set(guarded);
+      busy = this.gwtAngularService.gwtAngularFacade.baseItemUiService.getTipItemStates(-1)
+        .some(item => item.own && ids.has(item.id) && !item.idle);
+    } catch (e) {
+      busy = false;
+    }
+    if (!busy) {
+      this.guardedBuilderIds = null;
+    }
+    return busy;
   }
 
   /**
@@ -151,7 +202,7 @@ export class ActionService {
   private sendMoveCommand(movableIds: number[], x: number, y: number): void {
     this.reportCommand(movableIds.length, 'move');
     this.gameCommandService.moveCmd(movableIds, x, y);
-    this.notifyOrder({kind: 'move', unitIds: movableIds, targetId: null, targetTypeId: null});
+    this.notifyOrder({kind: 'move', unitIds: movableIds, targetId: null, targetTypeId: null, target: {x, y}});
     this.hasPendingMoveCommand = true;
     if (this.moveAckTimeout) {
       clearTimeout(this.moveAckTimeout);
@@ -247,7 +298,7 @@ export class ActionService {
           this.babylonAudioService.speakCommand('Loading up');
           this.reportCommand(containableIds.length, 'load');
           this.gameCommandService.loadContainerCmd(containableIds, id);
-          this.notifyOrder({kind: 'load', unitIds: containableIds, targetId: id, targetTypeId: baseItemType.getId()});
+          this.notifyOrder({kind: 'load', unitIds: containableIds, targetId: id, targetTypeId: baseItemType.getId(), target: groundOf(item)});
           return;
         }
       }
@@ -261,7 +312,7 @@ export class ActionService {
           this.rendererService?.showCommandTargetMarker(item, 'build');
           this.reportCommand(builderIds.length, 'finalize');
           this.gameCommandService.finalizeBuildCmd(builderIds, id);
-          this.notifyOrder({kind: 'finalize', unitIds: builderIds, targetId: id, targetTypeId: baseItemType.getId()});
+          this.notifyOrder({kind: 'finalize', unitIds: builderIds, targetId: id, targetTypeId: baseItemType.getId(), target: groundOf(item)});
           return;
         }
       }
@@ -289,7 +340,7 @@ export class ActionService {
         this.rendererService?.showCommandTargetMarker(babylonItem, 'attack');
         this.reportCommand(attackerIds.length, 'attack');
         this.gameCommandService.attackCmd(attackerIds, id);
-        this.notifyOrder({kind: 'attack', unitIds: attackerIds, targetId: id, targetTypeId: item.getBaseItemType().getId()});
+        this.notifyOrder({kind: 'attack', unitIds: attackerIds, targetId: id, targetTypeId: item.getBaseItemType().getId(), target: groundOf(babylonItem)});
         return;
       }
     }
@@ -304,7 +355,7 @@ export class ActionService {
         this.rendererService?.showCommandTargetMarker(babylonItem, 'harvest');
         this.reportCommand(harvesterIds.length, 'harvest');
         this.gameCommandService.harvestCmd(harvesterIds, id);
-        this.notifyOrder({kind: 'harvest', unitIds: harvesterIds, targetId: id, targetTypeId: itemTypeId});
+        this.notifyOrder({kind: 'harvest', unitIds: harvesterIds, targetId: id, targetTypeId: itemTypeId, target: groundOf(babylonItem)});
         return;
       }
     }
@@ -318,7 +369,7 @@ export class ActionService {
         this.babylonAudioService.speakCommand('Picking up');
         this.reportCommand(movableIds.length, 'pickBox');
         this.gameCommandService.pickBoxCmd(movableIds, id);
-        this.notifyOrder({kind: 'pickBox', unitIds: movableIds, targetId: id, targetTypeId: itemTypeId});
+        this.notifyOrder({kind: 'pickBox', unitIds: movableIds, targetId: id, targetTypeId: itemTypeId, target: groundOf(babylonItem)});
         return;
       }
     }
