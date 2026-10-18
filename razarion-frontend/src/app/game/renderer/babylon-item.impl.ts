@@ -35,6 +35,7 @@ import {PressMouseVisualization} from './press-mouse-visualization';
 import {AdvancedDynamicTexture} from '@babylonjs/gui/2D/advancedDynamicTexture';
 import {StackPanel} from '@babylonjs/gui/2D/controls/stackPanel';
 import {Image} from '@babylonjs/gui/2D/controls/image';
+import {Control} from '@babylonjs/gui/2D/controls/control';
 import {GwtHelper} from '../../gwtangular/GwtHelper';
 import {isTouchDevice, promptAssemblyLengthBeside, promptAssemblyWidthPx, promptFitsAt, promptOffsets, PROMPT_GEOMETRY, PROMPT_HEIGHT_PX, PROMPT_IDEAL_HEIGHT_PX, PromptSide} from './prompt-geometry';
 
@@ -531,7 +532,8 @@ export class BabylonItemImpl implements BabylonItem {
     // Every pixel below is read against this, so the prompt keeps its share of the picture on a
     // phone instead of covering it - see PROMPT_IDEAL_HEIGHT_PX.
     this.selectTipTexture.idealHeight = PROMPT_IDEAL_HEIGHT_PX;
-    this.selectTipTexture.disablePicking = true; // Prevent mouse down on terrain cursor change
+    // Picking stays on for the bubble and its arrow only (makePromptTappable); everywhere else the
+    // texture has no control under the pointer and lets it through to the scene.
     let pressMouseVisualization = new PressMouseVisualization(true, this.rendererService);
     pressMouseVisualization.label.text = shown;
     // Sized by the text, not by a number per prompt. The fixed widths were a table of exceptions
@@ -571,6 +573,7 @@ export class BabylonItemImpl implements BabylonItem {
     }
     this.selectTipTexture.addControl(stackPanel)
     stackPanel.linkWithMesh(this.getContainer());
+    this.makePromptTappable([pressMouseVisualization.getContainer(), arrow], shown);
 
     // How long the assembly is along the direction it floats in - which is what decides how far
     // its centre has to sit from the item for the near end to clear it. Beside the item that is
@@ -591,6 +594,24 @@ export class BabylonItemImpl implements BabylonItem {
       }
       this.animateSelectPrompt(stackPanel, side, lengthOf(width));
     });
+  }
+
+  /**
+   * A tap on the bubble or its arrow does what a tap on the item does. The "go there" chip next to
+   * an out-of-view arrow is a button that looks the same, and players used it in 894 sessions in two
+   * weeks (PROD to 2026-10-18) - so a green bubble reads as something to tap. This one used to let
+   * the tap fall through to the ground underneath, which could even drop the selection or send a
+   * unit there. Now every green bubble works when tapped.
+   */
+  private makePromptTappable(controls: Control[], shown: string): void {
+    for (const control of controls) {
+      control.isPointerBlocker = true;
+      control.hoverCursor = 'pointer';
+      control.onPointerClickObservable.add(() => {
+        this.rendererService.reportFirstInteraction('PROMPT_TAP', shown);
+        this.fireItemClick();
+      });
+    }
   }
 
   /** Floats the prompt beside or above the item, between the near and the far gap. */

@@ -10,6 +10,9 @@ import {isTouchDevice} from './prompt-geometry';
  * Plain DOM over the canvas, not Babylon GUI: a finger and a mouse both reach it the same way, and
  * a tap on it never falls through to the ground below as a move order.
  */
+/** Marks an element the tips put over the picture themselves - see isCoveredByHtml. */
+export const TIP_OVERLAY_ATTRIBUTE = 'data-raz-tip-overlay';
+
 export class OutOfViewJump {
   /**
    * How far from the picture's centre the chip sits, as a share of its shorter side: just past the
@@ -61,6 +64,9 @@ export class OutOfViewJump {
     button.type = 'button';
     button.textContent = isTouchDevice() ? 'Tap to go there' : 'Click to go there';
     button.setAttribute('aria-label', 'Move the camera to the target');
+    // The tips' own hint, not part of the HUD: BabylonRenderServiceAccessImpl#isCoveredByHtml looks
+    // through it, or the target it brought into the middle of the picture counted as covered by it.
+    button.setAttribute(TIP_OVERLAY_ATTRIBUTE, '');
     Object.assign(button.style, {
       position: 'fixed',
       zIndex: '5',

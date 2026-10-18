@@ -210,6 +210,7 @@ public final class TeaVMWorkerMarshaller {
                 setArrayString(array, DATA_OFFSET_2, toJson(controlPackage.getData(2)));
                 setArrayString(array, DATA_OFFSET_3, toJson(controlPackage.getData(3)));
                 setArrayString(array, DATA_OFFSET_4, toJson(controlPackage.getData(4)));
+                setArrayString(array, DATA_OFFSET_5, toJson(controlPackage.getData(5)));
                 break;
 
             // Native marshal terrain buffers
@@ -278,6 +279,9 @@ public final class TeaVMWorkerMarshaller {
                 data.add(fromJson(getArrayString(array, DATA_OFFSET_2), UserContext.class));
                 data.add(fromJson(getArrayString(array, DATA_OFFSET_3), GameEngineMode.class));
                 data.add(fromJson(getArrayString(array, DATA_OFFSET_4), String.class));
+                // Where the player will be looking, or null. Decides which corner of the height
+                // map has to be there before the game may start.
+                data.add(fromJson(getArrayString(array, DATA_OFFSET_5), DecimalPosition.class));
                 break;
 
             case INITIALIZE_WARM:

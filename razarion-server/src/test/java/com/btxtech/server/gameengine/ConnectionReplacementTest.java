@@ -46,7 +46,7 @@ class ConnectionReplacementTest {
     @BeforeEach
     void setUp() {
         userService = mock(UserService.class);
-        when(userService.getOrCreateUserId(any(), any())).thenReturn(USER);
+        when(userService.getOrCreateUserId(any(), any(), any())).thenReturn(USER);
     }
 
     private static WebSocketSession session() {
@@ -68,7 +68,7 @@ class ConnectionReplacementTest {
         @SuppressWarnings("unchecked")
         ObjectProvider<ServerRestartAnnouncementService> announcements = mock(ObjectProvider.class);
         when(announcements.getObject()).thenReturn(mock(ServerRestartAnnouncementService.class));
-        ClientSystemConnectionService service = new ClientSystemConnectionService(provider, null, userService, announcements);
+        ClientSystemConnectionService service = new ClientSystemConnectionService(provider, null, userService, announcements, mock(ObjectProvider.class));
         WebSocketSession oldSession = session();
         WebSocketSession newSession = session();
 
@@ -125,7 +125,7 @@ class ConnectionReplacementTest {
         @SuppressWarnings("unchecked")
         ObjectProvider<ServerRestartAnnouncementService> announcements = mock(ObjectProvider.class);
         when(announcements.getObject()).thenReturn(mock(ServerRestartAnnouncementService.class));
-        ClientSystemConnectionService service = new ClientSystemConnectionService(provider, null, userService, announcements);
+        ClientSystemConnectionService service = new ClientSystemConnectionService(provider, null, userService, announcements, mock(ObjectProvider.class));
         WebSocketSession firstSession = session();
         WebSocketSession secondSession = session();
         service.afterConnectionEstablished(firstSession);

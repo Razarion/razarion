@@ -205,6 +205,13 @@ $buildup-slots: 5;
   visibility: visible;
 }
 
+/* Tappable - see ItemCockpitComponent.onBuildTipTap; the wrapper stays pointer-events: none. */
+.build-tip-box,
+.build-tip-arrow {
+  pointer-events: auto;
+  cursor: pointer;
+}
+
 .build-tip-bounce {
   display: flex;
   flex-direction: column;
@@ -377,4 +384,15 @@ $buildup-slots: 5;
   border-radius: 10px;
   background-color: rgba(16, 16, 16, 0.9);
   color: #fff;
+}
+
+/* The press arrived: a short green flash and a slight give - see ItemCockpitComponent.flashPressed. */
+@keyframes build-pressed {
+  0% { transform: scale(0.9); box-shadow: 0 0 0 3px rgba(58, 208, 122, 0.95), 0 0 14px rgba(58, 208, 122, 0.9); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(58, 208, 122, 0), 0 0 0 rgba(58, 208, 122, 0); }
+}
+
+.item-cockpit-buildup-button.build-pressed,
+.hud-build-btn.build-pressed {
+  animation: build-pressed 450ms ease-out;
 }

@@ -16,7 +16,7 @@ public interface NativeTerrainShapeAccess {
      *                   by the tile has to know the grid before it can ask for a rectangle of it -
      *                   and the caller has just computed it from the planet config.
      */
-    void load(int planetId, int tileXCount, int tileYCount, Consumer<NativeTerrainShape> loadedCallback, Consumer<String> failCallback);
+    void load(int planetId, int tileXCount, int tileYCount, Index startTile, Consumer<NativeTerrainShape> loadedCallback, Consumer<String> failCallback);
 
     Uint16ArrayEmu createTileGroundHeightMap(Index terrainTileIndex);
 
@@ -31,5 +31,15 @@ public interface NativeTerrainShapeAccess {
      */
     default Uint16ArrayEmu createTileGroundRelief(Index terrainTileIndex) {
         return null;
+    }
+
+    /**
+     * Whether a terrain tile and its eight neighbours have their real heights. Building a tile reads
+     * one row into the tiles beside it and its relief looks further, so a tile is only safe to build
+     * when the ring around it is there too. Always true where the whole height map is loaded before
+     * the game starts.
+     */
+    default boolean isTileDrawable(Index terrainTileIndex) {
+        return true;
     }
 }

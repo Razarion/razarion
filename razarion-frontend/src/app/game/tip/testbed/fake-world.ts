@@ -112,6 +112,14 @@ const CAMERA = {
  */
 const SCREEN = {hudFraction: 0.26, clearanceFraction: PROMPT_CLEARANCE_FRACTION};
 
+/**
+ * The column of unit buttons on the left edge of a phone, as a share of the picture: measured on
+ * the live client (2026-10-18) the strip covers the left 12 % of the width from 55 % of the height
+ * down, and the renderer counts a unit as covered within 16 px of it (isCoveredByHtml) - 4 % more.
+ * A unit there gets the arrow, not a prompt, and its "go there" has to bring it out from under it.
+ */
+const STRIP = {right: 0.16, top: 0.55};
+
 export class World {
   private nextId = 1;
   readonly units = new Map<number, Unit>();
@@ -242,6 +250,13 @@ export class World {
     return (1 - Math.tan(above) / Math.tan(CAMERA.halfFov)) / 2;
   }
 
+  /** Where the point sits across the picture, 0 at the left edge and 1 at the right. */
+  screenFractionX(x: number, y: number): number {
+    const depth = Math.min(1, Math.max(0, (y - (this.cameraY - VIEW.near)) / (VIEW.near + VIEW.far)));
+    const halfWidth = VIEW.nearHalfWidth + depth * (VIEW.farHalfWidth - VIEW.nearHalfWidth);
+    return 0.5 + (x - this.cameraX) / (2 * halfWidth);
+  }
+
   /** The camera row that puts this ground row at the given height in the picture - the inverse. */
   cameraYForScreenFraction(y: number, fraction: number): number {
     const above = Math.atan((1 - 2 * fraction) * Math.tan(CAMERA.halfFov));
@@ -262,6 +277,9 @@ export class World {
     const floor = 1 - SCREEN.hudFraction;
     if (fraction > floor) {
       return false; // behind the HUD
+    }
+    if (fraction >= STRIP.top && this.screenFractionX(x, y) < STRIP.right) {
+      return false; // under the button strip
     }
     return fraction >= SCREEN.clearanceFraction
       || fraction + SCREEN.clearanceFraction <= floor;

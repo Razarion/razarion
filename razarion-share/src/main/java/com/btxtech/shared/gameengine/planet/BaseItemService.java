@@ -49,6 +49,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -98,6 +99,16 @@ public class BaseItemService {
     private final Collection<SyncBaseItem> activeItemQueue = new ArrayList<>();
     private final Queue<BaseCommand> commandQueue = new LinkedList<>();
     private final PriorityQueue<TickInfo> pendingReceivedTickInfos = new PriorityQueue<>(Comparator.comparingDouble(TickInfo::getTickCount));
+    /**
+     * Ids the server deleted, kept on the slave so an older tick info cannot bring the item back.
+     * A delete is applied at once, tick infos wait in pendingReceivedTickInfos until the worker's tick
+     * catches up - one sent before the delete then arrived after it, and an unknown id in a tick
+     * info is created without question. Units killed or sold minutes earlier lived on in the client
+     * that way and were sent along in commands (PROD 14.-16.10.2026: "sell all" of quest 488). The
+     * server never reuses an id, so a tombstone stays right; the oldest go first above the cap.
+     */
+    private final Set<Integer> deletedSlaveIds = new LinkedHashSet<>();
+    private static final int DELETED_SLAVE_IDS_MAX = 10000;
     private int lastBaseItId = 1;
     private PlanetConfig planetConfig;
     private GameEngineMode gameEngineMode;
@@ -174,7 +185,18 @@ public class BaseItemService {
         activeItems.clear();
         activeItemQueue.clear();
         pendingReceivedTickInfos.clear();
+        deletedSlaveIds.clear();
         lastBaseItId = 1;
+    }
+
+    /** See {@link #deletedSlaveIds}. Also for an id the slave never knew: the delete came first. */
+    public void rememberDeletedSlave(int syncItemId) {
+        if (deletedSlaveIds.size() >= DELETED_SLAVE_IDS_MAX) {
+            Iterator<Integer> oldest = deletedSlaveIds.iterator();
+            oldest.next();
+            oldest.remove();
+        }
+        deletedSlaveIds.add(syncItemId);
     }
 
     public void setupSlave(InitialSlaveSyncItemInfo initialSlaveSyncItemInfo) {
@@ -463,6 +485,9 @@ public class BaseItemService {
     private void onSlaveSyncBaseItemChanged(SyncBaseItemInfo syncBaseItemInfo, double serverTick, long workerTick) {
         SyncBaseItem syncBaseItem = syncItemContainerService.getSyncBaseItem(syncBaseItemInfo.getId());
         if (syncBaseItem == null) {
+            if (deletedSlaveIds.contains(syncBaseItemInfo.getId())) {
+                return; // an older tick info of an item the server has deleted since
+            }
             PlayerBase playerBase = getPlayerBase4BaseId(syncBaseItemInfo.getBaseId());
             syncBaseItem = createSyncBaseItemSlave(syncBaseItemInfo, playerBase);
         } else {
@@ -545,6 +570,7 @@ public class BaseItemService {
     }
 
     public void onSlaveSyncBaseItemDeleted(SyncBaseItem syncBaseItem, SyncItemDeletedInfo syncItemDeletedInfo) {
+        rememberDeletedSlave(syncBaseItem.getId());
         syncBaseItem.clearHealth();
         syncItemContainerService.destroySyncItem(syncBaseItem);
         energyService.onBaseItemRemoved(syncBaseItem);
@@ -623,8 +649,25 @@ public class BaseItemService {
         }
     }
 
-    public void sellItems(Collection<Integer> syncBaseItemIds, PlayerBase playerBase) throws ItemDoesNotExistException, NotYourBaseException {
-        syncBaseItemIds.forEach(syncBaseItemId -> sellItem(syncBaseItemId, playerBase));
+    /**
+     * Sells what can be sold and skips the rest. A client sometimes still holds a unit the server
+     * destroyed or sold minutes ago, and sends it along; the first such id used to throw and leave
+     * everything after it standing. The "sell all" of level 9 (quest 488) then could not clear the
+     * noob island however often it was pressed (PROD 14.-16.10.2026: two players stuck there, about
+     * 60 such failures in all).
+     */
+    public void sellItems(Collection<Integer> syncBaseItemIds, PlayerBase playerBase) {
+        List<Integer> skipped = new ArrayList<>();
+        for (int syncBaseItemId : syncBaseItemIds) {
+            try {
+                sellItem(syncBaseItemId, playerBase);
+            } catch (ItemDoesNotExistException | NotYourBaseException e) {
+                skipped.add(syncBaseItemId);
+            }
+        }
+        if (!skipped.isEmpty()) {
+            logger.info("BaseItemService.sellItems() skipped ids not (any more) in base " + playerBase.getBaseId() + ": " + skipped);
+        }
     }
 
     private void sellItem(int syncBaseItemId, PlayerBase playerBase) throws ItemDoesNotExistException, NotYourBaseException {

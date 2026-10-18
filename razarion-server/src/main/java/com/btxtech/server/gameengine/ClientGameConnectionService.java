@@ -1,5 +1,6 @@
 package com.btxtech.server.gameengine;
 
+import com.btxtech.server.AuthHandshakeInterceptor;
 import com.btxtech.server.model.tracking.PageRequest;
 import com.btxtech.server.service.tracking.MetaConversionService;
 import com.btxtech.server.service.tracking.PageRequestService;
@@ -82,7 +83,8 @@ public class ClientGameConnectionService extends TextWebSocketHandler {
 
         Authentication auth = WebSocketUtils.getJwtFromWsSession(wsSession, jwtAuthenticationConverter);
         var httpSessionId = (String) wsSession.getAttributes().get(HttpSessionHandshakeInterceptor.HTTP_SESSION_ID_ATTR_NAME);
-        String userId = userService.getOrCreateUserId(auth, httpSessionId);
+        var anonymousToken = (String) wsSession.getAttributes().get(AuthHandshakeInterceptor.ANONYMOUS_TOKEN);
+        String userId = userService.getOrCreateUserId(auth, httpSessionId, anonymousToken);
 
         clientGameConnection.init(wsSession, userId);
         wsSession.getAttributes().put(CLIENT_GAME_CONNECTION, clientGameConnection);

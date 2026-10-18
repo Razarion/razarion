@@ -93,6 +93,7 @@
                      pressed lives in the tooltip, which a finger never opens. It stays pressable and
                      answers with the reason instead. -->
                 <button class='item-cockpit-buildup-button'
+                  [class.build-pressed]="pressedItemTypeId === buildupItem.itemTypeId"
                   (mousedown)="onBuildClick(buildupItem)"
                   [title]="buildTooltip(buildupItem)"
                   [attr.aria-disabled]="!isBuildable(buildupItem)">
@@ -129,6 +130,7 @@
                      be pressed would go with it. It stays pressable and answers with the reason,
                      which is printed under the grid as well as offered as a tooltip. -->
                 <button class="hud-build-btn"
+                        [class.build-pressed]="pressedItemTypeId === buildupItem.itemTypeId"
                         (mousedown)="onBuildClick(buildupItem)"
                         [title]="buildTooltip(buildupItem)"
                         [attr.aria-disabled]="!isBuildable(buildupItem)">
@@ -305,14 +307,15 @@
     @if (buildTip; as tip) {
       <!-- Outside every panel and fixed to the viewport: the buttons sit in a carousel that clips
            and translates its content, and the cockpit panel would cut the tip off at its own top
-           edge. pointer-events none - a prompt standing over the button it asks to be clicked must
-           not be what catches the click. -->
+           edge. The box and the arrow take a tap and press what they point at (onBuildTipTap); the
+           rest of the tip lets it through. -->
       <div class="build-tip" [style.left.px]="tip.x" [style.top.px]="tip.y">
         <div class="build-tip-bounce">
           <!-- Shifted sideways on its own so it stays on screen while the arrow keeps pointing at
                the button: both anchors sit near the left edge of a phone, and a box centred on
                them ran off it. -->
-          <div class="build-tip-box" #buildTipBox [style.transform]="'translateX(' + buildTipShift + 'px)'">
+          <div class="build-tip-box" #buildTipBox [style.transform]="'translateX(' + buildTipShift + 'px)'"
+               (click)="onBuildTipTap(tip)">
             @if (touch) {
               <!-- The mouse with its blinking left button is the wrong instrument on a phone, and
                    the box is nowrap on a screen that has no width to spare. -->
@@ -325,7 +328,7 @@
             }
             <span>{{ buildTipText(tip) }}</span>
           </div>
-          <img class="build-tip-arrow" src="babylon-gui/arrow-down.svg" alt="">
+          <img class="build-tip-arrow" src="babylon-gui/arrow-down.svg" alt="" (click)="onBuildTipTap(tip)">
         </div>
       </div>
     }

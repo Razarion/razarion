@@ -40,8 +40,29 @@ public interface UserRepository extends JpaRepository<UserEntity, Integer> {
 
     boolean existsByNameIgnoreCase(String name);
 
-    @Query("SELECT u FROM UserEntity u WHERE u.systemConnectionClosed IS NOT NULL AND u.systemConnectionClosed < :cutoff")
-    List<UserEntity> findInactiveSince(@Param("cutoff") LocalDateTime cutoff);
+    Optional<UserEntity> findByAnonymousToken(String anonymousToken);
+
+    /**
+     * Disconnected players who have nothing left to come back to: no cookie that could find them
+     * again, gone past the grace; or a cookie, gone past the retention. Unregistered only - the
+     * caller checks it once more, a wrong delete here costs an account.
+     */
+    @Query("SELECT u FROM UserEntity u WHERE u.systemConnectionClosed IS NOT NULL "
+            + "AND u.verificationStartedDate IS NULL AND u.verificationDoneDate IS NULL "
+            + "AND ((u.anonymousToken IS NULL AND u.systemConnectionClosed < :graceCutoff) "
+            + "OR u.systemConnectionClosed < :retentionCutoff)")
+    List<UserEntity> findInactiveForGood(@Param("graceCutoff") LocalDateTime graceCutoff,
+                                         @Param("retentionCutoff") LocalDateTime retentionCutoff);
+
+    /**
+     * Unregistered players who can still come back, gone past the grace: their base has to leave
+     * the start region, their progress stays. Only the ids - this is every such player of the last
+     * two weeks, once a minute.
+     */
+    @Query("SELECT u.userId FROM UserEntity u WHERE u.anonymousToken IS NOT NULL "
+            + "AND u.verificationStartedDate IS NULL AND u.verificationDoneDate IS NULL "
+            + "AND u.systemConnectionClosed IS NOT NULL AND u.systemConnectionClosed < :graceCutoff")
+    List<String> findRetainedUserIdsInactiveSince(@Param("graceCutoff") LocalDateTime graceCutoff);
 
     /**
      * Users whose connection is open as far as the database knows, which is not the same as open.
@@ -49,7 +70,7 @@ public interface UserRepository extends JpaRepository<UserEntity, Integer> {
      * The close timestamp is written by the websocket close event alone, and no idle timeout is
      * configured, so a socket that dies without a close frame - a locked phone, a swiped-away tab,
      * a network that simply stops - never produces one. The row then says "still connected"
-     * forever, and {@link #findInactiveSince} can never see it because that asks for a close time.
+     * forever, and {@link #findInactiveForGood} can never see it because that asks for a close time.
      * Measured on PROD on 2026-09-16: one of the four anonymous players who had actually connected
      * was in this state, and the row survives until the next server start.
      */

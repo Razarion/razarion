@@ -149,7 +149,17 @@ describe('ItemCockpitComponent buildup tip', () => {
     const component = fixture.componentInstance;
     stubButtonRect(component, {left: 100, top: 200, width: 60});
     expect(component.showBuildupTip(4)).toBe(true);
-    expect(component.buildTip).toEqual({x: 130, y: 200, mode: 'build'});
+    expect(component.buildTip).toEqual({x: 130, y: 200, mode: 'build', itemTypeId: 4});
+  });
+
+  it('presses the button it points at when the tip itself is tapped', () => {
+    const fixture = createFixture([buildupItem(4, true)]);
+    const component = fixture.componentInstance;
+    stubButtonRect(component, {left: 100, top: 200, width: 60});
+    component.showBuildupTip(4);
+    const press = spyOn(component, 'onBuildClick');
+    component.onBuildTipTap(component.buildTip!);
+    expect(press).toHaveBeenCalledWith(jasmine.objectContaining({itemTypeId: 4}));
   });
 
   it('renders the tip where it was anchored', () => {
@@ -217,9 +227,9 @@ describe('ItemCockpitComponent buildup tip', () => {
     const component = fixture.componentInstance;
     stubButtonRect(component, {left: 100, top: 200, width: 60}, {left: 300, top: 400, width: 60});
     expect(component.showBuildupTip(4)).toBe(true);
-    expect(component.buildTip).toEqual({x: 130, y: 200, mode: 'build'});
+    expect(component.buildTip).toEqual({x: 130, y: 200, mode: 'build', itemTypeId: 4});
     expect(component.showBuildupTip(4)).toBe(true);
-    expect(component.buildTip).toEqual({x: 330, y: 400, mode: 'build'});
+    expect(component.buildTip).toEqual({x: 330, y: 400, mode: 'build', itemTypeId: 4});
   });
 
   it('hides the tip when cleared', () => {

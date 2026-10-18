@@ -1,5 +1,6 @@
 package com.btxtech.shared.gameengine.planet;
 
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.InitialSlaveSyncItemInfo;
 import com.btxtech.shared.dto.MasterPlanetConfig;
 import com.btxtech.shared.gameengine.InitializeService;
@@ -91,11 +92,11 @@ public class PlanetService implements Runnable { // Only available in worker. On
     }
     // private List<DebugHelperStatic.TickData> tickDatas = new ArrayList<>();
 
-    public void initialise(PlanetConfig planetConfig, GameEngineMode gameEngineMode, MasterPlanetConfig masterPlanetConfig, Runnable finishCallback, Consumer<String> failCallback) {
+    public void initialise(PlanetConfig planetConfig, GameEngineMode gameEngineMode, MasterPlanetConfig masterPlanetConfig, DecimalPosition startPosition, Runnable finishCallback, Consumer<String> failCallback) {
         this.planetConfig = planetConfig;
         this.gameEngineMode = gameEngineMode;
         syncItemContainerService.clear();
-        terrainService.setup(planetConfig, () -> {
+        terrainService.setup(planetConfig, startPosition, () -> {
             initializeService.setPlanetActivationEvent(new PlanetActivationEvent(planetConfig, gameEngineMode, masterPlanetConfig, PlanetActivationEvent.Type.INITIALIZE));
             finishCallback.run();
         }, failCallback);
@@ -157,28 +158,42 @@ public class PlanetService implements Runnable { // Only available in worker. On
             }
             questService.tick();
             planetServiceTracker.afterQuestService();
+            long afterQuest = System.currentTimeMillis();
             pathingService.tick(synchronizationSendingContext);
             planetServiceTracker.afterPathingService();
+            long afterPathing = System.currentTimeMillis();
             if (gameEngineMode == GameEngineMode.MASTER) {
                 // Server-authoritative replan of units ORCA cannot free. The new path propagates to
                 // clients via TickInfo (notifySendSyncBaseItem); SLAVE clients never replan locally.
                 pathingService.replanStuckItems(syncService::notifySendSyncBaseItem);
             }
+            long afterReplan = System.currentTimeMillis();
             baseItemService.tick();
             planetServiceTracker.afterBaseItemService();
+            long afterBaseItems = System.currentTimeMillis();
             projectileService.tick();
             planetServiceTracker.afterProjectileService();
             energyService.tick();
             planetServiceTracker.afterEnergyService();
             boxService.tick();
             planetServiceTracker.afterBoxService();
+            long afterOthers = System.currentTimeMillis();
             notifyTickListeners(synchronizationSendingContext);
             planetServiceTracker.afterTickListener();
+            long afterListeners = System.currentTimeMillis();
             syncService.sendTickInfo(tickCount);
             planetServiceTracker.endTick();
             long tickMillis = System.currentTimeMillis() - tickStartMillis;
             if (gameEngineMode == GameEngineMode.MASTER && tickMillis > TICK_STALL_MILLIS) {
-                logger.warning("[TickStall] tick " + tickCount + " took " + tickMillis + " ms");
+                // Which part of the tick, so a stall can be traced to its cause from the log alone.
+                // 16.10.2026 21:46-22:36 UTC the planet ran 608 ticks of 1-5 s and the line said
+                // nothing but the total.
+                logger.warning("[TickStall] tick " + tickCount + " took " + tickMillis + " ms: quest="
+                        + (afterQuest - tickStartMillis) + " pathing=" + (afterPathing - afterQuest)
+                        + " replan=" + (afterReplan - afterPathing) + " baseItems=" + (afterBaseItems - afterReplan)
+                        + " projectile+energy+box=" + (afterOthers - afterBaseItems)
+                        + " listeners=" + (afterListeners - afterOthers)
+                        + " send=" + (System.currentTimeMillis() - afterListeners));
             }
 
             // DebugHelperStatic.appendAfterTick(tickDatas, tickCount, syncItemContainerService);

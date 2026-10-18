@@ -96,6 +96,13 @@ public class UserEntity {
     private String name;
     private LocalDateTime systemConnectionOpened;
     private LocalDateTime systemConnectionClosed;
+    /**
+     * The secret in the long-lived cookie that brings an unregistered player back to this row, see
+     * {@link com.btxtech.server.user.UserService#getOrCreateUserIdFromContext()}. Not the userId: that
+     * one travels to other clients with the base.
+     */
+    @Column(length = 64, unique = true)
+    private String anonymousToken;
 
     public Integer getId() {
         return id;
@@ -337,6 +344,14 @@ public class UserEntity {
 
     public void setSystemConnectionClosed(LocalDateTime systemConnectionClosed) {
         this.systemConnectionClosed = systemConnectionClosed;
+    }
+
+    public String getAnonymousToken() {
+        return anonymousToken;
+    }
+
+    public void setAnonymousToken(String anonymousToken) {
+        this.anonymousToken = anonymousToken;
     }
 
     @Override

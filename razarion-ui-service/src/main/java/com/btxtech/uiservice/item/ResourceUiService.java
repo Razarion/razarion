@@ -52,8 +52,18 @@ public class ResourceUiService {
 
     public void addResource(SyncResourceItemSimpleDto syncResourceItem) {
         synchronized (resources) {
-            if (resources.put(syncResourceItem.getId(), syncResourceItem) != null) {
-                logger.warning("Resource already exists: " + syncResourceItem);
+            SyncResourceItemSimpleDto previous = resources.put(syncResourceItem.getId(), syncResourceItem);
+            if (previous != null) {
+                if (previous.getPosition().equals(syncResourceItem.getPosition())) {
+                    logger.warning("Resource already exists: " + syncResourceItem);
+                } else {
+                    // Sent again with its real height: it was placed while the far part of the height
+                    // map was still loading (GameEngineWorker#onHeightMapComplete).
+                    BabylonResourceItem visible = babylonResourceItems.get(syncResourceItem.getId());
+                    if (visible != null) {
+                        visible.setPosition(syncResourceItem.getPosition());
+                    }
+                }
             }
         }
         updateBabylonResourceItems();

@@ -21,6 +21,7 @@ import { MiniItemView } from './mini-item-view';
 import { MiniQuestMarker } from './mini-quest-marker';
 import { MiniFog } from './mini-fog';
 import { QuestMarkerService } from './quest-marker.service';
+import { CockpitDisplayService } from '../../cockpit-display.service';
 import {Button} from 'primeng/button';
 import {Slider} from 'primeng/slider';
 import {FormsModule} from '@angular/forms';
@@ -115,6 +116,7 @@ export class RadarComponent implements ViewFieldListener, OnInit, OnChanges, OnD
   miniQuestMarkerElement!: ElementRef<HTMLCanvasElement>;
 
   private readonly zone = inject(NgZone);
+  private readonly cockpitDisplayService = inject(CockpitDisplayService);
 
   constructor(private gwtAngularService: GwtAngularService, private renderService: BabylonRenderServiceAccessImpl,
               private questMarkerService: QuestMarkerService) {
@@ -238,7 +240,9 @@ export class RadarComponent implements ViewFieldListener, OnInit, OnChanges, OnD
     // while the start placer was open - often their first tap - and 20 % of them placed a base, against
     // 76 % of those who did not: the ghost stayed behind, and dragged to where the map had taken them it
     // was outside the start region. The map still shows where the player is.
-    if (this.renderService.startPlacerHome) {
+    // Only for a newcomer. A player further on who lost or gave up a base chooses where to start
+    // again, and the map is how they get there (reported 18.10.2026).
+    if (this.renderService.startPlacerHome && (this.cockpitDisplayService.currentLevelNumber ?? 1) <= 1) {
       this.renderService.reportFirstInteraction('MINIMAP_JUMP', 'blocked=start');
       return;
     }

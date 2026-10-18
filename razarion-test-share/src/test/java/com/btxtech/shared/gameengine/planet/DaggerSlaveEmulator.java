@@ -25,7 +25,7 @@ public class DaggerSlaveEmulator extends AbstractDaggerIntegrationTest {
     public void connectToMaster(UserContext userContext, DaggerMasterBaseTest weldMasterBaseTest) {
         this.weldMasterBaseTest = weldMasterBaseTest;
         setupEnvironment(weldMasterBaseTest.getStaticGameConfig(), weldMasterBaseTest.getPlanetConfig());
-        getPlanetService().initialise(getPlanetConfig(), GameEngineMode.SLAVE, null, () -> {
+        getPlanetService().initialise(getPlanetConfig(), GameEngineMode.SLAVE, null, null, () -> {
             getPlanetService().start();
         }, null);
 

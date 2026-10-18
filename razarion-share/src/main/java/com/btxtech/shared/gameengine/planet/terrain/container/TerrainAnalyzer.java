@@ -93,6 +93,15 @@ public class TerrainAnalyzer {
         return terrainType;
     }
 
+    /**
+     * Forgets every terrain type worked out so far. For a height map that arrived after the game
+     * started: a type read from a stand-in height would otherwise stay wrong for the life of the
+     * planet. The blocked-node masks stay - they come from the terrain objects, not the heights.
+     */
+    public void clearTerrainTypeCache() {
+        terrainTypeCache.clear();
+    }
+
     private TerrainType analyze(Index terrainNodeIndex) {
         if (terrainShapeManager != null) {
             if (isBlockedByTerrainObject(terrainNodeIndex)) {

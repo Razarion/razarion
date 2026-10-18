@@ -488,6 +488,9 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
     // has created it - the rings bridge that gap on the green disc the player just confirmed.
     this.rendererService.showGroundCommandMarker(position.x, position.z, this.discRadius, 'build', position.y);
     baseItemPlacer.onPlace(position.x, position.z);
+    if (!this.buildPlacer) {
+      this.rendererService.startBasePlacedListener?.();
+    }
   }
 
   /**

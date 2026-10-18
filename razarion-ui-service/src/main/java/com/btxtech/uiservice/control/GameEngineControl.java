@@ -127,7 +127,28 @@ import java.util.logging.Logger;
                 coldGameUiContext.getWarmGameUiContext().getPlanetConfig(),
                 userUiService.getUserContext(),
                 coldGameUiContext.getWarmGameUiContext().getGameEngineMode(),
-                boot.get().getGameSessionUuid());
+                boot.get().getGameSessionUuid(),
+                // Where this player will be put down. It is the only thing that says which corner
+                // of the height map has to arrive before the game may start, and the server has
+                // already chosen it - see GameUiContextService. Null for a player who already has
+                // a base: the engine learns that position later, and the map then loads whole, the
+                // way it always did.
+                noBaseViewPosition(coldGameUiContext));
+    }
+
+    /**
+     * The spot the camera will fly to for a player without a base, as the server picked it.
+     * <p>
+     * Guarded end to end because every step of it can be absent: a warm context without a slave
+     * config, a planet that does not place new players by itself. A missing position is not a
+     * failure, it is the old behaviour.
+     */
+    private static DecimalPosition noBaseViewPosition(ColdGameUiContext coldGameUiContext) {
+        try {
+            return coldGameUiContext.getWarmGameUiContext().getSlavePlanetConfig().getNoBaseViewPosition();
+        } catch (Throwable t) {
+            return null;
+        }
     }
 
     public void initWarm(PlanetConfig planetConfig, GameEngineMode gameEngineMode, DeferredStartup deferredStartup) {

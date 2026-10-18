@@ -45,7 +45,7 @@ public class DaggerTerrainServiceTestBase extends DaggerMasterBaseTest {
         setupEnvironment(staticGameConfig, planetConfig);
         getTestNativeTerrainShapeAccess().setBotConfigs(botConfigs);
         getTestNativeTerrainShapeAccess().setPlanetConfig(planetConfig);
-        getPlanetService().initialise(getPlanetConfig(), GameEngineMode.MASTER, setupMasterPlanetConfig(), () -> getPlanetService().start(), null);
+        getPlanetService().initialise(getPlanetConfig(), GameEngineMode.MASTER, setupMasterPlanetConfig(), null, () -> getPlanetService().start(), null);
         if (getAlarmService().hasAlarms()) {
             throw new RuntimeException("Setup Terrain failed. Check AlarmService and Log");
         }

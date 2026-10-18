@@ -34,9 +34,13 @@ export class SelectionService {
   /** Counts the times own units were picked - by a tap, a box or a chip - not the other changes. */
   ownSelectionCount = 0;
 
-  selectOwnItems(items: BabylonBaseItemImpl[]): void {
+  /**
+   * @param byGame the game picked them, not the player - not counted as a SELECT, which measures
+   *               whether players find their units (see StartBuilderSelectService).
+   */
+  selectOwnItems(items: BabylonBaseItemImpl[], byGame = false): void {
     this.ownSelectionCount++;
-    if (items.length) {
+    if (items.length && !byGame) {
       this.reportSelected();
     }
     if (items.length > 1) {

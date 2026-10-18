@@ -6,6 +6,7 @@ import com.btxtech.worker.jso.JsCloseEvent;
 import com.btxtech.worker.jso.JsConsole;
 import com.btxtech.worker.jso.JsMessageEvent;
 import com.btxtech.worker.jso.JsWebSocket;
+import org.teavm.jso.JSBody;
 
 import jakarta.inject.Inject;
 import java.util.function.Consumer;
@@ -26,6 +27,8 @@ public class TeaVMWebSocketWrapper {
     private Runnable serverRestartCallback;
     private Runnable connectionLostCallback;
     private InnerWebSocket innerWebSocket;
+    /** When the open connection dropped, 0 while it is up - for the [Reconnect] log line. */
+    private double lostAt;
 
     @Inject
     public TeaVMWebSocketWrapper(SimpleExecutorService simpleExecutorService) {
@@ -129,16 +132,18 @@ public class TeaVMWebSocketWrapper {
                                 + " Reason: " + closeEvent.getReason()
                                 + " WasClean: " + closeEvent.isWasClean());
                         /*
-                         * Lost, not reconnected. A reconnected game connection is sent the whole
-                         * world again and the worker lays it on top of the old one: "Id is not
-                         * free", null traps, and a scene chain that breaks - the quest line goes and
-                         * no quest comes back, although the server keeps handing them out. 22 of
-                         * 857 sessions with a base in the week to 2026-10-05. The connection-lost
-                         * path reloads the page once the server answers, which for a dropped mobile
-                         * connection is a few seconds, and the player is still the same player.
-                         * See project memory "slave reconnect corruption" for the proper repair.
+                         * Reconnected in place. The server sends the whole world on every
+                         * connection; the worker replaces its own with it (PlanetService
+                         * #initialSlaveSyncItemInfo) and the client keeps its scenes
+                         * (GameUiControl#onInitialSlaveSynchronized). Until 2026-10-18 a drop
+                         * reloaded the page instead: of 109 drops in 14 days on PROD, 60 got back
+                         * into the game - after 9 s in the middle, 60 s for the slowest tenth - and
+                         * 28 of 58 players with a base. The reload stays as the last resort, when
+                         * MAX_RETRIES attempts find no server (createNewSocket).
                          */
-                        connectionLostCallback.run();
+                        lostAt = now();
+                        JsConsole.warn("[Reconnect] game connection lost, code " + closeEvent.getCode() + ", reconnecting");
+                        createNewSocket();
                     }
                 } catch (Throwable t) {
                     JsConsole.warn("Error handling close event: " + t.getMessage());
@@ -160,6 +165,10 @@ public class TeaVMWebSocketWrapper {
                 }
                 retries = 0;
                 open = true;
+                if (lostAt > 0) {
+                    JsConsole.warn("[Reconnect] game connection back after " + Math.round(now() - lostAt) + " ms");
+                    lostAt = 0;
+                }
                 openCallback.run();
             });
         }
@@ -187,4 +196,7 @@ public class TeaVMWebSocketWrapper {
             }
         }
     }
+
+    @JSBody(script = "return performance.now();")
+    private static native double now();
 }

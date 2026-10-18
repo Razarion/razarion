@@ -10,6 +10,7 @@ package com.btxtech.server.model.history;
 public enum GameHistoryType {
     // Account / progression
     USER_LOGGED_IN,
+    ANONYMOUS_USER_RETURNED,
     LEVEL_UP,
     QUEST_ACTIVATED,
     QUEST_DEACTIVATED,

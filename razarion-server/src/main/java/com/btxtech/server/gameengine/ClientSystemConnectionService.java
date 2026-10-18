@@ -1,11 +1,14 @@
 package com.btxtech.server.gameengine;
 
+import com.btxtech.server.AuthHandshakeInterceptor;
+import com.btxtech.server.service.engine.ServerLevelQuestService;
 import com.btxtech.server.user.UserService;
 import com.btxtech.shared.datatypes.ChatMessage;
 import com.btxtech.shared.datatypes.LevelUpPacket;
 import com.btxtech.shared.datatypes.LifecyclePacket;
 import com.btxtech.shared.datatypes.UnlockedItemPacket;
 import com.btxtech.shared.datatypes.UserContext;
+import com.btxtech.shared.dto.SlaveQuestInfo;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
@@ -52,15 +55,18 @@ public class ClientSystemConnectionService extends TextWebSocketHandler {
     private final UserService userService;
     // ObjectProvider breaks the cycle: the announcement service sends through this service.
     private final ObjectProvider<ServerRestartAnnouncementService> serverRestartAnnouncementService;
+    private final ObjectProvider<ServerLevelQuestService> serverLevelQuestService;
 
     public ClientSystemConnectionService(Provider<ClientSystemConnection> provider,
                                          Converter<Jwt, AbstractAuthenticationToken> jwtAuthenticationConverter,
                                          UserService userService,
-                                         ObjectProvider<ServerRestartAnnouncementService> serverRestartAnnouncementService) {
+                                         ObjectProvider<ServerRestartAnnouncementService> serverRestartAnnouncementService,
+                                         ObjectProvider<ServerLevelQuestService> serverLevelQuestService) {
         this.provider = provider;
         this.jwtAuthenticationConverter = jwtAuthenticationConverter;
         this.userService = userService;
         this.serverRestartAnnouncementService = serverRestartAnnouncementService;
+        this.serverLevelQuestService = serverLevelQuestService;
     }
 
     @Override
@@ -69,7 +75,8 @@ public class ClientSystemConnectionService extends TextWebSocketHandler {
 
         Authentication auth = WebSocketUtils.getJwtFromWsSession(wsSession, jwtAuthenticationConverter);
         var httpSessionId = (String) wsSession.getAttributes().get(HttpSessionHandshakeInterceptor.HTTP_SESSION_ID_ATTR_NAME);
-        String userId = userService.getOrCreateUserId(auth, httpSessionId);
+        var anonymousToken = (String) wsSession.getAttributes().get(AuthHandshakeInterceptor.ANONYMOUS_TOKEN);
+        String userId = userService.getOrCreateUserId(auth, httpSessionId, anonymousToken);
 
         clientSystemConnection.init(wsSession, userId);
         wsSession.getAttributes().put(CLIENT_SYSTEM_CONNECTION, clientSystemConnection);
@@ -86,6 +93,8 @@ public class ClientSystemConnectionService extends TextWebSocketHandler {
         } catch (Throwable throwable) {
             logger.warn(throwable.getMessage(), throwable);
         }
+
+        sendQuestState(userId, clientSystemConnection);
 
         // TODO connectionTrackingPersistence.onSystemConnectionOpened(clientSystemConnection.getSession().getHttpSessionId(), clientSystemConnection.getSession());
     }
@@ -152,6 +161,33 @@ public class ClientSystemConnectionService extends TextWebSocketHandler {
 
     public void onUnlockedItemLimit(String userId, Map<Integer, Integer> unlockedItemLimit, boolean blinking) {
         sendToClient(userId, SystemConnectionPacket.UNLOCKED_ITEM_LIMIT, new UnlockedItemPacket().unlockedItemLimit(unlockedItemLimit).availableUnlocks(blinking));
+    }
+
+    /**
+     * The quest the player is on, and how far, to the connection that just opened. Quest changes
+     * travel as events on this connection only, so one that came while the connection was down -
+     * a mobile drop, which since 2026-10-18 no longer reloads the page - was simply missing: the
+     * quest line stayed on the old quest and its tip never came (phone, 2026-10-18). The client
+     * ignores an activation of the quest it already shows (GameUiControl#onQuestActivatedServer),
+     * so a first connection, which got the same quest in its game context, is not disturbed.
+     */
+    private void sendQuestState(String userId, ClientSystemConnection clientSystemConnection) {
+        try {
+            ServerLevelQuestService questService = serverLevelQuestService.getIfAvailable();
+            if (questService == null) {
+                return;
+            }
+            SlaveQuestInfo slaveQuestInfo = questService.getSlaveQuestInfo(userId);
+            if (slaveQuestInfo.getActiveQuest() == null) {
+                return;
+            }
+            sendToClient(SystemConnectionPacket.QUEST_ACTIVATED, slaveQuestInfo.getActiveQuest(), List.of(clientSystemConnection));
+            if (slaveQuestInfo.getQuestProgressInfo() != null) {
+                sendToClient(SystemConnectionPacket.QUEST_PROGRESS_CHANGED, slaveQuestInfo.getQuestProgressInfo(), List.of(clientSystemConnection));
+            }
+        } catch (Throwable throwable) {
+            logger.warn("Sending the quest state to a new system connection failed for user " + userId, throwable);
+        }
     }
 
     public void sendLifecyclePacket(LifecyclePacket lifecyclePacket) {

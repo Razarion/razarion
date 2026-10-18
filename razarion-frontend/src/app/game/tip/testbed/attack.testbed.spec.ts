@@ -195,7 +195,9 @@ describe('Tip test bed - attack', () => {
    */
   tipCase('X-10 quest 365, the player changes his selection three times: that is not a restart loop', bed => {
     const {viper, extractor} = base(bed);
-    bed.lookAt(20, 0); // viper and extractor both on screen
+    // Viper and extractor both on screen and clear of the button strip. From (20, 0) the viper stood
+    // at the picture's bottom left edge, which is under the strip on a phone (2026-10-18).
+    bed.lookAt(17, -6);
     bed.click(viper);
     bed.activateQuest(365);
     bed.run(1500);

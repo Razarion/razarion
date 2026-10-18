@@ -9,6 +9,7 @@ import {FakeBaseItem, FakeItemCockpit, FakeResourceItem, QuestCondition, Unit, W
 import {TipStallReason} from '../tip-stall';
 import {fakeBaseItemType, ItemTypeId, itemTypeSpec} from './fake-item-types';
 import {QuestMarkerService} from '../../cockpit/main/radar/quest-marker.service';
+import {frameArrowJumpPoint} from '../../order-follow.service';
 
 /** A quest with a tip, as in catalog section 3. */
 export interface TipQuest {
@@ -293,7 +294,15 @@ export class TipTestbed {
     if (!target) {
       throw new Error('There is no "go there" chip');
     }
-    this.world.moveCamera(target.x, target.y);
+    // Framed as the game frames it: leaning toward what is selected (OrderFollowService).
+    const selected = this.selection.getSelectedOwnItemIds()
+      .map(id => this.world.units.get(id))
+      .filter((unit): unit is Unit => !!unit);
+    const units = selected.length > 0
+      ? {x: selected.reduce((sum, unit) => sum + unit.x, 0) / selected.length, y: selected.reduce((sum, unit) => sum + unit.y, 0) / selected.length}
+      : null;
+    const center = frameArrowJumpPoint(target, units);
+    this.world.moveCamera(center.x, center.y);
   }
 
   clickSell(): void {

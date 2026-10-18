@@ -47,8 +47,6 @@ export class OrderFollowService {
   private static readonly POLL_MILLIS = 200;
   /** Units closer to their target than this are shown together with it, at the midpoint. */
   private static readonly TOGETHER_DISTANCE = 35;
-  /** The jump to an arrow's target takes the selected units into the picture up to this far away. */
-  private static readonly JUMP_FRAME_DISTANCE = 60;
   /** Units stand at the start until the engine has taken the order up. */
   private static readonly START_GRACE_MILLIS = 2000;
   private static readonly ARRIVED_IDLE_MILLIS = 1500;
@@ -175,8 +173,8 @@ export class OrderFollowService {
   }
 
   /**
-   * The "go there" chip beside a tip's arrow: the selected units come into the picture with the
-   * target if they are near enough, the picture centred between them. Otherwise the target alone.
+   * The "go there" chip beside a tip's arrow: the picture goes to the target, leaning toward the
+   * selected units by at most JUMP_FRAME_MAX_SHIFT so near ones come along. The target stays clear.
    */
   private frameArrowJump(x: number, y: number): Point {
     const target = {x, y};
@@ -185,11 +183,7 @@ export class OrderFollowService {
       return target;
     }
     const items = this.safeItemStates(-1);
-    const units = items ? this.centroid(items, selected) : null;
-    if (!units || distance(units, target) > OrderFollowService.JUMP_FRAME_DISTANCE) {
-      return target;
-    }
-    return midpoint(units, target);
+    return frameArrowJumpPoint(target, items ? this.centroid(items, selected) : null);
   }
 
   private framePoint(units: Point, target: Point | null): Point {
@@ -233,6 +227,36 @@ export class OrderFollowService {
     const viewField = this.renderService.getCurrentViewField();
     return !!viewField && viewField.contains(GwtInstance.newDecimalPosition(point.x, point.y));
   }
+}
+
+/** The jump to an arrow's target takes the selected units into the picture up to this far away. */
+const JUMP_FRAME_DISTANCE = 60;
+/**
+ * How far the jump may move the picture's centre off the target toward the selected units. The
+ * midpoint it used to take was up to 30 m off: on a phone held upright the picture is under 40 m
+ * wide, and the target - the builder a quest asks for - ended up under the button strip, where the
+ * tip counts it as hidden and keeps the arrow up (phone, 2026-10-18).
+ */
+const JUMP_FRAME_MAX_SHIFT = 6;
+
+/**
+ * Where the "go there" chip puts the picture's centre: on the target, leaning toward the selected
+ * units (their centroid, null for none) by at most JUMP_FRAME_MAX_SHIFT. Shared with the tip test
+ * bed, so the bed jumps where the game does.
+ */
+export function frameArrowJumpPoint(target: Point, units: Point | null): Point {
+  if (!units) {
+    return target;
+  }
+  const towardUnits = distance(units, target);
+  if (towardUnits <= 0 || towardUnits > JUMP_FRAME_DISTANCE) {
+    return target;
+  }
+  const shift = Math.min(towardUnits / 2, JUMP_FRAME_MAX_SHIFT);
+  return {
+    x: target.x + (units.x - target.x) * shift / towardUnits,
+    y: target.y + (units.y - target.y) * shift / towardUnits
+  };
 }
 
 function distance(a: Point, b: Point): number {

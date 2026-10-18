@@ -29,7 +29,7 @@ import java.util.Objects;
  * when A* asks about a cell, so an A* run that visits 5'000 cells pays for 5'000
  * fits-checks instead of pre-computing all 26'000'000.
  *
- * Auto-invalidates when the TerrainShapeManager identity changes.
+ * Auto-invalidates when the TerrainShapeManager identity changes or the height map completes.
  */
 @Singleton
 public class PassabilityGrid {
@@ -37,6 +37,7 @@ public class PassabilityGrid {
     private final TerrainService terrainService;
     private final Map<Key, Grid> gridsByKey = new HashMap<>();
     private TerrainShapeManager lastTerrainShape;
+    private int lastHeightMapGeneration;
 
     /**
      * Rounds correctedRadius up to the nearest {@link #RADIUS_BUCKET_SIZE} multiple so units
@@ -67,9 +68,12 @@ public class PassabilityGrid {
         if (shape == null) {
             return null;
         }
-        if (shape != lastTerrainShape) {
+        // A height map completed after the game started also invalidates: cells worked out while
+        // the far tiles still had stand-in heights would stay wrong (TerrainService#onHeightMapPartial).
+        if (shape != lastTerrainShape || terrainService.getHeightMapGeneration() != lastHeightMapGeneration) {
             gridsByKey.clear();
             lastTerrainShape = shape;
+            lastHeightMapGeneration = terrainService.getHeightMapGeneration();
         }
         Key key = new Key(terrainType, correctedRadius);
         Grid grid = gridsByKey.get(key);

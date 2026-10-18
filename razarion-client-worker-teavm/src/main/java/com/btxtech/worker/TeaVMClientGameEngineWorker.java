@@ -78,6 +78,9 @@ public class TeaVMClientGameEngineWorker extends GameEngineWorker {
             try {
                 JsMessageEvent messageEvent = (JsMessageEvent) evt;
                 JSObject data = messageEvent.getData();
+                if (handleHeightRestGo(data)) {
+                    return;
+                }
                 // Check if this is the SharedArrayBuffer init message
                 if (isSharedTickBufferInit(data)) {
                     JSObject sab = getSharedBuffer(data);
@@ -132,6 +135,16 @@ public class TeaVMClientGameEngineWorker extends GameEngineWorker {
 
     @JSBody(params = {"data"}, script = "return data && data.type === 'shared-tick-buffer' && data.buffer instanceof SharedArrayBuffer;")
     private static native boolean isSharedTickBufferInit(JSObject data);
+
+    /**
+     * The page's signal that the models are in and the rest of the height map may have the
+     * connection - see TeaVMNativeTerrainShapeAccess#checkBothLoaded. Raw like the buffer init above,
+     * because it comes from the renderer, not from the marshaller.
+     */
+    @JSBody(params = {"data"}, script = "if (!data || !data.razHeightRestGo) { return false; }"
+            + "if (self.RAZ_heightRestGo) { self.RAZ_heightRestGo(); } else { self.RAZ_heightRestGoEarly = true; }"
+            + "return true;")
+    private static native boolean handleHeightRestGo(JSObject data);
 
     @JSBody(params = {"data"}, script = "return data.buffer;")
     private static native JSObject getSharedBuffer(JSObject data);

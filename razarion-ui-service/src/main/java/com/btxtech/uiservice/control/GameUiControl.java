@@ -65,6 +65,8 @@ public class GameUiControl { // Equivalent worker class is PlanetService
     private Scene currentScene;
     private Date sceneStartTimeStamp;
     private List<SceneConfig> scenes;
+    /** The world was handed over once in this game - see onInitialSlaveSynchronized. */
+    private boolean initialSlaveSynchronized;
     private AbstractServerSystemConnection abstractServerSystemConnection;
     private GameEngineMode gameEngineMode;
     private int consuming;
@@ -144,6 +146,7 @@ public class GameUiControl { // Equivalent worker class is PlanetService
     public void start() {
         cockpitService.show(userUiService.get().getUserContext());
         nextSceneNumber = 0;
+        initialSlaveSynchronized = false;
         /*
          * Reported before the branch below, and carrying the mode, because the branch is where the
          * two outcomes part: a MASTER runs a scene on the next line, a SLAVE returns and waits.
@@ -313,6 +316,15 @@ public class GameUiControl { // Equivalent worker class is PlanetService
      * stream stops with it.
      */
     public void onInitialSlaveSynchronized(DecimalPosition scrollToPosition) {
+        // A second hand-over is the worker's game connection coming back after a drop: the world in
+        // the worker has been replaced, the scenes here are still the right ones. Running them again
+        // tore the quest line down and the new chain broke on the way up - the reason a dropped
+        // connection reloaded the whole page until 2026-10-18.
+        if (initialSlaveSynchronized) {
+            logger.warning("[Reconnect] world handed over again, scenes kept");
+            return;
+        }
+        initialSlaveSynchronized = true;
         try {
             if (scrollToPosition != null) {
                 scenes = setupSlaveExistingScenes(scrollToPosition);
@@ -367,6 +379,12 @@ public class GameUiControl { // Equivalent worker class is PlanetService
     }
 
     public void onQuestActivatedServer(QuestConfig quest) {
+        // The server repeats the active quest on every system connection, a reconnect included
+        // (ClientSystemConnectionService#sendQuestState). The one already shown stays as it is:
+        // activating it again would restart its tip and its markers.
+        if (quest != null && serverQuest != null && serverQuest.getId() == quest.getId()) {
+            return;
+        }
         serverQuest = quest;
         if (currentScene != null) {
             currentScene.onQuestActivatedServer(quest);

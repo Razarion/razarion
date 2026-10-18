@@ -104,7 +104,7 @@ describe('Tip test bed - select', () => {
    */
   tipCase('SEL-13 deselected in a later step: back to "Click to select"', bed => {
     const {viper} = base(bed);
-    bed.lookAt(20, 0);
+    bed.lookAt(17, -6); // the viper clear of the button strip, see X-10
     bed.click(viper);
     bed.activateQuest(365);
     bed.run(1500);
@@ -112,5 +112,27 @@ describe('Tip test bed - select', () => {
     bed.run(3000);
 
     bed.check(bed.showsOnly('Click to select', viper.id), '"Click to select" on the viper');
+  });
+
+  /*
+   * Phone, 2026-10-18: a viper selected and attacking far off, the build quest asks for the builder
+   * at the base, which is out of the picture. "Go there" centred the picture between the two - up
+   * to 30 m from the builder, which put it under the button strip: still covered, the arrow stayed
+   * and the chip went on offering a jump that changed nothing.
+   */
+  tipCase('SEL-14 "go there" with another unit selected far off: the target lands clear of the HUD', bed => {
+    bed.own(ItemTypeId.FACTORY, 0, 0);
+    const builder = bed.own(ItemTypeId.BUILDER, -10, -4);
+    const viper = bed.own(ItemTypeId.VIPER, 5, 24);
+    bed.lookAt(viper.x, viper.y + 10);
+    bed.click(viper);
+    bed.activateQuest(362);
+    bed.run(1500);
+    bed.check(bed.arrowPointsAt(builder.x, builder.y), 'test setup: arrow to the builder');
+
+    bed.clickJump();
+    bed.run(1500);
+
+    bed.check(bed.showsOnly('Click to select', builder.id), '"Click to select" on the builder after the jump');
   });
 });

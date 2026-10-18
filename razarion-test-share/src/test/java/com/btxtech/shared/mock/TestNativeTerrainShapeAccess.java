@@ -41,7 +41,7 @@ public class TestNativeTerrainShapeAccess implements NativeTerrainShapeAccess {
     }
 
     @Override
-    public void load(int planetId, int tileXCount, int tileYCount, Consumer<NativeTerrainShape> loadedCallback, Consumer<String> failCallback) {
+    public void load(int planetId, int tileXCount, int tileYCount, Index startTile, Consumer<NativeTerrainShape> loadedCallback, Consumer<String> failCallback) {
         TerrainShapeManager terrainShapeManager = new TerrainShapeManager(
                 planetConfig,
                 terrainTypeService,

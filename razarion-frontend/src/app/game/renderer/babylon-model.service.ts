@@ -246,6 +246,13 @@ export class BabylonModelService {
     this.modelsReadyReported = true;
     const failed = this.gltfIds!.filter(id => !this.glbContainer.isEntityLoaded(id)).length;
     this.renderer.reportFirstInteraction('MODELS_READY', failed ? 'failed=' + failed : undefined);
+    // The engine worker holds the far part of the height map back until now, so that it does not
+    // share the connection with the models (TeaVMNativeTerrainShapeAccess#checkBothLoaded).
+    try {
+      (window as any).RAZ_engineWorker?.postMessage({razHeightRestGo: true});
+    } catch (e) {
+      // The worker falls back to a timer of its own.
+    }
   }
 
   /**

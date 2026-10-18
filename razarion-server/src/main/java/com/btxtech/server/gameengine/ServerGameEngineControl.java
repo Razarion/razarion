@@ -124,7 +124,9 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
         ServerGameEngineConfig serverGameEngineConfig = serverGameEngineService.serverGameEngineConfig();
         PlanetConfig planetConfig = planetCrudService.read(serverGameEngineConfig.getPlanetConfigId());
         BackupPlanetInfo finaBackupPlanetInfo = setupBackupPlanetInfo(backupPlanetInfo, planetConfig);
-        planetService.initialise(planetConfig, GameEngineMode.MASTER, serverGameEngineService.readMasterPlanetConfig(), () -> {
+        // No start position: the server runs the planet for everybody and holds the whole
+        // height map in memory anyway. Null asks for all of it, which is what it needs.
+        planetService.initialise(planetConfig, GameEngineMode.MASTER, serverGameEngineService.readMasterPlanetConfig(), null, () -> {
             gameLogicService.setGameLogicListener(this);
             if (finaBackupPlanetInfo != null) {
                 planetService.restoreBases(finaBackupPlanetInfo, this);

@@ -50,6 +50,7 @@ public class TeaVMClientMarshaller {
     private static final int DATA_OFFSET_2 = 3;
     private static final int DATA_OFFSET_3 = 4;
     private static final int DATA_OFFSET_4 = 5;
+    private static final int DATA_OFFSET_5 = 6;
 
     /**
      * Raw JsObject from the ColdGameUiContext REST response.
@@ -89,6 +90,9 @@ public class TeaVMClientMarshaller {
                 setArrayString(array, DATA_OFFSET_2, toJson(controlPackage.getData(2))); // UserContext
                 setArrayString(array, DATA_OFFSET_3, toJson(controlPackage.getData(3))); // GameEngineMode
                 setArrayString(array, DATA_OFFSET_4, toJson(controlPackage.getData(4))); // String (gameSessionUuid)
+                // Where the player will be looking. Null for a player who already has a base - the
+                // engine learns that position later, and the height map then loads whole as before.
+                setArrayString(array, DATA_OFFSET_5, toJson(controlPackage.getData(5)));
                 break;
 
             case INITIALIZE_WARM:

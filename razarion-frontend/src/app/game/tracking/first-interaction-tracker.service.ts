@@ -105,6 +105,11 @@ export type InteractionKind =
   /** A start base dragged outside the start region was put back where the placer opened, camera and
    *  all (2026-10-14). */
   | 'PLACER_BROUGHT_HOME'
+  /** The start base's builder was selected by the game, `after=<s>` since the placement (2026-10-16). Not a
+   *  SELECT: that one is the player finding the unit. */
+  | 'BUILDER_AUTO_SELECTED'
+  /** The tip's own bubble was tapped, which acts on its item - see BabylonItemImpl#makePromptTappable. */
+  | 'PROMPT_TAP'
   /*
    * The first building, from the button to the ground (2026-10-05). Before these, the placer kinds
    * above were reported by every placer, but the start placer always comes first and the tracker
@@ -294,7 +299,7 @@ export class FirstInteractionTrackerService {
     'POINTER_DOWN', 'POINTER_DOWN_PAGE', 'CAMERA_PAN_TOUCH', 'CAMERA_PINCH', 'CAMERA_KEYBOARD',
     'CAMERA_WHEEL', 'MINIMAP_JUMP', 'ARROW_JUMP', 'QUEST_JUMP', 'SELECT_ALL', 'SELECT', 'COMMAND', 'SELECT_GROUP', 'COMMAND_GROUP', 'SELECTION_BOX_ARMED',
     'PLACER_CONFIRMED', 'PLACER_REJECTED', 'TECH_TREE_OPENED', 'ORDER', 'BUILD_BUTTON',
-    'BUILD_PLACER_REJECTED', 'BUILD_PLACER_CONFIRMED', 'CLEAR_REGION_SOLD', 'CLEAR_REGION_CARD_CLOSED']);
+    'BUILD_PLACER_REJECTED', 'BUILD_PLACER_CONFIRMED', 'CLEAR_REGION_SOLD', 'CLEAR_REGION_CARD_CLOSED', 'PROMPT_TAP']);
 
   /** When the player last did anything at all, or 0 if they never have. */
   public get lastPlayerAction(): number {

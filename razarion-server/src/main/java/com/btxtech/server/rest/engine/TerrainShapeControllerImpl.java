@@ -6,10 +6,7 @@ import com.btxtech.server.service.engine.ServerGameEngineService;
 import com.btxtech.server.service.engine.ServerTerrainShapeService;
 import com.btxtech.server.service.ui.GameUiContextService;
 import com.btxtech.shared.CommonUrl;
-import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.dto.ServerGameEngineConfig;
-import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
-import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.rest.TerrainShapeController;
 import org.springframework.http.CacheControl;
 import org.springframework.http.HttpHeaders;
@@ -77,13 +74,14 @@ public class TerrainShapeControllerImpl {
         PrefetchUrls urls = prefetchUrls;
         long now = System.currentTimeMillis();
         if (urls == null || now - urls.loadedAt() > PREFETCH_TTL_MILLIS) {
-            PlanetConfig planetConfig = gameUiContextService.starterPlanetConfig();
-            int planetId = planetConfig.getId();
-            Index tileCount = TerrainUtil.terrainPositionToTileIndexCeil(planetConfig.getSize());
+            int planetId = gameUiContextService.starterPlanetConfig().getId();
+            // Not the height map itself any more. A new player's game starts on the tiles around
+            // their spawn and fetches the rest behind it (TeaVMNativeTerrainShapeAccess); the whole
+            // map from here would put its 2 MB back in front of the start. The spawn differs per
+            // player, so its 140 kB are left to the worker.
             urls = new PrefetchUrls(List.of(
                     CommonUrl.terrainShapeController(planetId),
-                    CommonUrl.terrainHeightMapFlatController(planetId),
-                    CommonUrl.terrainHeightMapRegionController(planetId, 0, 0, tileCount.getX(), tileCount.getY())),
+                    CommonUrl.terrainHeightMapFlatController(planetId)),
                     now);
             prefetchUrls = urls;
         }

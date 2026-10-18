@@ -69,7 +69,7 @@ import {BabylonImpact} from "./babylon-impact";
 import {BabylonPerfOverlay} from "./babylon-perf-overlay";
 import {RenderTelemetry, RenderTelemetrySceneStats} from "./render-telemetry";
 import {ParkedMeshFilter} from "./parked-mesh-filter";
-import {OutOfViewJump} from './out-of-view-jump';
+import {OutOfViewJump, TIP_OVERLAY_ATTRIBUTE} from './out-of-view-jump';
 import {whenTerrainReady} from './boot-gate';
 import {ShadowQuality} from "./shadow-quality";
 import {TextureMemory} from "./texture-memory";
@@ -141,6 +141,8 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   /** The elements that cover the bottom of the canvas - the rail on a desktop, the panel on a
    *  phone, where the rail itself is display:contents and has no box. */
   private static readonly HUD_BOTTOM_SELECTORS = ['.hud-bottom', '.panel-item'];
+  /** See isCoveredByHtml: about half a unit on a phone at the start zoom. */
+  private static readonly COVER_PROBE_CSS_PX = 16;
   private static readonly GO_CURSOR = 'url("cursors/go.png") 15 15, auto';
   private static readonly GO_NO_CURSOR = 'url("cursors/go-no.png") 15 15, auto';
   // The same images the items' own ActionManager.hoverCursor uses, so hovering the mesh and
@@ -190,6 +192,8 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
    * presenter. The minimap does not jump while it is set, see RadarComponent.onMapClicke.
    */
   startPlacerHome: { x: number, y: number } | null = null;
+  /** Told when the start base has been placed, see StartBuilderSelectService. */
+  startBasePlacedListener: (() => void) | null = null;
   // ----- Terrain no-go cursor state (see updateTerrainCursor) -----
   private moveCursorActive = false;
   /** Whether the current selection can harvest at all - no harvester, no collect cursor. */
@@ -375,7 +379,8 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     // arrow at a target in plain sight.
     const assembly = promptAssemblyWidthPx(text, !isTouchDevice());
     const hud = this.getHudBottomPixels();
-    const fit = projected === null ? null
+    const covered = projected !== null && this.isCoveredByHtml(projected.x, projected.y);
+    const fit = projected === null || covered ? null
       : promptFitsAt(projected.x, projected.y, engine.getRenderWidth(), engine.getRenderHeight(),
         hud, assembly);
     // Turned on with RAZ_promptProbe = 1 in the console. Whether a prompt may go somewhere is a
@@ -388,10 +393,52 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
         screen: projected ? [Math.round(projected.x), Math.round(projected.y)] : null,
         picture: [engine.getRenderWidth(), engine.getRenderHeight()],
         terrainHeight: this.centerTerrainHeight,
-        hud, assembly: Math.round(assembly), fit
+        hud, assembly: Math.round(assembly), covered, fit
       }));
     }
     return fit !== null && fit.readable;
+  }
+
+  /**
+   * Whether a tap at this point of the picture, or close beside it, would land on the page instead
+   * of the canvas - the unit strip on the left edge of a phone, the minimap, the status line, an
+   * open panel. The bottom HUD has its own band (getHudBottomPixels); these are not bands.
+   * <p>
+   * A unit under the strip got a "Tap to select" whose arrow ended on a strip button, and the
+   * player who followed it pressed the button instead of the unit (phone, 2026-10-16). Hit-tested
+   * rather than listed by selector, because what covers the canvas is exactly what takes the tap.
+   *
+   * @param x render pixels, as projected
+   * @param y render pixels, as projected
+   */
+  private isCoveredByHtml(x: number, y: number): boolean {
+    try {
+      const engine = this.scene.getEngine();
+      const canvas = engine.getRenderingCanvas();
+      if (!canvas) {
+        return false;
+      }
+      const rect = canvas.getBoundingClientRect();
+      if (rect.width <= 0 || rect.height <= 0) {
+        return false;
+      }
+      const cssX = rect.left + x * rect.width / engine.getRenderWidth();
+      const cssY = rect.top + y * rect.height / engine.getRenderHeight();
+      const reach = BabylonRenderServiceAccessImpl.COVER_PROBE_CSS_PX;
+      // The anchor is the unit's centre; a unit half under a button invites the same wrong tap.
+      for (const [dx, dy] of [[0, 0], [-reach, 0], [reach, 0], [0, -reach], [0, reach]]) {
+        // Through the tips' own hints: the "go there" button sits in the middle of the picture,
+        // exactly where its jump puts the target, and counted as cover it kept the arrow up forever.
+        const hit = document.elementsFromPoint(cssX + dx, cssY + dy)
+          .find(element => !element.closest('[' + TIP_OVERLAY_ATTRIBUTE + ']'));
+        if (hit && hit !== canvas) {
+          return true;
+        }
+      }
+      return false;
+    } catch (error) {
+      return false;
+    }
   }
 
   /**
@@ -454,6 +501,14 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
           // display:contents and hidden panels have no box; an element that does not reach the
           // bottom of the canvas is not covering the ground near the player.
           if (rect.height <= 0 || rect.bottom < canvasRect.bottom - rect.height) {
+            continue;
+          }
+          // A closed item panel is only made invisible and keeps its box - on a phone the lower
+          // quarter of the picture. Counted, it put everything in that quarter
+          // "under the HUD" and the tips sent the player off with an arrow to a resource field
+          // or a factory in plain sight (phone, 2026-10-18).
+          const style = getComputedStyle(element);
+          if (style.visibility === 'hidden' || style.display === 'none') {
             continue;
           }
           covered = Math.max(covered, (canvasRect.bottom - rect.top) * toRenderPixels);

@@ -30,6 +30,8 @@ export interface BuildTipAnchor {
   y: number;
   /** open-menu-unload: the unload button is behind the collapsed panel. */
   mode: 'build' | 'open-menu' | 'unload' | 'open-menu-unload' | 'sell' | 'open-menu-sell';
+  /** build: the button's item type, so a tap on the tip can press it. */
+  itemTypeId?: number;
 }
 
 @Component({
@@ -44,6 +46,11 @@ export interface BuildTipAnchor {
 ]
 })
 export class ItemCockpitComponent implements AfterViewInit, DoCheck, OnDestroy {
+  /** How long a build button lights up after a press - see flashPressed. */
+  private static readonly PRESS_FLASH_MILLIS = 450;
+  /** The build button that just took a press, for the flash; null otherwise. */
+  pressedItemTypeId: number | null = null;
+  private pressedTimer: ReturnType<typeof setTimeout> | null = null;
   /**
    * The build tip, or null while none is up. Its own element rather than a p-popover: the tip has
    * to look like the prompt that sits on the builder out in the world - same green box with the
@@ -208,7 +215,7 @@ export class ItemCockpitComponent implements AfterViewInit, DoCheck, OnDestroy {
     // regularly a different element than a moment ago - re-selecting the builder was enough to
     // leave the tip hanging over a node no longer in the document.
     const rect = button.getBoundingClientRect();
-    this.buildTip = {x: rect.left + rect.width / 2, y: rect.top, mode: 'build'};
+    this.buildTip = {x: rect.left + rect.width / 2, y: rect.top, mode: 'build', itemTypeId};
     this.updateBuildTipShift(this.buildTip.x);
     return true;
   }
@@ -432,6 +439,7 @@ export class ItemCockpitComponent implements AfterViewInit, DoCheck, OnDestroy {
       return;
     }
     this.clearBlockedMessage();
+    this.flashPressed(buildupItem.itemTypeId);
     if (this.buildPreparing) {
       return; // a second tap while the camera is still on its way
     }
@@ -462,6 +470,25 @@ export class ItemCockpitComponent implements AfterViewInit, DoCheck, OnDestroy {
     }
   }
 
+  /**
+   * The button lights up for a moment when it takes the press. A unit ordered at a factory shows
+   * nothing else until it rolls out, and on a phone there is no hover to say the tap arrived
+   * (reported 2026-10-18). Cleared and set again on the next frame, so a second tap replays it.
+   */
+  private flashPressed(itemTypeId: number): void {
+    if (this.pressedTimer !== null) {
+      clearTimeout(this.pressedTimer);
+    }
+    this.pressedItemTypeId = null;
+    requestAnimationFrame(() => {
+      this.pressedItemTypeId = itemTypeId;
+      this.pressedTimer = setTimeout(() => {
+        this.pressedItemTypeId = null;
+        this.pressedTimer = null;
+      }, ItemCockpitComponent.PRESS_FLASH_MILLIS);
+    });
+  }
+
   private showBlockedMessage(message: string): void {
     this.buildBlockedMessage = message;
     if (this.blockedMessageTimeout !== null) {
@@ -485,6 +512,33 @@ export class ItemCockpitComponent implements AfterViewInit, DoCheck, OnDestroy {
    * Selling cannot be undone, so the first tap only arms the button. It disarms itself, otherwise a
    * player who tapped once and moved on would sell on their next visit to this corner.
    */
+  /**
+   * A tap on the tip presses what it points at. The bubbles over units work that way since
+   * 2026-10-18, and so does the "go there" chip - a green bubble that does nothing when tapped,
+   * here of all places, would be the one exception.
+   */
+  onBuildTipTap(tip: BuildTipAnchor): void {
+    this.firstInteractionTracker.report('PROMPT_TAP', 'cockpit=' + tip.mode);
+    switch (tip.mode) {
+      case 'build': {
+        const item = this.itemCockpitService.ownItemCockpit?.buildupItems?.find(candidate => candidate.itemTypeId === tip.itemTypeId);
+        if (item) {
+          this.onBuildClick(item);
+        }
+        break;
+      }
+      case 'unload':
+        this.onUnloadClick();
+        break;
+      case 'sell':
+        this.onSellClick();
+        break;
+      default:
+        // open-menu*: the panel is collapsed and the tip stands on the wrench that opens it.
+        document.getElementById('compact-build-icon')?.click();
+    }
+  }
+
   onSellClick(): void {
     if (!this.sellArmed) {
       this.sellArmed = true;

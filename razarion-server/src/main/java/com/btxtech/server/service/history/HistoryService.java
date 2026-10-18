@@ -188,6 +188,15 @@ public class HistoryService {
                 .httpSessionId(httpSessionId));
     }
 
+    public void onAnonymousUserReturned(UserEntity userEntity, String httpSessionId) {
+        save(new GameHistory()
+                .type(GameHistoryType.ANONYMOUS_USER_RETURNED)
+                .source(GameHistorySource.HUMAN)
+                .userId(userEntity.getUserId())
+                .httpSessionId(httpSessionId)
+                .levelNumber(userEntity.getLevel() != null ? userEntity.getLevel().getNumber() : null));
+    }
+
     public void onLevelUp(String userId, LevelEntity newLevel) {
         save(new GameHistory()
                 .type(GameHistoryType.LEVEL_UP)
@@ -596,6 +605,7 @@ public class HistoryService {
         }
         return switch (type) {
             case USER_LOGGED_IN -> "Logged in / registered";
+            case ANONYMOUS_USER_RETURNED -> "Came back unregistered on level " + h.getLevelNumber();
             case LEVEL_UP -> "Reached level " + h.getLevelNumber();
             case QUEST_ACTIVATED -> "Quest activated: " + h.getQuestId();
             case QUEST_DEACTIVATED -> "Quest deactivated: " + h.getQuestId();

@@ -56,12 +56,15 @@ public class TerrainShapeManager {
         logger.info("Setup TerrainShape: " + (System.currentTimeMillis() - time) + " for planet config: " + planetConfig.getId());
     }
 
-    public void lazyInit(PlanetConfig planetConfig, Runnable finishCallback, Consumer<String> failCallback) {
+    public void lazyInit(PlanetConfig planetConfig, DecimalPosition startPosition, Runnable finishCallback, Consumer<String> failCallback) {
         terrainAnalyzer = new TerrainAnalyzer(
                 index -> getNativeTerrainShapeAccess().getGroundHeightAt(index),
                 this);
         setupDimension(planetConfig);
-        nativeTerrainShapeAccess.load(planetConfig.getId(), tileXCount, tileYCount, nativeTerrainShape -> {
+        Index startTile = startPosition != null
+                ? TerrainUtil.terrainPositionToTileIndex(startPosition)
+                : null;
+        nativeTerrainShapeAccess.load(planetConfig.getId(), tileXCount, tileYCount, startTile, nativeTerrainShape -> {
             try {
                 terrainShapeTiles = new TerrainShapeTile[tileXCount][tileYCount];
                 for (int x = 0; x < tileXCount; x++) {

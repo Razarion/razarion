@@ -29,7 +29,7 @@ public class DaggerMasterBaseTest extends AbstractDaggerIntegrationTest {
 
     protected void setupMasterEnvironment(StaticGameConfig staticGameConfig) {
         setupEnvironment(staticGameConfig, FallbackConfig.setupPlanetConfig());
-        getPlanetService().initialise(getPlanetConfig(), GameEngineMode.MASTER, setupMasterPlanetConfig(), () -> getPlanetService().start(), null);
+        getPlanetService().initialise(getPlanetConfig(), GameEngineMode.MASTER, setupMasterPlanetConfig(), null, () -> getPlanetService().start(), null);
     }
 
     protected CommandService getCommandService() {

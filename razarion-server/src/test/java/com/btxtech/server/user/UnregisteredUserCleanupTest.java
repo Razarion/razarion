@@ -4,6 +4,8 @@ import com.btxtech.server.gameengine.ClientSystemConnection;
 import com.btxtech.server.gameengine.ClientSystemConnectionService;
 import com.btxtech.server.model.UserEntity;
 import com.btxtech.server.repository.UserRepository;
+import com.btxtech.shared.gameengine.planet.BaseItemService;
+import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -49,7 +51,7 @@ class UnregisteredUserCleanupTest {
         connectionService = mock(ClientSystemConnectionService.class);
         userService = new UserService(null, userRepository, null, null, null, null, null, null);
         ReflectionTestUtils.setField(userService, "clientSystemConnectionService", connectionService);
-        when(userRepository.findInactiveSince(any())).thenReturn(List.of());
+        when(userRepository.findInactiveForGood(any(), any())).thenReturn(List.of());
         when(userRepository.findOpenSince(any())).thenReturn(List.of());
         when(userRepository.findNeverConnectedBefore(any())).thenReturn(List.of());
         when(connectionService.getOpenConnections()).thenReturn(new TreeMap<>());
@@ -119,6 +121,45 @@ class UnregisteredUserCleanupTest {
         userService.cleanupDisconnectedUnregisteredUsers();
 
         verify(userRepository).delete(neverConnected);
+    }
+
+    /**
+     * A player the cookie can bring back loses his base after the grace - the spawn point cannot
+     * wait two weeks - but keeps his row: level, xp, quests and unlocks.
+     */
+    @Test
+    void takesTheBaseButKeepsTheProgressOfAPlayerWhoCanComeBack() {
+        BaseItemService baseItemService = mock(BaseItemService.class);
+        ReflectionTestUtils.setField(userService, "baseItemService", baseItemService);
+        PlayerBase playerBase = mock(PlayerBase.class);
+        when(playerBase.getBaseId()).thenReturn(7);
+        when(baseItemService.getPlayerBase4UserId(GONE)).thenReturn(playerBase);
+        when(userRepository.findRetainedUserIdsInactiveSince(any())).thenReturn(List.of(GONE));
+
+        userService.cleanupDisconnectedUnregisteredUsers();
+
+        verify(baseItemService).deleteBase(7);
+        verify(userRepository, never()).delete(any());
+    }
+
+    /**
+     * Gone for good - no cookie, or past the retention: the base goes along with the row, or it
+     * would hold its spawn point with nobody left who could ever free it.
+     */
+    @Test
+    void deletesBaseAndRowOfAPlayerWhoCannotComeBack() {
+        BaseItemService baseItemService = mock(BaseItemService.class);
+        ReflectionTestUtils.setField(userService, "baseItemService", baseItemService);
+        PlayerBase playerBase = mock(PlayerBase.class);
+        when(playerBase.getBaseId()).thenReturn(8);
+        when(baseItemService.getPlayerBase4UserId(GONE)).thenReturn(playerBase);
+        UserEntity gone = anonymous(GONE);
+        when(userRepository.findInactiveForGood(any(), any())).thenReturn(List.of(gone));
+
+        userService.cleanupDisconnectedUnregisteredUsers();
+
+        verify(baseItemService).deleteBase(8);
+        verify(userRepository).delete(gone);
     }
 
     /**

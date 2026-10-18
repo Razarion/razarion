@@ -61,7 +61,9 @@ import com.btxtech.shared.utils.ExceptionUtil;
 import jakarta.inject.Provider;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -113,6 +115,16 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     private AbstractServerGameConnection serverConnection;
     private GameEngineMode gameEngineMode;
     private String gameSessionUuid;
+    /**
+     * Resources and boxes the client was given while the height map was still partial, with the
+     * height they were given. Sent again once the map is complete if that height turns out wrong -
+     * the client places them once and never asks again. See TerrainService#onHeightMapPartial.
+     */
+    private final Map<SyncResourceItem, Double> resourcesOnPartialMap = new LinkedHashMap<>();
+    private final Map<SyncBoxItem, Double> boxesOnPartialMap = new LinkedHashMap<>();
+    /** Terrain tiles the renderer asked for while their heights were not there yet. */
+    private final List<Index> deferredTerrainTiles = new ArrayList<>();
+    private final List<Index> deferredTerrainTypeOrdinals = new ArrayList<>();
 
     public GameEngineWorker(Provider<AbstractServerGameConnection> connectionInstance,
                             TerrainService terrainService,
@@ -139,6 +151,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         this.planetService = planetService;
         questService.addQuestListener(this);
         logicService.setGameLogicListener(this);
+        terrainService.setHeightMapCompleteListener(this::onHeightMapComplete);
     }
 
     protected abstract void sendToClient(GameEngineControlPackage.Command command, Object... object);
@@ -155,7 +168,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     protected void dispatch(GameEngineControlPackage controlPackage) {
         switch (controlPackage.getCommand()) {
             case INITIALIZE:
-                initialise((StaticGameConfig) controlPackage.getData(0), (PlanetConfig) controlPackage.getData(1), (UserContext) controlPackage.getData(2), (GameEngineMode) controlPackage.getData(3), (String) controlPackage.getData(4));
+                initialise((StaticGameConfig) controlPackage.getData(0), (PlanetConfig) controlPackage.getData(1), (UserContext) controlPackage.getData(2), (GameEngineMode) controlPackage.getData(3), (String) controlPackage.getData(4), (DecimalPosition) controlPackage.getData(5));
                 break;
             case INITIALIZE_WARM:
                 initialiseWarm((PlanetConfig) controlPackage.getData(0), (UserContext) controlPackage.getData(1), (GameEngineMode) controlPackage.getData(2), (String) controlPackage.getData(3));
@@ -264,12 +277,12 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         return ids.toString();
     }
 
-    private void initialise(StaticGameConfig staticGameConfig, PlanetConfig planetConfig, UserContext userContext, GameEngineMode gameEngineMode, String gameSessionUuid) {
+    private void initialise(StaticGameConfig staticGameConfig, PlanetConfig planetConfig, UserContext userContext, GameEngineMode gameEngineMode, String gameSessionUuid, DecimalPosition startPosition) {
         try {
             this.gameSessionUuid = gameSessionUuid;
             initializeService.setStaticGameConfig(staticGameConfig);
             planetService.addTickListener(this);
-            initWarmInternal(planetConfig, userContext, gameEngineMode,
+            initWarmInternal(planetConfig, userContext, gameEngineMode, startPosition,
                     () -> sendToClient(GameEngineControlPackage.Command.INITIALIZED),
                     failString -> sendToClient(GameEngineControlPackage.Command.INITIALISING_FAILED, failString));
         } catch (Throwable t) {
@@ -281,7 +294,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     private void initialiseWarm(PlanetConfig planetConfig, UserContext userContext, GameEngineMode gameEngineMode, String gameSessionUuid) {
         try {
             this.gameSessionUuid = gameSessionUuid;
-            initWarmInternal(planetConfig, userContext, gameEngineMode, () -> {
+            initWarmInternal(planetConfig, userContext, gameEngineMode, null, () -> {
                 sendToClient(GameEngineControlPackage.Command.INITIALIZED);
             }, failString -> {
                 sendToClient(GameEngineControlPackage.Command.INITIALISING_FAILED, failString);
@@ -292,15 +305,34 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         }
     }
 
-    private void initWarmInternal(PlanetConfig planetConfig, UserContext userContext, GameEngineMode gameEngineMode, Runnable finishCallback, Consumer<String> failCallback) {
+    /**
+     * @param startPosition where the player will be looking, or null when nobody knows yet. It
+     *                      decides which part of the height map has to be there before the game
+     *                      may start; null means all of it, which is what a warm start does.
+     */
+    private void initWarmInternal(PlanetConfig planetConfig, UserContext userContext, GameEngineMode gameEngineMode, DecimalPosition startPosition, Runnable finishCallback, Consumer<String> failCallback) {
         this.gameEngineMode = gameEngineMode;
         this.userContext = userContext;
+        resourcesOnPartialMap.clear();
+        boxesOnPartialMap.clear();
+        deferredTerrainTiles.clear();
+        deferredTerrainTypeOrdinals.clear();
         // For [SyncSnap]: which units are the player's own - the correction of those is what he sees.
         baseItemService.setLocalUserId(gameEngineMode == GameEngineMode.SLAVE && userContext != null ? userContext.getUserId() : null);
-        planetService.initialise(planetConfig, gameEngineMode, null, finishCallback, failCallback);
+        planetService.initialise(planetConfig, gameEngineMode, null, startPosition, finishCallback, failCallback);
     }
 
     public void onInitialSlaveSyncItemInfo(InitialSlaveSyncItemInfo initialSlaveSyncItemInfo) {
+        // A reconnect only carries on in place when the world it comes back to is the one it left:
+        // the same base, or still none. After a server restart an unregistered player has been
+        // deleted and the base is gone, and the client's scenes no longer fit - reloading the page,
+        // as every drop did before 2026-10-18, sets that up cleanly.
+        Integer previousBaseId = playerBase != null ? playerBase.getBaseId() : null;
+        if (initialSyncComplete && !java.util.Objects.equals(previousBaseId, initialSlaveSyncItemInfo.getActualBaseId())) {
+            logger.warning("[Reconnect] base was " + previousBaseId + ", now " + initialSlaveSyncItemInfo.getActualBaseId() + " - reloading");
+            onConnectionLost();
+            return;
+        }
         planetService.initialSlaveSyncItemInfo(initialSlaveSyncItemInfo);
         if (initialSlaveSyncItemInfo.getActualBaseId() != null) {
             playerBase = baseItemService.getPlayerBase4BaseId(initialSlaveSyncItemInfo.getActualBaseId());
@@ -452,11 +484,15 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         syncResourceItemSimpleDto.setId(syncResourceItem.getId());
         syncResourceItemSimpleDto.setItemTypeId(syncResourceItem.getItemType().getId());
         syncResourceItemSimpleDto.setPosition(terrainService.getTerrainAnalyzer().toPosition3d(syncResourceItem.getAbstractSyncPhysical().getPosition()));
+        if (!terrainService.isHeightMapComplete()) {
+            resourcesOnPartialMap.put(syncResourceItem, syncResourceItemSimpleDto.getPosition().getZ());
+        }
         sendToClient(GameEngineControlPackage.Command.RESOURCE_CREATED, syncResourceItemSimpleDto);
     }
 
     @Override
     public void onResourceDeleted(SyncResourceItem syncResourceItem) {
+        resourcesOnPartialMap.remove(syncResourceItem);
         sendToClient(GameEngineControlPackage.Command.RESOURCE_DELETED, syncResourceItem.getId());
     }
 
@@ -466,6 +502,9 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         syncBoxItemSimpleDto.setId(syncBoxItem.getId());
         syncBoxItemSimpleDto.setItemTypeId(syncBoxItem.getItemType().getId());
         syncBoxItemSimpleDto.setPosition(terrainService.getTerrainAnalyzer().toPosition3d(syncBoxItem.getAbstractSyncPhysical().getPosition()));
+        if (!terrainService.isHeightMapComplete()) {
+            boxesOnPartialMap.put(syncBoxItem, syncBoxItemSimpleDto.getPosition().getZ());
+        }
         sendToClient(GameEngineControlPackage.Command.BOX_CREATED, syncBoxItemSimpleDto);
     }
 
@@ -478,6 +517,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
 
     @Override
     public void onSyncBoxDeleted(SyncBoxItem syncBoxItem, com.btxtech.shared.gameengine.planet.BoxDeletionReason reason) {
+        boxesOnPartialMap.remove(syncBoxItem);
         sendToClient(GameEngineControlPackage.Command.BOX_DELETED, syncBoxItem.getId());
     }
 
@@ -605,7 +645,49 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     }
 
 
+    /**
+     * The rest of the height map has arrived. What was handed out from stand-in heights is put right:
+     * the tiles the renderer had to wait for are built now, and resources and boxes whose height was
+     * wrong are sent again (the client replaces an item it already has).
+     */
+    private void onHeightMapComplete() {
+        int resent = 0;
+        for (Map.Entry<SyncResourceItem, Double> entry : resourcesOnPartialMap.entrySet()) {
+            if (resendIfMoved(entry.getKey().getAbstractSyncPhysical().getPosition(), entry.getValue())) {
+                onResourceCreated(entry.getKey());
+                resent++;
+            }
+        }
+        for (Map.Entry<SyncBoxItem, Double> entry : boxesOnPartialMap.entrySet()) {
+            if (resendIfMoved(entry.getKey().getAbstractSyncPhysical().getPosition(), entry.getValue())) {
+                onBoxCreated(entry.getKey());
+                resent++;
+            }
+        }
+        int tiles = deferredTerrainTiles.size() + deferredTerrainTypeOrdinals.size();
+        // A warning so it reaches the server log (WorkerLogForwarder) - it is the field measurement.
+        logger.warning("[HeightGate] height map complete: " + resourcesOnPartialMap.size() + " resources and "
+                + boxesOnPartialMap.size() + " boxes placed before, " + resent + " re-sent, " + tiles + " tiles deferred");
+        resourcesOnPartialMap.clear();
+        boxesOnPartialMap.clear();
+        List<Index> tilesToBuild = new ArrayList<>(deferredTerrainTiles);
+        deferredTerrainTiles.clear();
+        tilesToBuild.forEach(this::getTerrainTile);
+        List<Index> ordinalsToBuild = new ArrayList<>(deferredTerrainTypeOrdinals);
+        deferredTerrainTypeOrdinals.clear();
+        ordinalsToBuild.forEach(this::getTerrainTypeOrdinals);
+    }
+
+    private boolean resendIfMoved(DecimalPosition position, double sentZ) {
+        return position != null && Math.abs(terrainService.getTerrainAnalyzer().toPosition3d(position).getZ() - sentZ) > 0.001;
+    }
+
     private void getTerrainTile(Index terrainTileIndex) {
+        if (!terrainService.isTileDrawable(terrainTileIndex)) {
+            // Built from stand-in heights it would be drawn the wrong shape and kept that way.
+            deferredTerrainTiles.add(terrainTileIndex);
+            return;
+        }
         long time = System.currentTimeMillis();
         TerrainTile terrainTile = terrainService.generateTerrainTile(terrainTileIndex);
         long generationMs = System.currentTimeMillis() - time;
@@ -659,7 +741,10 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         } else if (syncItem instanceof SyncBoxItem) {
             boxService.removeSyncBoxSlave((SyncBoxItem) syncItem);
         } else {
-            throw new IllegalArgumentException("GameEngineWorker.onServerSyncItemDeleted(): unknown type: " + syncItem + " syncItemDeletedInfo: " + syncItemDeletedInfo);
+            // Not known yet: the delete overtook the tick info that creates the item. Remembered, so that
+            // tick info does not create it after all (BaseItemService.deletedSlaveIds). Used to throw
+            // "unknown type: null", and the item then appeared and stayed.
+            baseItemService.rememberDeletedSlave(syncItemDeletedInfo.getId());
         }
     }
 
@@ -726,6 +811,10 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
 
 
     private void getTerrainTypeOrdinals(Index terrainTileIndex) {
+        if (!terrainService.isTileDrawable(terrainTileIndex)) {
+            deferredTerrainTypeOrdinals.add(terrainTileIndex);
+            return;
+        }
         try {
             sendToClient(GameEngineControlPackage.Command.TERRAIN_TYPE_ORDINALS_RESPONSE,
                     terrainTileIndex,

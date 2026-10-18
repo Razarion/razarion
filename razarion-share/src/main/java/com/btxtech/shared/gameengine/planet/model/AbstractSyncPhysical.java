@@ -26,7 +26,11 @@ public class AbstractSyncPhysical {
         this.syncItem = syncItem;
         this.radius = radius;
         this.terrainType = terrainType;
-        setPosition2d(position2d, false);
+        // An item created inside a container - a slave learning about a loaded transporter - has no
+        // position and no cell; as in synchronize(), there is nothing to tell the container service.
+        if (position2d != null) {
+            setPosition2d(position2d, false);
+        }
         this.angle = angle;
     }
 

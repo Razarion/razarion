@@ -2,6 +2,7 @@ package com.btxtech.server.service.engine;
 
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
+import com.btxtech.shared.gameengine.planet.terrain.HeightMapBlocks;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.zip.Deflater;
@@ -63,11 +65,12 @@ public class HeightMapRegionService {
     /** {@code u16 tileX, tileY, countX, countY} and then the checksum - see {@link #getRegion}. */
     private static final int HEADER_BYTES = 12;
     /**
-     * How many finished region responses are kept. The whole-planet rectangle is what every client
-     * asks for, so one would do; four leaves room for a second planet and for whatever the editor
-     * and the studio ask for without evicting the one that matters on every start.
+     * How many finished region responses are kept. Every client asks for the blocks of
+     * {@link #contentBlocks} (12 on planet 117); a new player first for the few tiles around their
+     * spawn, one small rectangle per spawn tile (about 100 kB each). Room for those and a second
+     * planet, so the blocks that cost seconds to encode are not pushed out by them.
      */
-    private static final int REGION_CACHE_MAX = 4;
+    private static final int REGION_CACHE_MAX = 64;
     private final Logger logger = LoggerFactory.getLogger(HeightMapRegionService.class);
     private final PlanetCrudService planetCrudService;
     /**
@@ -124,8 +127,9 @@ public class HeightMapRegionService {
      * <p>On a thread of its own, so a server that is ready says so and starts serving. A request
      * that arrives during the warm-up waits for the warm-up's bytes - see {@link #inFlight}.
      *
-     * <p>The whole planet is the only rectangle asked for today - see {@link #regions}. When the
-     * client starts asking for the player's corner instead, this should warm that corner.
+     * <p>What every client asks for in the end is {@link #contentBlocks}, a new player right after
+     * the few tiles around their spawn - see {@link #regions}. Those are small enough to encode on
+     * demand; this one is not.
      */
     @EventListener(ApplicationReadyEvent.class)
     public void warmUp() {
@@ -160,14 +164,35 @@ public class HeightMapRegionService {
             if (digest == null) {
                 return;
             }
-            Map map = map(planetId, digest);
             getFlatTable(planetId, digest);
-            getRegion(planetId, digest, 0, 0, map.tileXCount, map.tileYCount);
+            for (int[] block : contentBlocks(planetId, digest)) {
+                getRegion(planetId, digest, block[0], block[1], block[2], block[3]);
+            }
         } catch (Throwable t) {
             // One planet that cannot be warmed must not stop the others, and none of this is
             // worth failing a start over: the request path computes it on demand as before.
             logger.warn("Could not warm the height map of planet {}: {}", planetId, t.getMessage());
         }
+    }
+
+    /**
+     * The blocks the client fetches the rest of the map in - see {@link HeightMapBlocks}, which the
+     * client uses with the flat table to name the same ones.
+     */
+    public List<int[]> contentBlocks(int planetId, String digest) {
+        Map map = map(planetId, digest);
+        return HeightMapBlocks.contentBlocks(map.tileXCount, map.tileYCount, tile -> isFlat(map, tile));
+    }
+
+    private static boolean isFlat(Map map, int tile) {
+        int start = tile * TILE_VALUES;
+        int first = map.heights[start] & 0xFFFF;
+        for (int i = 1; i < TILE_VALUES; i++) {
+            if ((map.heights[start + i] & 0xFFFF) != first) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -188,14 +213,8 @@ public class HeightMapRegionService {
         for (int tile = 0; tile < tiles; tile++) {
             int start = tile * TILE_VALUES;
             int first = map.heights[start] & 0xFFFF;
-            boolean flat = true;
-            for (int i = 1; i < TILE_VALUES; i++) {
-                if ((map.heights[start + i] & 0xFFFF) != first) {
-                    flat = false;
-                    break;
-                }
-            }
-            if (flat) {
+            // The same test as contentBlocks: the two must agree on which tiles are flat.
+            if (isFlat(map, tile)) {
                 out[bitmask + tile / 8] |= (byte) (1 << (tile % 8));
                 writeU16(out, values + tile * 2, first);
             }

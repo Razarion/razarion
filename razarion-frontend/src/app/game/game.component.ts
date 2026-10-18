@@ -38,6 +38,7 @@ import {TouchSelectionModeService} from './renderer/touch-selection-mode.service
 import {RadarState} from '../gwtangular/GwtAngularFacade';
 import {notifyAngularReady} from '../wasm-boot';
 import {OrderFollowService} from './order-follow.service';
+import {StartBuilderSelectService} from './start-builder-select.service';
 
 
 @Component({
@@ -173,6 +174,8 @@ export class GameComponent implements OnInit {
     this.actionService.setRendererService(this.babylonRenderServiceAccessImpl);
     // Created with the game: from here on the camera goes along with the orders of a guided quest.
     this.injector.get(OrderFollowService);
+    // And the builder of the start base comes selected.
+    this.injector.get(StartBuilderSelectService);
 
     if (environment.gwtMock) {
       // Fetched only in the mock build. Injected in the constructor, this service was created for

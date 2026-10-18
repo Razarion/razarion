@@ -27,13 +27,17 @@ import com.btxtech.shared.dto.UserBackendInfo;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.quest.QuestService;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -51,11 +55,13 @@ import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import java.security.SecureRandom;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -77,6 +83,20 @@ public class UserService implements UserDetailsService {
      * interruption, short enough that the start region does not run out of spawn points.
      */
     private static final long UNREGISTERED_DISCONNECT_GRACE_MINUTES = 60;
+    /**
+     * How long an unregistered player who can be recognised again ({@link #ANONYMOUS_COOKIE}) keeps
+     * level, xp, quests and unlocks after disconnecting. The base goes after the grace above all the
+     * same. Measured 2026-10-05: 5.6 % come back within three days, 7.3 % within seven - and until
+     * now every one of them started over at level 1.
+     */
+    private static final long UNREGISTERED_RETENTION_DAYS = 14;
+    /**
+     * Carries {@link UserEntity#getAnonymousToken()}. The http session alone forgot an unregistered
+     * player after 30 idle minutes, a closed browser or a server restart.
+     */
+    public static final String ANONYMOUS_COOKIE = "raz_anon";
+    private static final Duration ANONYMOUS_COOKIE_MAX_AGE = Duration.ofDays(30);
+    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
     private final Logger logger = LoggerFactory.getLogger(UserService.class);
     private final Duration checkIntervalRegisteredUser = Duration.ofMinutes(30);
     private final LevelCrudService levelCrudPersistence;
@@ -296,8 +316,13 @@ public class UserService implements UserDetailsService {
             return null;
         }
         String userId = anonymousMap.get(httpSessionId);
+        if (userId == null) {
+            // A returning player before his first game request of this visit.
+            UserEntity returning = findReturningAnonymousUser(readAnonymousCookie());
+            return returning != null ? returning.getUserId() : null;
+        }
         // A dead id says less than nothing here - the row would name a player that no longer exists.
-        return userId != null && userRepository.findByUserId(userId).isPresent() ? userId : null;
+        return userRepository.findByUserId(userId).isPresent() ? userId : null;
     }
 
     @Transactional
@@ -316,7 +341,67 @@ public class UserService implements UserDetailsService {
         if (authentication == null && httpSessionId == null) {
             throw new IllegalStateException("authentication and httpSessionId is null");
         }
-        return getOrCreateUserId(authentication, httpSessionId);
+        if (authentication != null) {
+            return getOrCreateUserId(authentication, httpSessionId);
+        }
+        // First request of this http session: the player is either new or coming back, and in both
+        // cases the cookie has to be (re)issued - a new token, or another 30 days for the old one.
+        boolean firstOfSession = !anonymousMap.containsKey(httpSessionId);
+        String userId = getOrCreateUserId(null, httpSessionId, readAnonymousCookie());
+        if (firstOfSession) {
+            writeAnonymousCookie(attr, userId);
+        }
+        return userId;
+    }
+
+    private String readAnonymousCookie() {
+        ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        return attr != null ? readAnonymousCookie(attr.getRequest()) : null;
+    }
+
+    public static String readAnonymousCookie(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies == null) {
+            return null;
+        }
+        for (Cookie cookie : cookies) {
+            if (ANONYMOUS_COOKIE.equals(cookie.getName()) && cookie.getValue() != null && !cookie.getValue().isBlank()) {
+                return cookie.getValue();
+            }
+        }
+        return null;
+    }
+
+    private void writeAnonymousCookie(ServletRequestAttributes attr, String userId) {
+        HttpServletResponse response = attr != null ? attr.getResponse() : null;
+        if (response == null || response.isCommitted()) {
+            return;
+        }
+        String token = userRepository.findByUserId(userId).map(UserEntity::getAnonymousToken).orElse(null);
+        if (token == null) {
+            return;
+        }
+        response.addHeader(HttpHeaders.SET_COOKIE, ResponseCookie.from(ANONYMOUS_COOKIE, token)
+                .httpOnly(true)
+                .secure(attr.getRequest().isSecure())
+                .sameSite("Lax")
+                .path("/")
+                .maxAge(ANONYMOUS_COOKIE_MAX_AGE)
+                .build()
+                .toString());
+    }
+
+    /**
+     * The unregistered player the cookie names, or {@code null}. A player who registered since keeps
+     * the token in his row but is no longer anonymous - he comes back through his login.
+     */
+    private UserEntity findReturningAnonymousUser(String anonymousToken) {
+        if (anonymousToken == null) {
+            return null;
+        }
+        return userRepository.findByAnonymousToken(anonymousToken)
+                .filter(userEntity -> userEntity.createRegisterState() == UserContext.RegisterState.UNREGISTERED)
+                .orElse(null);
     }
 
     /**
@@ -332,16 +417,24 @@ public class UserService implements UserDetailsService {
      */
     @Transactional
     public String getOrCreateUserId(Authentication auth, String httpSessionId) {
+        return getOrCreateUserId(auth, httpSessionId, null);
+    }
+
+    /**
+     * @param anonymousToken the value of {@link #ANONYMOUS_COOKIE}, if the request carried one
+     */
+    @Transactional
+    public String getOrCreateUserId(Authentication auth, String httpSessionId, String anonymousToken) {
         auth = removeAnonymousAuthentication(auth);
         if (auth != null) {
             return getUserIdByEmail(auth.getName());
         }
         synchronized (anonymousCreationLocks[Math.floorMod(httpSessionId.hashCode(), anonymousCreationLocks.length)]) {
-            return getOrCreateAnonymousUserId(httpSessionId);
+            return getOrCreateAnonymousUserId(httpSessionId, anonymousToken);
         }
     }
 
-    private String getOrCreateAnonymousUserId(String httpSessionId) {
+    private String getOrCreateAnonymousUserId(String httpSessionId, String anonymousToken) {
         String userId = anonymousMap.get(httpSessionId);
         if (userId != null) {
             // Created a moment ago by a request of the same page: its transaction may not have
@@ -350,13 +443,21 @@ public class UserService implements UserDetailsService {
                 return userId;
             }
             // The user is gone but the HTTP session outlived it - cleanupDisconnectedUnregisteredUsers()
-            // deletes an unregistered player 60 minutes after his connection closed, while the browser
-            // tab stays open. Handing the dead id out anyway is what produced the reconnect storm of
+            // deletes an unregistered player once nothing can bring him back, while the browser tab
+            // may stay open. Handing the dead id out anyway is what produced the reconnect storm of
             // 2026-08-01: onClientSystemConnectionOpened() threw, the socket closed with 1011, the
             // client reconnected at once and the whole thing repeated 9373 times from a single tab.
             // Recovering here rather than at the call sites covers every way a user can disappear.
             logger.info("Anonymous user {} no longer exists, issuing a new one for the http session", userId);
             anonymousMap.remove(httpSessionId);
+        }
+        UserEntity returning = findReturningAnonymousUser(anonymousToken);
+        if (returning != null) {
+            logger.info("Anonymous user {} is back on level {}", returning.getUserId(),
+                    returning.getLevel() != null ? returning.getLevel().getNumber() : null);
+            historyService.onAnonymousUserReturned(returning, httpSessionId);
+            anonymousMap.put(httpSessionId, returning.getUserId());
+            return returning.getUserId();
         }
         String anonymousUserId = createAnonymousUser(httpSessionId);
         anonymousMap.put(httpSessionId, anonymousUserId);
@@ -408,9 +509,16 @@ public class UserService implements UserDetailsService {
     private String saveNewAnonymousUser() {
         var userEntity = new UserEntity();
         userEntity.setUserId(UUID.randomUUID().toString());
+        userEntity.setAnonymousToken(newAnonymousToken());
         userEntity.setLevel(levelCrudPersistence.getStarterLevel());
         userEntity.setCreationDate(new Date());
         return userRepository.save(userEntity).getUserId();
+    }
+
+    private static String newAnonymousToken() {
+        byte[] bytes = new byte[32];
+        SECURE_RANDOM.nextBytes(bytes);
+        return Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
     }
 
     @Transactional
@@ -861,11 +969,18 @@ public class UserService implements UserDetailsService {
         });
     }
 
+    /**
+     * Only the unregistered players nothing can bring back: rows from before the anonymous cookie.
+     * The others come back through it after the restart as well and are left to
+     * {@link #cleanupDisconnectedUnregisteredUsers()}, which runs with the planet up and can take
+     * their quest progress along.
+     */
     @Transactional
     public void cleanupUnregisteredUsersStartup() {
         userRepository.findAll()
                 .stream()
                 .filter(userEntity -> userEntity.createRegisterState() == UserContext.RegisterState.UNREGISTERED)
+                .filter(userEntity -> userEntity.getAnonymousToken() == null)
                 .forEach(userEntity -> {
                     logger.info("Removing unregistered user startup: {}", userEntity);
                     forgetAnonymousSessions(userEntity.getUserId());
@@ -927,7 +1042,10 @@ public class UserService implements UserDetailsService {
     }
 
     /**
-     * Drops unregistered players an hour after they disconnected, together with their base.
+     * Takes the base of an unregistered player off the planet an hour after he disconnected, and the
+     * player himself once nothing can bring him back: right away without the anonymous cookie,
+     * after {@link #UNREGISTERED_RETENTION_DAYS} with it. A player who returns in between keeps his
+     * level, xp, quests and unlocks and places a new base.
      * <p>
      * The start region has a fixed number of spawn points ({@code ServerGameEngineConfigEntity}
      * builds a hardcoded path of 33), and a point only counts as free while at most
@@ -946,12 +1064,14 @@ public class UserService implements UserDetailsService {
     @Transactional
     @Scheduled(fixedRate = 60000)
     public void cleanupDisconnectedUnregisteredUsers() {
-        var cutoff = LocalDateTime.now().minusMinutes(UNREGISTERED_DISCONNECT_GRACE_MINUTES);
+        var now = LocalDateTime.now();
+        var cutoff = now.minusMinutes(UNREGISTERED_DISCONNECT_GRACE_MINUTES);
         closeConnectionsThatEndedWithoutSayingSo(cutoff);
         deleteAnonymousUsersThatNeverConnected(cutoff);
         // Only users whose connection actually closed: onClientSystemConnectionOpened() resets the
-        // timestamp to null, so anyone currently playing is out of this query by construction.
-        for (UserEntity userEntity : userRepository.findInactiveSince(cutoff)) {
+        // timestamp to null, so anyone currently playing is out of both queries by construction.
+        removeBasesOfRetainedUsers(cutoff);
+        for (UserEntity userEntity : userRepository.findInactiveForGood(cutoff, now.minusDays(UNREGISTERED_RETENTION_DAYS))) {
             if (userEntity.createRegisterState() != UserContext.RegisterState.UNREGISTERED) {
                 continue;
             }
@@ -962,6 +1082,25 @@ public class UserService implements UserDetailsService {
             removeUserFromRunningPlanet(userEntity.getUserId());
             forgetAnonymousSessions(userEntity.getUserId());
             userRepository.delete(userEntity);
+        }
+    }
+
+    /**
+     * The base only - the spawn point is what cannot wait two weeks. The quest progress stays with
+     * the player: his quest is still active when he comes back, and only the base is new.
+     */
+    private void removeBasesOfRetainedUsers(LocalDateTime cutoff) {
+        for (String userId : userRepository.findRetainedUserIdsInactiveSince(cutoff)) {
+            var playerBase = baseItemService.getPlayerBase4UserId(userId);
+            if (playerBase == null) {
+                continue;
+            }
+            logger.info("Removing the base of unregistered user {}, his progress waits for his return", userId);
+            try {
+                baseItemService.deleteBase(playerBase.getBaseId());
+            } catch (Throwable t) {
+                logger.warn("Could not delete base of user {}", userId, t);
+            }
         }
     }
 
