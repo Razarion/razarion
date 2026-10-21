@@ -25,6 +25,8 @@ export const TipTaskName = {
   SEND_UNLOAD_COMMAND: 'SEND_UNLOAD_COMMAND',
   /** Selling a building (level 9 moves the base): select it, then the two taps on the sell button. */
   SEND_SELL_COMMAND: 'SEND_SELL_COMMAND',
+  /** Unlocking units with crystals (405): the unlock button, on a phone behind the menu. */
+  SEND_UNLOCK_COMMAND: 'SEND_UNLOCK_COMMAND',
   IDLE_ITEM: 'IDLE_ITEM'
 } as const;
 
@@ -111,6 +113,8 @@ export const TipStallReason = {
   AWAIT_UNLOAD: 'AWAIT_UNLOAD',
   /** The building is selected and the hint stands on the sell button; not pressed (or not twice). */
   AWAIT_SELL_CLICK: 'AWAIT_SELL_CLICK',
+  /** The hint stands on the unlock button (or the menu, or the dialog's Unlock); not pressed. */
+  AWAIT_UNLOCK_CLICK: 'AWAIT_UNLOCK_CLICK',
   /** The group tip is up and the player has not put a second unit into the selection yet. */
   AWAIT_GROUP: 'AWAIT_GROUP',
   /**

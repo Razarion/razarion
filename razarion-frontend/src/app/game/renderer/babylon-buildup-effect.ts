@@ -24,6 +24,7 @@ import {StandardMaterial} from "@babylonjs/core/Materials/standardMaterial";
 import {RawTexture} from "@babylonjs/core/Materials/Textures/rawTexture";
 import {Color3, Color4} from "@babylonjs/core/Maths/math.color";
 import {Vector3} from "@babylonjs/core/Maths/math.vector";
+import {InstancedMesh} from "@babylonjs/core/Meshes/instancedMesh";
 import {Mesh} from "@babylonjs/core/Meshes/mesh";
 import {MeshBuilder} from "@babylonjs/core/Meshes/meshBuilder";
 import {ParticleSystem} from "@babylonjs/core/Particles/particleSystem";
@@ -76,6 +77,10 @@ export class BabylonBuildupEffect {
     return this.scanLine !== null;
   }
 
+  private static isInstance(mesh: Mesh): boolean {
+    return (mesh as unknown) instanceof InstancedMesh;
+  }
+
   init(): boolean {
     const meshes = (this.container.getChildMeshes() as Mesh[]).filter(m => m.isVisible);
     if (meshes.length === 0) {
@@ -107,7 +112,9 @@ export class BabylonBuildupEffect {
     // per mesh whether it shows its normal material (fully below the scan line) or the build-up
     // material (above/intersecting the scan line).
     meshes.forEach(m => {
-      this.originalMaterials.set(m, m.material);
+      if (!BabylonBuildupEffect.isInstance(m)) {
+        this.originalMaterials.set(m, m.material);
+      }
       m.isVisible = false;
     });
     return true;
@@ -626,6 +633,13 @@ export class BabylonBuildupEffect {
     if (this.meshes) {
       this.meshes.forEach(mesh => {
         const meshMaxY = mesh.getBoundingInfo().boundingBox.maximumWorld.y;
+        if (BabylonBuildupEffect.isInstance(mesh)) {
+          // A glTF instance draws with its source's material and cannot wear the build-up shader;
+          // setting it only made Babylon warn on every update (~2 000 PROD log lines a day). Show it
+          // finished once the scan line has passed it, hide it until then.
+          mesh.isVisible = meshMaxY <= worldClipY;
+          return;
+        }
         mesh.isVisible = true;
         if (meshMaxY <= worldClipY) {
           mesh.material = this.originalMaterials.get(mesh) ?? mesh.material;

@@ -19,7 +19,7 @@
               <i class="pi pi-gem text-cyan-400"></i>
               Crystals {{ levelUnlockConfig.crystalCost }}
             </span>
-            <p-button icon="pi pi-unlock" label="Unlock" size="small" (onClick)="onUse(levelUnlockConfig)"
+            <p-button icon="pi pi-unlock" label="Unlock" size="small" data-tip="unlock-use" (onClick)="onUse(levelUnlockConfig)"
                       [disabled]="crystals !== undefined && levelUnlockConfig.crystalCost > crystals"></p-button>
           </div>
         </div>

@@ -1,0 +1,11 @@
+<div class="community-ticker" aria-live="polite">
+  @for (line of lines(); track line.seq) {
+    <div class="community-ticker-line" [class.leaving]="line.leaving">
+      <i class="pi pi-globe"></i>
+      <span>{{ line.text }}</span>
+      @if (line.age) {
+        <span class="community-ticker-age">· {{ line.age }}</span>
+      }
+    </div>
+  }
+</div>

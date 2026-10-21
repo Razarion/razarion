@@ -162,4 +162,51 @@ public class MoveTest extends BaseBasicTest {
         TestHelper.assertDecimalPosition(null, secondGoal, slaveBuilder.getAbstractSyncPhysical().getPosition(), 0.5);
     }
 
+    /**
+     * Turned round under way, on to a goal just behind the unit. Turning on the spot gets no closer to
+     * it for a while; the master keeps going, the slave used to judge that on its own, give up after
+     * 2.5 s and stand there until the master's next sync. Only the master may give up now
+     * (SyncPhysicalMovable.stopIfDestinationReached(mayGiveUp)) - in a fight the slave's give-up also
+     * ended the attack and left whole Viper groups standing while the server drove on (PROD
+     * [SyncSnap] 11.-18.10.2026: jumps of 30-113 m, localIdle=true).
+     */
+    @Test
+    public void slaveDoesNotGiveUpOnAUTurn() {
+        setup();
+
+        UserContext userContext = createLevel1UserContext();
+        DaggerSlaveEmulator permSlave = new DaggerSlaveEmulator();
+        permSlave.connectToMaster(userContext, this);
+        PlayerBaseFull playerBaseFull = createHumanBaseWithBaseItem(new DecimalPosition(17, 20), userContext);
+        tickPlanetServiceBaseServiceActive();
+        permSlave.tickPlanetServiceBaseServiceActive();
+        SyncBaseItem builder = findSyncBaseItem(playerBaseFull, FallbackConfig.BUILDER_ITEM_TYPE_ID);
+        SyncBaseItem slaveBuilder = permSlave.getSyncItemContainerService().getSyncBaseItemSave(builder.getId());
+        DecimalPosition firstGoal = new DecimalPosition(75, 20);
+        DecimalPosition behind = new DecimalPosition(40, 20);
+
+        getCommandService().move(builder, firstGoal);
+        for (int tick = 0; tick < 300 && builder.getAbstractSyncPhysical().getPosition().getX() < 45; tick++) {
+            tickPlanetService(1);
+            permSlave.tickPlanetService(1);
+        }
+        Assert.assertTrue("at full speed past the turning goal", builder.getSyncPhysicalMovable().hasDestination());
+
+        getCommandService().move(builder, behind);
+        for (int tick = 0; tick < 300 && builder.getSyncPhysicalMovable().hasDestination(); tick++) {
+            tickPlanetService(1);
+            permSlave.tickPlanetService(1);
+            if (builder.getSyncPhysicalMovable().hasDestination()) {
+                Assert.assertTrue("the slave stopped at " + slaveBuilder.getAbstractSyncPhysical().getPosition()
+                                + " while the master drove on at " + builder.getAbstractSyncPhysical().getPosition() + " (tick " + tick + ")",
+                        slaveBuilder.getSyncPhysicalMovable().hasDestination()
+                                || slaveBuilder.getAbstractSyncPhysical().getPosition().getDistance(behind) < 1);
+            }
+        }
+        tickPlanetService(2);
+        permSlave.tickPlanetService(2);
+
+        TestHelper.assertDecimalPosition(null, builder.getAbstractSyncPhysical().getPosition(), slaveBuilder.getAbstractSyncPhysical().getPosition(), 0.5);
+    }
+
 }

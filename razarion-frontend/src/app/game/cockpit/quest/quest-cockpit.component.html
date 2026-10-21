@@ -4,7 +4,7 @@
     <div class="quest-title font-semibold items-center">
       {{ title }}
     </div>
-    @for (progressRow of progressRows; track progressRow) {
+    @for (progressRow of progressRows; track $index) {
       <div class="quest-row flex flex-row">
         <div class="flex items-center justify-center p-1">
           @if (!progressRow.done) {

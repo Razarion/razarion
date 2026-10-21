@@ -5,6 +5,7 @@ import {GwtInstance} from '../../../gwtangular/GwtInstance';
 import {Guidance} from './tip-decision';
 import {regionInReach} from './reach-area';
 import {ETA_WINDOW_MILLIS, progressText, ProgressSample, remainingSeconds} from './progress-eta';
+import {UnlockTip} from './unlock-tip';
 
 /**
  * Puts one Guidance on the screen and takes the previous one down.
@@ -27,6 +28,7 @@ export class GuidanceView {
   private followDeclined = false;
   /** The clock the time left is measured with; the test bed runs on a clock of its own. */
   private now: () => number = () => Date.now();
+  private readonly unlockTip = new UnlockTip();
 
   constructor(private readonly renderService: BabylonRenderServiceAccessImpl,
               private readonly itemCockpit: () => ItemCockpitComponent | null,
@@ -67,6 +69,10 @@ export class GuidanceView {
         break;
       case 'sell':
         this.itemCockpit()?.showSellTip(true);
+        break;
+      case 'unlock':
+        // Re-anchored on every evaluation: the phone menu and the unlock dialog come and go.
+        this.unlockTip.show();
         break;
       case 'group':
         this.renderService.touchSelectionMode.setAsked(true);
@@ -152,6 +158,9 @@ export class GuidanceView {
     }
     if (previous.kind === 'sell' && next.kind !== 'sell') {
       this.itemCockpit()?.showSellTip(false);
+    }
+    if (previous.kind === 'unlock' && next.kind !== 'unlock') {
+      this.unlockTip.hide();
     }
     if (previous.kind === 'placeMarker') {
       this.renderService.showPlaceMarker(null, null);

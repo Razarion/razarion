@@ -25,6 +25,15 @@
 .panel-item  { position: absolute; left: 0; bottom: 0; }
 .panel-quest { position: absolute; right: 0; top: 0; }
 .panel-chat  { position: absolute; right: 0; bottom: 0; }
+/* Between the two top panels, over the field. */
+.community-ticker-pos {
+  position: absolute;
+  /* Under the HUD top bar (bottom at 60px), not in it: there it read as part of the bar. */
+  top: 68px;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: 40vw;
+}
 
 /* ---------------------------------------------------------------- compact (phone) layout
    Kept in one media query with the same test as CompactLayoutService.QUERY - the service decides
@@ -485,6 +494,14 @@
      director mode, neither is worth a line of a phone screen. */
   .rec-indicator {
     top: calc(var(--compact-status-h) + var(--compact-quest-h) + 6px);
+  }
+
+  /* Under the quest line, left; the docked map takes the right-hand corner there. */
+  .community-ticker-pos {
+    top: calc(var(--compact-status-h) + var(--compact-quest-h) + 6px);
+    left: 10px;
+    transform: none;
+    max-width: calc(100% - 130px);
   }
 }
 

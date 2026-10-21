@@ -689,6 +689,12 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
 
     // ----- Terrain click handler (short delay to distinguish click from drag) -----
     let terrainDownPos: { x: number, y: number } | null = null;
+    // What was under the mouse when it went down. A click is decided on that, not on the release:
+    // an attack on the press starts the camera along with the order (OrderFollowService), and
+    // within the few ms of a fast click the release pick already lands on the ground beside the
+    // target - a move to there overrode the attack and the units stopped short of it (quest 379,
+    // local, 2026-10-21: ORDER attack and ORDER move in the same second, the move marker showing).
+    let terrainDownPick: any = null;
     let terrainClickTimer: ReturnType<typeof setTimeout> | null = null;
     let terrainDragDetected = false;
     const DRAG_THRESHOLD = 5; // pixels
@@ -733,6 +739,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
 
       // Fire after short delay if no drag detected
       const savedPickResult = pickResult;
+      terrainDownPick = pickResult;
       terrainClickTimer = setTimeout(() => {
         terrainClickTimer = null;
         if (!terrainDragDetected) {
@@ -779,7 +786,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
       if (terrainClickTimer && !terrainDragDetected) {
         clearTimeout(terrainClickTimer);
         terrainClickTimer = null;
-        fireTerrainClick(pickResult);
+        fireTerrainClick(terrainDownPick);
       }
     };
 

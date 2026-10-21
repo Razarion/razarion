@@ -4,6 +4,7 @@ import {DynamicTexture} from "@babylonjs/core/Materials/Textures/dynamicTexture"
 import {Color3, Color4} from "@babylonjs/core/Maths/math.color";
 import {Vector3} from "@babylonjs/core/Maths/math.vector";
 import {AbstractMesh} from "@babylonjs/core/Meshes/abstractMesh";
+import {InstancedMesh} from "@babylonjs/core/Meshes/instancedMesh";
 import {Mesh} from "@babylonjs/core/Meshes/mesh";
 import {MeshBuilder} from "@babylonjs/core/Meshes/meshBuilder";
 import {ParticleSystem} from "@babylonjs/core/Particles/particleSystem";
@@ -159,6 +160,12 @@ export class BabylonWreckage {
     smoke.start();
 
     // === 4) Timed cleanup with fade ===
+    // A glTF instance has no visibility of its own - setting it did nothing but make Babylon warn every
+    // frame of the fade (~2 500 PROD log lines a day), and the piece then vanished at once. It shrinks
+    // away instead, from the scale it lies with.
+    const fadeByVisibility = debrisMeshes.filter(d => !((d as unknown) instanceof InstancedMesh));
+    const fadeByScale = debrisMeshes.filter(d => (d as unknown) instanceof InstancedMesh)
+      .map(mesh => ({mesh, scaling: mesh.scaling.clone()}));
     const startTime = Date.now();
     const lifetimeMs = options?.lifetimeMs ?? BabylonWreckage.WRECKAGE_LIFETIME;
     const fadeMs = options?.fadeMs ?? BabylonWreckage.FADE_DURATION;
@@ -176,8 +183,11 @@ export class BabylonWreckage {
         // Per-mesh visibility — Babylon forces alpha blending when visibility < 1,
         // independent of the material's transparencyMode. Keeps the (possibly shared)
         // source material untouched.
-        for (const d of debrisMeshes) {
+        for (const d of fadeByVisibility) {
           d.visibility = 1 - fadeT;
+        }
+        for (const {mesh, scaling} of fadeByScale) {
+          scaling.scaleToRef(1 - fadeT, mesh.scaling);
         }
 
         // Reduce smoke as we fade

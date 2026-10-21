@@ -15,7 +15,7 @@ import {TipStallReason, TipTaskName} from '../tip-stall';
  * LOAD, SAIL and UNLOAD are the three steps off the noob island (quest 392 split in three): the
  * actor is the unit that crosses, the container is whatever can carry it.
  */
-export type TipKind = 'BUILD' | 'FABRICATE' | 'HARVEST' | 'ATTACK' | 'LOAD' | 'SAIL' | 'UNLOAD' | 'SELL' | 'CLEAR';
+export type TipKind = 'BUILD' | 'FABRICATE' | 'HARVEST' | 'ATTACK' | 'LOAD' | 'SAIL' | 'UNLOAD' | 'SELL' | 'CLEAR' | 'UNLOCK';
 
 export interface TipQuestSpec {
   questId: number | null;
@@ -116,6 +116,8 @@ export type Guidance =
   /** The hint on the sell button; the building it sells is where the minimap marks. */
   { kind: 'sell', x: number, y: number } |
   { kind: 'group', arrow: Point | null } |
+  /** The hint on the unlock button - nothing in the world to point at (UnlockTip). */
+  { kind: 'unlock' } |
   /**
    * Nothing to do but wait, and the player is shown that something is happening: the builder on its
    * way (distance left to the spot it was sent to, null when unknown), then the site going up. Not a
@@ -158,6 +160,8 @@ export function decide(input: DecisionInput): Decision {
       return decideSell(input);
     case 'CLEAR':
       return decideClear(input);
+    case 'UNLOCK':
+      return {guidance: {kind: 'unlock'}, taskName: TipTaskName.SEND_UNLOCK_COMMAND, reason: TipStallReason.AWAIT_UNLOCK_CLICK};
   }
 }
 

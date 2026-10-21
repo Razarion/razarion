@@ -49,3 +49,60 @@
   0%, 100% { box-shadow: 0 0 0 0 rgba(250, 204, 21, 0.7); }
   50% { box-shadow: 0 0 0 6px rgba(250, 204, 21, 0); }
 }
+
+/* The quest tip on the unlock button (UnlockTip) - built in plain DOM, so its look lives here. The
+   same bubble as the build tip (ItemCockpitComponent .build-tip): the anchor is the arrow's point,
+   above the button, or below it for a button at the top edge. Above dialogs: the dialog's own
+   Unlock button is one of its anchors. */
+.unlock-tip {
+  position: fixed;
+  z-index: 2000;
+  transform: translate(-50%, calc(-100% - 6px));
+  pointer-events: none;
+}
+
+.unlock-tip.unlock-tip-below {
+  transform: translate(-50%, 6px);
+}
+
+.unlock-tip-bounce {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  animation: unlock-tip-bounce 0.8s ease-in-out infinite;
+}
+
+.unlock-tip-below .unlock-tip-bounce {
+  flex-direction: column-reverse;
+}
+
+.unlock-tip-box,
+.unlock-tip-arrow {
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.unlock-tip-box {
+  padding: 8px 18px;
+  border: 3px solid orange;
+  border-radius: 18px;
+  background: green;
+  color: white;
+  font-size: 1.05rem;
+  white-space: nowrap;
+}
+
+.unlock-tip-arrow {
+  width: 40px;
+  height: 68px;
+}
+
+.unlock-tip-below .unlock-tip-arrow {
+  transform: rotate(180deg);
+}
+
+@keyframes unlock-tip-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(10px); }
+}

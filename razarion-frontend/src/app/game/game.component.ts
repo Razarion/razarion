@@ -39,6 +39,7 @@ import {RadarState} from '../gwtangular/GwtAngularFacade';
 import {notifyAngularReady} from '../wasm-boot';
 import {OrderFollowService} from './order-follow.service';
 import {StartBuilderSelectService} from './start-builder-select.service';
+import {CommunityTickerComponent} from './cockpit/community-ticker/community-ticker.component';
 
 
 @Component({
@@ -60,7 +61,8 @@ import {StartBuilderSelectService} from './start-builder-select.service';
     RadarComponent,
     NgClass,
     NgTemplateOutlet,
-    TooltipModule
+    TooltipModule,
+    CommunityTickerComponent
 ],
   styleUrls: ['game.component.scss']
 })

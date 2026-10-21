@@ -44,7 +44,7 @@
         <i class="pi pi-angle-right menu-chevron"></i>
       </button>
     }
-    <button type="button" class="menu-row" [ngClass]="{'blinking-button': blinkUnlockEnabled}"
+    <button type="button" class="menu-row" data-tip="unlock-open" [ngClass]="{'blinking-button': blinkUnlockEnabled}"
             (click)="onUnlock(); compactLayout.close()">
       <i class="pi pi-lock-open"></i>
       <span class="menu-label">Unlock units</span>
@@ -172,7 +172,7 @@
         <button type="button" class="hud-btn" pTooltip="Inventory" (click)="onInventory()">
           <i class="pi pi-briefcase"></i>
         </button>
-        <button type="button" class="hud-btn" pTooltip="Unlock units" (click)="onUnlock()"
+        <button type="button" class="hud-btn" data-tip="unlock-open" pTooltip="Unlock units" (click)="onUnlock()"
                 [class.hud-btn-blink]="blinkUnlockEnabled">
           <i class="pi pi-lock-open"></i>
         </button>

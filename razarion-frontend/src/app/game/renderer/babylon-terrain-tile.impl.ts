@@ -123,6 +123,16 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
    * disposed must drop them, or its callback would plant rocks into a container that is gone.
    */
   private readonly pendingModelRequests: Set<() => void> = new Set();
+  /**
+   * Every rock and plant of the tile, and the nodes planted from them. A tile hidden in the cache for
+   * TERRAIN_OBJECT_DROP_DELAY drops its nodes and plants them again when it is shown - see
+   * dropTerrainObjects. Bumping the generation stops batches and model callbacks of an earlier planting.
+   */
+  private terrainObjectPlacements: { config: TerrainObjectConfig, model: TerrainObjectModel }[] = [];
+  private terrainObjectNodes: TransformNode[] = [];
+  private terrainObjectGeneration = 0;
+  private terrainObjectsDropped = false;
+  private terrainObjectDropTimer: ReturnType<typeof setTimeout> | null = null;
   private groundHeights: number[] = [];
   private tileXOffset: number = 0;
   private tileYOffset: number = 0;
@@ -490,6 +500,13 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
   // 100 per batch took up to 44 ms in one piece on a desktop (2026-10-11)
   private static readonly TERRAIN_OBJECTS_PER_BATCH = 50;
   private static readonly TERRAIN_OBJECT_BATCH_DELAY = 16;
+  /**
+   * How long a tile stays hidden in the cache before its rocks and plants are disposed. Parking did not
+   * make them free: on PROD 16 cached tiles held 6 000-17 000 parked instances in long sessions, and
+   * within a session the phone's renderP50 still rose ~3.5 ms per 1 000 of them (RenderTelemetry
+   * 16.-21.10.2026). Long enough that scrolling back and forth stays instant.
+   */
+  private static readonly TERRAIN_OBJECT_DROP_DELAY = 20000;
 
   private setupWater(groundConfig: GroundConfig): void {
     this.waterResources = this.threeJsWaterRenderService.setup(this.terrainTile.getIndex(), groundConfig, this.container, this.uv2GroundHeightMap, this.rendererService);
@@ -552,11 +569,15 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
       }
     });
 
-    this.createTerrainObjectsBatched(pending, 0);
+    this.terrainObjectPlacements = pending;
+    if (this.terrainObjectsDropped) {
+      return; // hidden long enough before this phase came: planted when the tile is shown
+    }
+    this.createTerrainObjectsBatched(pending, 0, this.terrainObjectGeneration);
   }
 
-  private createTerrainObjectsBatched(pending: { config: TerrainObjectConfig, model: TerrainObjectModel }[], index: number): void {
-    if (this.disposed) {
+  private createTerrainObjectsBatched(pending: { config: TerrainObjectConfig, model: TerrainObjectModel }[], index: number, generation: number): void {
+    if (this.disposed || generation !== this.terrainObjectGeneration) {
       return;
     }
     const end = Math.min(index + BabylonTerrainTileImpl.TERRAIN_OBJECTS_PER_BATCH, pending.length);
@@ -572,6 +593,7 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
       }
       try {
         const terrainObject = BabylonTerrainTileImpl.createTerrainObject(model, config, this.babylonModelService, this.container);
+        this.terrainObjectNodes.push(terrainObject);
         if (!this.active) {
           // A tile can be scrolled away again while its objects are still streaming in. Those
           // instances would otherwise be born unparked and keep costing per-frame work until the
@@ -587,10 +609,71 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
         console.error(error);
       }
     }
-    this.plantWhenModelsArrive(waitingForModel);
+    this.plantWhenModelsArrive(waitingForModel, generation);
     if (end < pending.length) {
-      setTimeout(() => this.createTerrainObjectsBatched(pending, end), BabylonTerrainTileImpl.TERRAIN_OBJECT_BATCH_DELAY);
+      setTimeout(() => this.createTerrainObjectsBatched(pending, end, generation), BabylonTerrainTileImpl.TERRAIN_OBJECT_BATCH_DELAY);
     }
+  }
+
+  private scheduleTerrainObjectDrop(): void {
+    // The editor moves the planted nodes themselves; replanting from the tile's models would undo that
+    if (this.disposed || this.terrainObjectDropTimer || this.rendererService.needsGroundMeshAtOnce()) {
+      return;
+    }
+    this.terrainObjectDropTimer = setTimeout(() => {
+      this.terrainObjectDropTimer = null;
+      this.dropTerrainObjects();
+    }, BabylonTerrainTileImpl.TERRAIN_OBJECT_DROP_DELAY);
+  }
+
+  private cancelTerrainObjectDrop(): void {
+    if (this.terrainObjectDropTimer) {
+      clearTimeout(this.terrainObjectDropTimer);
+      this.terrainObjectDropTimer = null;
+    }
+  }
+
+  /**
+   * Disposes the rocks and plants of a tile that has stayed hidden; ground, water, sprites and bot
+   * grounds stay, so showing the tile again only has to plant them anew (replantTerrainObjects).
+   * The nodes are switched off at once and disposed in batches: each instance takes itself off the
+   * shadow map's render list with an indexOf over that whole list, too much for one frame.
+   */
+  private dropTerrainObjects(): void {
+    if (this.disposed || this.active || this.terrainObjectsDropped) {
+      return;
+    }
+    this.terrainObjectGeneration++;
+    this.pendingModelRequests.forEach(cancel => cancel());
+    this.pendingModelRequests.clear();
+    this.terrainObjectsDropped = true;
+    const nodes = this.terrainObjectNodes;
+    this.terrainObjectNodes = [];
+    nodes.forEach(node => node.setEnabled(false));
+    this.disposeTerrainObjectsBatched(nodes, 0);
+  }
+
+  private disposeTerrainObjectsBatched(nodes: TransformNode[], index: number): void {
+    if (this.disposed) {
+      return; // the container took them along
+    }
+    const end = Math.min(index + BabylonTerrainTileImpl.TERRAIN_OBJECTS_PER_BATCH, nodes.length);
+    for (let i = index; i < end; i++) {
+      if (!nodes[i].isDisposed()) {
+        nodes[i].dispose(false, false);
+      }
+    }
+    if (end < nodes.length) {
+      setTimeout(() => this.disposeTerrainObjectsBatched(nodes, end), BabylonTerrainTileImpl.TERRAIN_OBJECT_BATCH_DELAY);
+    }
+  }
+
+  private replantTerrainObjects(): void {
+    if (!this.terrainObjectsDropped) {
+      return;
+    }
+    this.terrainObjectsDropped = false;
+    this.createTerrainObjectsBatched(this.terrainObjectPlacements, 0, this.terrainObjectGeneration);
   }
 
   /**
@@ -598,7 +681,7 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
    * Grouped by model rather than per object: one glb typically carries every rock on the tile,
    * and one subscription per placement would mean hundreds of callbacks for a single load.
    */
-  private plantWhenModelsArrive(waiting: { config: TerrainObjectConfig, model: TerrainObjectModel }[]): void {
+  private plantWhenModelsArrive(waiting: { config: TerrainObjectConfig, model: TerrainObjectModel }[], generation: number): void {
     if (waiting.length === 0) {
       return;
     }
@@ -623,7 +706,7 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
           this.pendingModelRequests.delete(handle.cancel);
         }
         if (ready && !this.disposed) {
-          this.createTerrainObjectsBatched(group, 0);
+          this.createTerrainObjectsBatched(group, 0, generation);
         }
       });
       if (!settled) {
@@ -678,6 +761,8 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
 
   addToScene(): void {
     this.active = true;
+    this.cancelTerrainObjectDrop();
+    this.replantTerrainObjects();
     this.applyActiveState();
     const included = this.rendererService.directionalLight.includedOnlyMeshes;
     if (!included.includes(this.groundMesh)) {
@@ -702,6 +787,7 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
       included.splice(index, 1);
     }
     this.rendererService.removeTerrainTileFromScene(this);
+    this.scheduleTerrainObjectDrop();
   }
 
   /**
@@ -751,8 +837,11 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     // A tile dropped mid-build owes nothing any more - without this a scene switch would leave
     // whenBuildsSettled() waiting forever on tiles that no longer exist.
     this.markBuildSettled();
+    this.cancelTerrainObjectDrop();
     this.pendingModelRequests.forEach(cancel => cancel());
     this.pendingModelRequests.clear();
+    this.terrainObjectNodes = [];
+    this.terrainObjectPlacements = [];
 
     // Detach meshes from the directional light so it never holds references to disposed meshes.
     const included = this.rendererService.directionalLight.includedOnlyMeshes;

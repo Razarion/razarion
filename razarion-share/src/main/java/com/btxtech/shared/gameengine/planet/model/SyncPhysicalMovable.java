@@ -152,13 +152,21 @@ public class SyncPhysicalMovable extends AbstractSyncPhysical {
         this.velocity = preferredVelocity;
     }
 
-    public void stopIfDestinationReached() {
+    /**
+     * @param mayGiveUp true on the server only. A client that gave up by itself stood still while the
+     *                  server drove on - its attack ended with the movement, the unit went idle, and the
+     *                  server, which only syncs on events, corrected it once its own attack was over:
+     *                  whole Viper groups jumped 30-113 m (PROD [SyncSnap] 11.-18.10.2026, localIdle=true,
+     *                  server and worker on the same tick). The server's give-up reaches the client as a
+     *                  stop like every other one.
+     */
+    public void stopIfDestinationReached(boolean mayGiveUp) {
         if (path == null || !path.isLastWayPoint()) {
             resetApproachTracking();
             return;
         }
 
-        if (trackApproachAndGiveUp()) {
+        if (mayGiveUp && trackApproachAndGiveUp()) {
             return;
         }
 

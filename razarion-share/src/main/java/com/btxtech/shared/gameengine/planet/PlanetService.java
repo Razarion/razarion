@@ -159,7 +159,7 @@ public class PlanetService implements Runnable { // Only available in worker. On
             questService.tick();
             planetServiceTracker.afterQuestService();
             long afterQuest = System.currentTimeMillis();
-            pathingService.tick(synchronizationSendingContext);
+            pathingService.tick(synchronizationSendingContext, gameEngineMode == GameEngineMode.MASTER);
             planetServiceTracker.afterPathingService();
             long afterPathing = System.currentTimeMillis();
             if (gameEngineMode == GameEngineMode.MASTER) {

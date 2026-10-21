@@ -1,0 +1,50 @@
+/* Laid over the field: no background of its own and no taps taken - a unit under a line must stay
+   selectable. The shadow keeps the text readable over sand, grass and water alike. */
+:host {
+  pointer-events: none;
+}
+
+.community-ticker {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.community-ticker-line {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  line-height: 1.35;
+  color: rgba(255, 255, 255, 0.92);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9), 0 0 6px rgba(0, 0, 0, 0.7);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  animation: community-ticker-in 400ms ease-out;
+  transition: opacity 600ms ease-in;
+
+  &.leaving {
+    opacity: 0;
+  }
+
+  i {
+    font-size: 11px;
+    color: var(--p-emerald-400, #34d399);
+  }
+}
+
+.community-ticker-age {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+@keyframes community-ticker-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}

@@ -298,7 +298,10 @@ public class PathingService {
         pathingServiceTracker.setRunning(track);
     }
 
-    public void tick(SynchronizationSendingContext synchronizationSendingContext) {
+    /**
+     * @param master true on the server: only it may decide that a unit cannot reach its destination
+     */
+    public void tick(SynchronizationSendingContext synchronizationSendingContext, boolean master) {
         try {
             // DebugHelperStatic.setCurrentTick(-1);
             pathingServiceTracker.startTick();
@@ -308,7 +311,7 @@ public class PathingService {
             pathingServiceTracker.afterSolveVelocity();
             implementPosition();
             pathingServiceTracker.afterImplementPosition();
-            checkDestination();
+            checkDestination(master);
             pathingServiceTracker.afterCheckDestination();
             syncItemContainerService.afterPathingServiceTick();
             pathingServiceTracker.afterSyncItemContainerService();
@@ -419,12 +422,12 @@ public class PathingService {
     }
 
 
-    private void checkDestination() {
+    private void checkDestination(boolean master) {
         syncItemContainerService.iterateOverBaseItemsIdOrdered(syncBaseItem -> {
             if (!syncBaseItem.getAbstractSyncPhysical().canMove()) {
                 return;
             }
-            ((SyncPhysicalMovable) syncBaseItem.getAbstractSyncPhysical()).stopIfDestinationReached();
+            ((SyncPhysicalMovable) syncBaseItem.getAbstractSyncPhysical()).stopIfDestinationReached(master);
         });
     }
 
