@@ -8,6 +8,12 @@ public class SimplePath {
     private List<DecimalPosition> wayPositions;
     private boolean destinationReachable;
     private DecimalPosition alternativeDestination;
+    /**
+     * A* ran out of nodes before it reached the destination: the way ends at the reachable node closest
+     * to it. Fine for a move order - the unit gets as near as it can - but a unit attacking from there
+     * may never get in range.
+     */
+    private boolean shortOfDestination;
 
     public List<DecimalPosition> getWayPositions() {
         return wayPositions;
@@ -38,5 +44,13 @@ public class SimplePath {
 
     public void setAlternativeDestination(DecimalPosition alternativeDestination) {
         this.alternativeDestination = alternativeDestination;
+    }
+
+    public boolean isShortOfDestination() {
+        return shortOfDestination;
+    }
+
+    public void setShortOfDestination(boolean shortOfDestination) {
+        this.shortOfDestination = shortOfDestination;
     }
 }

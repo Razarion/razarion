@@ -3,6 +3,7 @@ package com.btxtech.shared.gameengine.planet.model;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.command.AttackCommand;
+import com.btxtech.shared.gameengine.datatypes.command.SimplePath;
 import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistException;
 import com.btxtech.shared.gameengine.datatypes.exception.TargetHasNoPositionException;
 import com.btxtech.shared.gameengine.datatypes.itemtype.WeaponType;
@@ -16,6 +17,8 @@ import com.btxtech.shared.gameengine.planet.projectile.ProjectileService;
 import com.btxtech.shared.utils.MathHelper;
 
 import jakarta.inject.Inject;
+
+import java.util.List;
 
 /**
  * User: Razarion contributors
@@ -113,8 +116,10 @@ public class SyncWeapon extends SyncBaseAbility {
                 }
                 if (!getSyncPhysicalMovable().hasDestination()) {
                     if (baseItemService.getGameEngineMode() == GameEngineMode.MASTER) {
-                        getSyncPhysicalMovable().setPath(pathingService.setupPathToDestination(getSyncBaseItem(), 0, target));
-                        syncService.notifySendSyncBaseItem(getSyncBaseItem());
+                        if (!setPathToTarget()) {
+                            stop();
+                            return false;
+                        }
                     } else {
                         return true;
                     }
@@ -125,8 +130,10 @@ public class SyncWeapon extends SyncBaseAbility {
                     if (targetPositionLastCheck + CHECK_DELTA < System.currentTimeMillis()) {
                         if (!targetPosition.equals(target.getAbstractSyncPhysical().getPosition())) {
                             targetPosition = target.getAbstractSyncPhysical().getPosition();
-                            getSyncPhysicalMovable().setPath(pathingService.setupPathToDestination(getSyncBaseItem(), 0, target));
-                            syncService.notifySendSyncBaseItem(getSyncBaseItem());
+                            if (!setPathToTarget()) {
+                                stop();
+                                return false;
+                            }
                         }
                         targetPositionLastCheck = System.currentTimeMillis();
                     }
@@ -280,6 +287,37 @@ public class SyncWeapon extends SyncBaseAbility {
                 && getAbstractSyncPhysical().hasPosition()
                 && target.getAbstractSyncPhysical().hasPosition()
                 && !isItemTypeDisallowed((SyncBaseItem) target);
+    }
+
+    /**
+     * Master only: a new path to the target, or false when the attack cannot go on - the target is on
+     * terrain this unit cannot get near, or the way ends short of it, out of weapon range.
+     * <p>
+     * Driving to the end of a short way and planning again there was a loop: the unit arrived, was still
+     * out of range, had no destination, and the next search walked every reachable node again - 1.5 s
+     * each on the game-engine thread, every few seconds for as long as the order stood (PROD 23.10.2026).
+     */
+    private boolean setPathToTarget() {
+        SimplePath path = pathingService.setupPathToDestination(getSyncBaseItem(), 0, target);
+        if (!path.isDestinationReachable() || !reachesWeaponRange(path, target)) {
+            return false;
+        }
+        getSyncPhysicalMovable().setPath(path);
+        syncService.notifySendSyncBaseItem(getSyncBaseItem());
+        return true;
+    }
+
+    /**
+     * False when the way ends short of the target and out of weapon range from there - a way across a
+     * narrow channel that ends within range is still an attack.
+     */
+    public boolean reachesWeaponRange(SimplePath path, SyncItem target) {
+        if (!path.isShortOfDestination()) {
+            return true;
+        }
+        List<DecimalPosition> way = path.getWayPositions();
+        DecimalPosition end = way.get(way.size() - 1);
+        return target.getAbstractSyncPhysical().getDistance(end, getAbstractSyncPhysical().getRadius()) < weaponType.getRange();
     }
 
     boolean isInRange(SyncBaseItem target) throws TargetHasNoPositionException {

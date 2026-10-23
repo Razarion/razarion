@@ -45,6 +45,7 @@ public class ServerLevelQuestService implements QuestListener {
     private final XConversionService xConversionService;
     private final MetaConversionService metaConversionService;
     private final HistoryService historyService;
+    private final EngineEventExecutor engineEventExecutor;
 
     public ServerLevelQuestService(QuestService questService,
                                    ServerGameEngineService serverGameEngineCrudPersistence,
@@ -58,7 +59,9 @@ public class ServerLevelQuestService implements QuestListener {
                                    RedditConversionService redditConversionService,
                                    XConversionService xConversionService,
                                    MetaConversionService metaConversionService,
-                                   HistoryService historyService) {
+                                   HistoryService historyService,
+                                   EngineEventExecutor engineEventExecutor) {
+        this.engineEventExecutor = engineEventExecutor;
         this.questService = questService;
         this.serverGameEngineCrudPersistence = serverGameEngineCrudPersistence;
         this.levelCrudPersistence = levelCrudPersistence;
@@ -86,9 +89,17 @@ public class ServerLevelQuestService implements QuestListener {
         return slaveQuestInfo;
     }
 
+    /**
+     * Called by QuestService from inside the planet tick, when the unit that fulfilled the condition is
+     * ticked. Everything that follows reads and writes the databases, so it runs on the
+     * EngineEventExecutor, not in the tick.
+     */
     @Override
-    @Transactional
     public void onQuestPassed(String userId, QuestConfig questConfig) {
+        engineEventExecutor.execute("quest " + questConfig.getId() + " passed by " + userId, () -> passQuest(userId, questConfig));
+    }
+
+    private void passQuest(String userId, QuestConfig questConfig) {
         clientSystemConnectionService.onQuestPassed(userId, questConfig);
         /*
          * The Razarion reward was configurable in the editor and never paid - only the xp below
@@ -200,7 +211,7 @@ public class ServerLevelQuestService implements QuestListener {
             // forever. Auto-complete it in that case instead of activating it.
             if (isUnfulfillableUnlockQuest(userId, newQuest)) {
                 logger.info("Auto-completing unlock quest {} for user {}: no available unlocks left", newQuest.getId(), userId);
-                onQuestPassed(userId, newQuest);
+                passQuest(userId, newQuest);
                 return;
             }
             historyService.onQuest(userId, newQuest, GameHistoryType.QUEST_ACTIVATED);
@@ -255,9 +266,9 @@ public class ServerLevelQuestService implements QuestListener {
             return false;
         }
         // getUserContextTransactional (not getUserContext): toUserContext() reads LAZY relations
-        // (levelUnlockEntities, level). This runs from the quest-listener / planet-tick path where
-        // no transaction is open (onQuestPassed is @Transactional but registered as the raw bean),
-        // so the non-transactional variant would throw LazyInitializationException.
+        // (levelUnlockEntities, level). This runs from the quest-listener path (EngineEventExecutor)
+        // where no transaction is open, so the non-transactional variant would throw
+        // LazyInitializationException.
         return !serverUnlockService.hasAvailableUnlocks(userService.getUserContextTransactional(userId));
     }
 

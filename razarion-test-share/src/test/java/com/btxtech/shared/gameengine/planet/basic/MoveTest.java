@@ -5,10 +5,20 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.FallbackConfig;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
+import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
+import com.btxtech.shared.gameengine.datatypes.packets.TickInfo;
+import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.DaggerSlaveEmulator;
+import com.btxtech.shared.gameengine.planet.TestWebSocket;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import org.junit.Assert;
 import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Handler;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -207,6 +217,96 @@ public class MoveTest extends BaseBasicTest {
         permSlave.tickPlanetService(2);
 
         TestHelper.assertDecimalPosition(null, builder.getAbstractSyncPhysical().getPosition(), slaveBuilder.getAbstractSyncPhysical().getPosition(), 0.5);
+    }
+
+    /**
+     * A unit on its way is sent every BaseItemService.MOVING_SYNC_TICKS, not only when the drive
+     * starts and ends: a client that simulated a different drive was otherwise corrected only by the
+     * next event - jumps up to 249 m (PROD [SyncSnap] 21.-23.10.2026).
+     */
+    @Test
+    public void movingUnitIsSentWhileOnItsWay() {
+        setup();
+
+        UserContext userContext = createLevel1UserContext();
+        PlayerBaseFull playerBaseFull = createHumanBaseWithBaseItem(new DecimalPosition(17, 20), userContext);
+        tickPlanetServiceBaseServiceActive();
+        SyncBaseItem builder = findSyncBaseItem(playerBaseFull, FallbackConfig.BUILDER_ITEM_TYPE_ID);
+        int[] sent = {0};
+        getTestShareDagger().testSyncService().getTestWebSocket().add(new TestWebSocket() {
+            @Override
+            public void onTickInfo(TickInfo tickInfo) {
+                if (tickInfo.getSyncBaseItemInfos().stream().anyMatch(info -> info.getId() == builder.getId())) {
+                    sent[0]++;
+                }
+            }
+        });
+
+        getCommandService().move(builder, new DecimalPosition(75, 20));
+        // The command is carried out with the next tick
+        tickPlanetService(1);
+        int driveTicks = 1;
+        for (; driveTicks < 600 && builder.getSyncPhysicalMovable().hasDestination(); driveTicks++) {
+            tickPlanetService(1);
+        }
+        Assert.assertTrue("a drive long enough to be sent on its way: " + driveTicks + " ticks", driveTicks > 3 * BaseItemService.MOVING_SYNC_TICKS);
+        // The command and the arrival, and one in between for every interval of the drive
+        int expected = driveTicks / BaseItemService.MOVING_SYNC_TICKS;
+        Assert.assertTrue("sent " + sent[0] + " times in " + driveTicks + " ticks, expected at least " + expected, sent[0] >= expected);
+    }
+
+    /**
+     * The [SyncSnap] line says why the client's unit went apart from the server's: here the same
+     * drive (dest=0) with the server 10 m to the side, nobody around.
+     */
+    @Test
+    public void syncSnapTellsWhyTheClientWentApart() {
+        setup();
+
+        UserContext userContext = createLevel1UserContext();
+        DaggerSlaveEmulator permSlave = new DaggerSlaveEmulator();
+        permSlave.connectToMaster(userContext, this);
+        PlayerBaseFull playerBaseFull = createHumanBaseWithBaseItem(new DecimalPosition(17, 20), userContext);
+        tickPlanetServiceBaseServiceActive();
+        permSlave.tickPlanetServiceBaseServiceActive();
+        SyncBaseItem builder = findSyncBaseItem(playerBaseFull, FallbackConfig.BUILDER_ITEM_TYPE_ID);
+        getCommandService().move(builder, new DecimalPosition(75, 20));
+        for (int tick = 0; tick < 10; tick++) {
+            tickPlanetService(1);
+            permSlave.tickPlanetService(1);
+        }
+        permSlave.getBaseItemService().setLocalUserId(userContext.getUserId());
+        List<String> lines = new ArrayList<>();
+        Handler handler = new Handler() {
+            @Override
+            public void publish(LogRecord record) {
+                lines.add(record.getMessage());
+            }
+
+            @Override
+            public void flush() {
+            }
+
+            @Override
+            public void close() {
+            }
+        };
+        Logger logger = Logger.getLogger(BaseItemService.class.getName());
+        logger.addHandler(handler);
+        try {
+            SyncBaseItemInfo apart = builder.getSyncInfo();
+            apart.getSyncPhysicalAreaInfo().setPosition(builder.getAbstractSyncPhysical().getPosition().add(new DecimalPosition(0, 10)));
+            permSlave.getBaseItemService().onSlaveSyncBaseItemChanged(apart);
+        } finally {
+            logger.removeHandler(handler);
+        }
+
+        Assert.assertEquals(lines.toString(), 1, lines.size());
+        String line = lines.get(0);
+        Assert.assertTrue(line, line.startsWith("[SyncSnap] "));
+        for (String expected : new String[]{" jump=10.0 ", " age=", " dest=0.0 ", " ways=", " serverVel=", " velAngle=0 ", " pref=", " target=-/- ", " crowd=0 ", " crowded=false"}) {
+            Assert.assertTrue(expected + " in " + line, line.contains(expected));
+        }
     }
 
 }

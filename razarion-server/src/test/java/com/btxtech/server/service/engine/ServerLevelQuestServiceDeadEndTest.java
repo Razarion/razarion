@@ -57,7 +57,8 @@ class ServerLevelQuestServiceDeadEndTest {
             redditConversionService,
             xConversionService,
             metaConversionService,
-            historyService);
+            historyService,
+            new QueuedEngineEventExecutor(true));
 
     @Test
     void playerWithoutQuestsLeftIsLevelledUpAndGetsTheNextLevelsQuest() {

@@ -371,6 +371,11 @@ public class SyncPhysicalMovable extends AbstractSyncPhysical {
         return preferredVelocity;
     }
 
+    /** For the [SyncSnap] measurement (BaseItemService.logSyncSnap). */
+    public boolean isCrowded() {
+        return crowded;
+    }
+
     public DecimalPosition getDesiredPosition() {
         DecimalPosition desiredPosition = getPosition();
         if (velocity != null) {

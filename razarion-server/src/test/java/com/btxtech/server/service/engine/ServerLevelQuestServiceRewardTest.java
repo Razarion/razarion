@@ -47,7 +47,8 @@ class ServerLevelQuestServiceRewardTest {
             mock(RedditConversionService.class),
             mock(XConversionService.class),
             mock(MetaConversionService.class),
-            mock(HistoryService.class));
+            mock(HistoryService.class),
+            new QueuedEngineEventExecutor(true));
 
     @BeforeEach
     void setUp() {

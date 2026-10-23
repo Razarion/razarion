@@ -31,6 +31,7 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.packets.PlayerBaseInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncItemDeletedInfo;
+import com.btxtech.shared.gameengine.datatypes.packets.SyncPhysicalAreaInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.TickInfo;
 import com.btxtech.shared.gameengine.planet.energy.EnergyService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
@@ -40,6 +41,7 @@ import com.btxtech.shared.gameengine.planet.quest.QuestService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainTypeNotAllowedException;
 import com.btxtech.shared.utils.CollectionUtils;
+import com.btxtech.shared.utils.MathHelper;
 
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
@@ -80,9 +82,30 @@ public class BaseItemService {
     private static final double SYNC_SNAP_DISTANCE = 3;
     /** At most one [SyncSnap] line per unit in this time, so one diverged unit cannot eat the forwarding budget. */
     private static final long SYNC_SNAP_LOG_INTERVAL_MILLIS = 5000;
+    /**
+     * The server sends a unit that is on its way this often, not only on events. Client and server
+     * simulate the drive each by itself, and in a crowded group fight they part: the client drove its
+     * own way at full speed while the server had the unit elsewhere, until the next event corrected it
+     * - jumps up to 249 m (PROD [SyncSnap] 21.-23.10.2026, localIdle=false). A drift of two seconds
+     * stays small enough not to be seen as a jump.
+     */
+    public static final int MOVING_SYNC_TICKS = 2 * PlanetService.TICKS_PER_SECONDS;
+    /** Counts the master's ticks, for MOVING_SYNC_TICKS. */
+    private int masterTickCount;
     /** The player this engine runs for; only a SLAVE worker sets it. Null on the server. */
     private String localUserId;
+    /**
+     * And at most one line in this time over all units: once the server sends moving units every
+     * MOVING_SYNC_TICKS, a whole group can go apart in the same second, and the forwarding budget
+     * (20 lines in 10 s) is shared with telemetry and real errors.
+     */
+    private static final long SYNC_SNAP_ANY_LOG_INTERVAL_MILLIS = 1000;
+    /** Units within this distance count as the crowd around a unit in [SyncSnap]. */
+    private static final double SYNC_SNAP_CROWD_DISTANCE = 4;
     private final Map<Integer, Long> lastSyncSnapLog = new HashMap<>();
+    private long lastSyncSnapAnyLog;
+    /** When the server last corrected each of the player's own units: how long the two went apart for. */
+    private final Map<Integer, Long> lastServerSync = new HashMap<>();
     private final GameLogicService gameLogicService;
     private final SyncItemContainerServiceImpl syncItemContainerService;
     private final LevelService levelService;
@@ -514,8 +537,11 @@ public class BaseItemService {
                     || syncBaseItemInfo.getSyncPhysicalAreaInfo() == null) {
                 return;
             }
+            long now = System.currentTimeMillis();
+            Long lastSync = lastServerSync.put(syncBaseItem.getId(), now);
             DecimalPosition local = syncBaseItem.getAbstractSyncPhysical().getPosition();
-            DecimalPosition server = syncBaseItemInfo.getSyncPhysicalAreaInfo().getPosition();
+            SyncPhysicalAreaInfo serverPhysical = syncBaseItemInfo.getSyncPhysicalAreaInfo();
+            DecimalPosition server = serverPhysical.getPosition();
             if (local == null || server == null) {
                 return;
             }
@@ -523,18 +549,20 @@ public class BaseItemService {
             if (jump <= SYNC_SNAP_DISTANCE) {
                 return;
             }
-            long now = System.currentTimeMillis();
             Long last = lastSyncSnapLog.get(syncBaseItem.getId());
-            if (last != null && now - last < SYNC_SNAP_LOG_INTERVAL_MILLIS) {
+            if (last != null && now - last < SYNC_SNAP_LOG_INTERVAL_MILLIS || now - lastSyncSnapAnyLog < SYNC_SNAP_ANY_LOG_INTERVAL_MILLIS) {
                 return;
             }
             lastSyncSnapLog.put(syncBaseItem.getId(), now);
+            lastSyncSnapAnyLog = now;
             String localSpeed = "-";
+            String divergence = "";
             if (syncBaseItem.getAbstractSyncPhysical() instanceof SyncPhysicalMovable) {
-                DecimalPosition velocity = ((SyncPhysicalMovable) syncBaseItem.getAbstractSyncPhysical()).getVelocity();
-                if (velocity != null) {
-                    localSpeed = String.valueOf(Math.round(velocity.magnitude() * 100) / 100.0);
+                SyncPhysicalMovable movable = (SyncPhysicalMovable) syncBaseItem.getAbstractSyncPhysical();
+                if (movable.getVelocity() != null) {
+                    localSpeed = String.valueOf(round2(movable.getVelocity().magnitude()));
                 }
+                divergence = describeDivergence(syncBaseItem, movable, syncBaseItemInfo, serverPhysical);
             }
             logger.warning("[SyncSnap] " + syncBaseItem.getBaseItemType().getInternalName() + "#" + syncBaseItem.getId()
                     + " jump=" + Math.round(jump * 10) / 10.0
@@ -543,10 +571,64 @@ public class BaseItemService {
                     + " localIdle=" + syncBaseItem.isIdle()
                     + " localSpeed=" + localSpeed
                     + " workerTick=" + workerTick + " serverTick=" + Math.round(serverTick)
-                    + " pending=" + pendingReceivedTickInfos.size());
+                    + " pending=" + pendingReceivedTickInfos.size()
+                    // How long the two went apart for: jump / age above the unit's speed means they drove different ways
+                    + " age=" + (lastSync != null ? String.valueOf(Math.round((now - lastSync) / 100.0) / 10.0) : "-")
+                    + divergence);
         } catch (Throwable t) {
             // A measurement must never break the synchronisation it measures.
         }
+    }
+
+    /**
+     * Why the client's unit is somewhere else than the server's - read before the correction is
+     * applied, so it is the client's own state:
+     * <ul>
+     * <li>dest: how far apart the two drives end (server - local last way point); large means
+     * different paths, small with a large jump means the same path driven differently</li>
+     * <li>serverVel / velAngle: the server's speed and how far its heading is from the client's (degrees)</li>
+     * <li>pref: the speed the client wanted; well above localSpeed means it was held back avoiding others</li>
+     * <li>target: the client's attack target / the server's</li>
+     * <li>crowd: other units within SYNC_SNAP_CROWD_DISTANCE on the client, crowded: the client's flag</li>
+     * </ul>
+     */
+    private String describeDivergence(SyncBaseItem syncBaseItem, SyncPhysicalMovable movable, SyncBaseItemInfo syncBaseItemInfo, SyncPhysicalAreaInfo serverPhysical) {
+        StringBuilder builder = new StringBuilder();
+        List<DecimalPosition> localWay = movable.getPath() != null ? movable.getPath().getWayPositions() : null;
+        List<DecimalPosition> serverWay = serverPhysical.getWayPositions();
+        DecimalPosition localDestination = localWay != null && !localWay.isEmpty() ? localWay.get(localWay.size() - 1) : null;
+        DecimalPosition serverDestination = serverWay != null && !serverWay.isEmpty() ? serverWay.get(serverWay.size() - 1) : null;
+        builder.append(" dest=");
+        if (localDestination != null && serverDestination != null) {
+            builder.append(Math.round(localDestination.getDistance(serverDestination) * 10) / 10.0);
+        } else {
+            builder.append(localDestination != null ? "serverNone" : serverDestination != null ? "localNone" : "none");
+        }
+        builder.append(" ways=").append(localWay != null ? localWay.size() : 0).append("/").append(serverWay != null ? serverWay.size() : 0);
+        DecimalPosition localVelocity = movable.getVelocity();
+        DecimalPosition serverVelocity = serverPhysical.getVelocity();
+        builder.append(" serverVel=").append(serverVelocity != null ? String.valueOf(round2(serverVelocity.magnitude())) : "-");
+        if (localVelocity != null && serverVelocity != null && !localVelocity.equalsDeltaZero() && !serverVelocity.equalsDeltaZero()) {
+            builder.append(" velAngle=").append(Math.round(Math.toDegrees(MathHelper.getAngle(localVelocity.angle(), serverVelocity.angle()))));
+        }
+        DecimalPosition preferred = movable.getPreferredVelocity();
+        builder.append(" pref=").append(preferred != null ? String.valueOf(round2(preferred.magnitude())) : "-");
+        SyncItem localTarget = syncBaseItem.getTarget();
+        builder.append(" target=").append(localTarget != null ? String.valueOf(localTarget.getId()) : "-")
+                .append("/").append(syncBaseItemInfo.getTarget() != null ? String.valueOf(syncBaseItemInfo.getTarget()) : "-");
+        int[] crowd = {0};
+        DecimalPosition position = syncBaseItem.getAbstractSyncPhysical().getPosition();
+        syncItemContainerService.iterateCellQuadBaseItem(position, 2 * SYNC_SNAP_CROWD_DISTANCE, other -> {
+            if (other != syncBaseItem && other.getAbstractSyncPhysical().getPosition().getDistance(position) <= SYNC_SNAP_CROWD_DISTANCE) {
+                crowd[0]++;
+            }
+        });
+        builder.append(" crowd=").append(crowd[0]).append(" crowded=").append(movable.isCrowded());
+        return builder.toString();
+    }
+
+    private static double round2(double value) {
+        return Math.round(value * 100) / 100.0;
     }
 
     private SyncBaseItem createSyncBaseItemSlave(SyncBaseItemInfo syncBaseItemInfo, PlayerBase playerBase) {
@@ -779,6 +861,19 @@ public class BaseItemService {
         }
     }
 
+    /**
+     * A player's unit on its way, all in the same tick: every unit sent in a tick of its own (staggered
+     * by id) made one message per tick, ten a second. Bots are left out - their harvesters and patrols
+     * drive all the time, and no player commands them.
+     */
+    private boolean isMovingSyncDue(SyncBaseItem syncBaseItem) {
+        return masterTickCount % MOVING_SYNC_TICKS == 0
+                && syncBaseItem.getBase() != null
+                && syncBaseItem.getBase().getCharacter().isHuman()
+                && syncBaseItem.getAbstractSyncPhysical().canMove()
+                && syncBaseItem.getSyncPhysicalMovable().hasDestination();
+    }
+
     public void tick() {
         try {
             synchronized (commandQueue) {
@@ -789,6 +884,10 @@ public class BaseItemService {
                 synchronized (activeItemQueue) {
                     activeItems.addAll(activeItemQueue);
                     activeItemQueue.clear();
+                }
+                boolean master = getGameEngineMode() == GameEngineMode.MASTER;
+                if (master) {
+                    masterTickCount++;
                 }
                 Iterator<SyncBaseItem> iterator = activeItems.iterator();
                 while (iterator.hasNext()) {
@@ -817,6 +916,8 @@ public class BaseItemService {
                             } catch (Throwable t) {
                                 logger.log(Level.WARNING, "Error during deactivation of active item: " + activeItem, t);
                             }
+                        } else if (master && isMovingSyncDue(activeItem)) {
+                            syncService.notifySendSyncBaseItem(activeItem);
                         }
                     } catch (Throwable t) {
                         activeItem.stop(true);

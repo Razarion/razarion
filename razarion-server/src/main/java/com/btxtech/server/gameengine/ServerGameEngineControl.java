@@ -1,6 +1,7 @@
 package com.btxtech.server.gameengine;
 
 import com.btxtech.server.model.engine.BackupPlanetOverview;
+import com.btxtech.server.service.engine.EngineEventExecutor;
 import com.btxtech.server.service.engine.PlanetBackupService;
 import com.btxtech.server.service.engine.PlanetCrudService;
 import com.btxtech.server.service.engine.ServerGameEngineService;
@@ -45,6 +46,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Map;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 @Service
 public class ServerGameEngineControl implements GameLogicListener, BaseRestoreProvider, PlanetTickListener {
@@ -73,6 +76,9 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
     private final HistoryService historyService;
     // Provider breaks the cycle: ServerLevelQuestService injects Provider<ServerGameEngineControl>.
     private final Provider<ServerLevelQuestService> serverLevelQuestService;
+    private final EngineEventExecutor engineEventExecutor;
+    /** See runInTick. */
+    private final Queue<Runnable> inTick = new ConcurrentLinkedQueue<>();
     private boolean running;
 
     public ServerGameEngineControl(InitializeService initializeService,
@@ -95,7 +101,8 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
                                    MetaConversionService metaConversionService,
                                    ServerInventoryService serverInventoryService,
                                    HistoryService historyService,
-                                   Provider<ServerLevelQuestService> serverLevelQuestService) {
+                                   Provider<ServerLevelQuestService> serverLevelQuestService,
+                                   EngineEventExecutor engineEventExecutor) {
         this.initializeService = initializeService;
         this.planetService = planetService;
         this.boxService = boxService;
@@ -118,6 +125,7 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
         this.serverInventoryService = serverInventoryService;
         this.historyService = historyService;
         this.serverLevelQuestService = serverLevelQuestService;
+        this.engineEventExecutor = engineEventExecutor;
     }
 
     public void start(BackupPlanetInfo backupPlanetInfo, boolean activateQuests) {
@@ -250,7 +258,7 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
     }
 
     public void onLevelChanged(String userId, int levelId) {
-        baseItemService.updateLevel(userId, levelId);
+        runInTick(() -> baseItemService.updateLevel(userId, levelId));
     }
 
     /**
@@ -258,13 +266,25 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
      * put it, and a quest is passed with a base anyway.
      */
     public void addRazarion(String userId, int razarion) {
-        PlayerBaseFull playerBase = baseItemService.getPlayerBaseFull4UserId(userId);
-        if (playerBase == null) {
-            logger.warn("No base for user {} - {} Razarion quest reward dropped", userId, razarion);
-            return;
-        }
-        playerBase.addResource(razarion);
-        gameLogicService.onResourcesBalanceChanged(playerBase, (int) playerBase.getResources());
+        runInTick(() -> {
+            PlayerBaseFull playerBase = baseItemService.getPlayerBaseFull4UserId(userId);
+            if (playerBase == null) {
+                logger.warn("No base for user {} - {} Razarion quest reward dropped", userId, razarion);
+                return;
+            }
+            playerBase.addResource(razarion);
+            gameLogicService.onResourcesBalanceChanged(playerBase, (int) playerBase.getResources());
+        });
+    }
+
+    /**
+     * A change to the world asked for from another thread - the EngineEventExecutor, a REST call - is
+     * carried out at the end of the next tick, on the tick thread. Adding to a base's Razarion is
+     * read, add, write: from the side it could overwrite what a harvester or a build did in the tick
+     * at the same moment, or be overwritten by it.
+     */
+    private void runInTick(Runnable change) {
+        inTick.add(change);
     }
 
     @Override
@@ -370,10 +390,13 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
         historyService.onBotEnrageNormal(botName, botEnragementStateConfig);
     }
 
+    /** From the tick: crystals and inventory are written to MariaDB, so not in it. */
     @Override
     public void onBoxPicked(String userId, BoxContent boxContent) {
-        serverInventoryService.onBoxPicked(userId, boxContent);
-        systemConnectionService.onBoxPicked(userId, boxContent);
+        engineEventExecutor.execute("box picked by " + userId, () -> {
+            serverInventoryService.onBoxPicked(userId, boxContent);
+            systemConnectionService.onBoxPicked(userId, boxContent);
+        });
     }
 
     @Override
@@ -425,6 +448,14 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
 
     @Override
     public void onPostTick(SynchronizationSendingContext synchronizationSendingContext) {
+        Runnable change;
+        while ((change = inTick.poll()) != null) {
+            try {
+                change.run();
+            } catch (Throwable t) {
+                logger.warn("Change in tick failed", t);
+            }
+        }
 //        Set<SyncBaseItem> tmpAlreadySentSyncBaseItems = alreadySentSyncBaseItems;
 //        alreadySentSyncBaseItems = new HashSet<>();
 //        pathingChangesDisruptor.onPostTick(synchronizationSendingContext.getCollisions(), tmpAlreadySentSyncBaseItems);

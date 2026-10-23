@@ -37,6 +37,8 @@ public class PathingService {
     private static final double DIAGNOSTIC_CROWD_RANGE = 5;
     /** Two destinations closer than this came from the same click. */
     private static final double DIAGNOSTIC_SAME_DESTINATION = 0.5;
+    /** Two ticks: a path search this long is a standstill players notice. */
+    private static final long SLOW_PATH_MILLIS = 200;
     private final Logger logger = Logger.getLogger(PathingService.class.getName());
     private final SyncItemContainerServiceImpl syncItemContainerService;
     private final TerrainService terrainService;
@@ -55,7 +57,33 @@ public class PathingService {
     }
 
     public SimplePath setupPathToDestination(SyncBaseItem syncBaseItem, double rangeOtherTerrain, SyncItem target) {
-        return setupPathToDestination(syncBaseItem, rangeOtherTerrain, target.getAbstractSyncPhysical().getTerrainType(), target.getAbstractSyncPhysical().getPosition(), target.getAbstractSyncPhysical().getRadius());
+        long start = System.currentTimeMillis();
+        SimplePath path = setupPathToDestination(syncBaseItem, rangeOtherTerrain, target.getAbstractSyncPhysical().getTerrainType(), target.getAbstractSyncPhysical().getPosition(), target.getAbstractSyncPhysical().getRadius());
+        logSlowPath(syncBaseItem, target, path, System.currentTimeMillis() - start);
+        return path;
+    }
+
+    /**
+     * A search that does not find its target walks every node it can reach - 1.5 s on the game-engine
+     * thread, all players stand still (PROD 23.10.2026, 446 [TickStall] in baseItems, thread dumps all in
+     * AStar from SyncWeapon.tickAttack). The tick log says only which phase; this says which unit and target.
+     */
+    private void logSlowPath(SyncBaseItem syncBaseItem, SyncItem target, SimplePath path, long millis) {
+        if (millis < SLOW_PATH_MILLIS) {
+            return;
+        }
+        try {
+            DecimalPosition from = syncBaseItem.getAbstractSyncPhysical().getPosition();
+            DecimalPosition to = target.getAbstractSyncPhysical().getPosition();
+            logger.warning("[SlowPath] " + syncBaseItem.getBaseItemType().getInternalName() + "#" + syncBaseItem.getId()
+                    + " (base " + (syncBaseItem.getBase() != null ? syncBaseItem.getBase().getBaseId() : "-") + ")"
+                    + " -> " + target.getItemType().getInternalName() + "#" + target.getId()
+                    + " took " + millis + " ms from " + Math.round(from.getX()) + "/" + Math.round(from.getY())
+                    + " to " + Math.round(to.getX()) + "/" + Math.round(to.getY())
+                    + " reachable=" + path.isDestinationReachable() + " shortOfDestination=" + path.isShortOfDestination());
+        } catch (Throwable t) {
+            // A measurement must never break the path it measures.
+        }
     }
 
     public SimplePath setupPathToDestination(SyncBaseItem syncBaseItem, double rangeOtherTerrain, TerrainType targetTerrainType, DecimalPosition targetPosition, double targetRadius) {
@@ -130,6 +158,7 @@ public class PathingService {
             positions.add(aStar.getReachedNode().getCenter());
         }
         path.setWayPositions(positions);
+        path.setShortOfDestination(!aStar.isPathFound());
         return path;
     }
 

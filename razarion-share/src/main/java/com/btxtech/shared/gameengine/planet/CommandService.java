@@ -234,6 +234,12 @@ public class CommandService {
             if (moveIfPathTargetUnreachable(syncBaseItem, path)) {
                 return;
             }
+            if (!syncBaseItem.getSyncWeapon().reachesWeaponRange(path, target)) {
+                // As near as it gets, as a move: an attack from there could never fire, and every
+                // time the unit arrived it searched the whole map again (SyncWeapon.setPathToTarget).
+                moveAlong(syncBaseItem, path);
+                return;
+            }
             attackCommand.setSimplePath(path);
         }
         attackCommand.setId(syncBaseItem.getId());
@@ -330,6 +336,15 @@ public class CommandService {
         } catch (Throwable t) {
             logger.log(Level.SEVERE, t.getMessage(), t);
         }
+    }
+
+    /** A move along a path already searched, so the search is not run twice. */
+    private void moveAlong(SyncBaseItem syncBaseItem, SimplePath path) {
+        MoveCommand moveCommand = new MoveCommand();
+        moveCommand.setId(syncBaseItem.getId());
+        moveCommand.updateTimeStamp();
+        moveCommand.setSimplePath(path);
+        executeCommand(moveCommand);
     }
 
     protected boolean moveIfPathTargetUnreachable(SyncBaseItem syncBaseItem, SimplePath path) {
