@@ -57,3 +57,27 @@ export function bareShare(worldX: number, worldZ: number, slope: number): number
   // Stones are laid over earth, earth over grass
   return 1 - (1 - earth) * (1 - stony);
 }
+
+/**
+ * The beach along the waterline. The sand used to come from height alone (and a splatter texture), and
+ * most of the coast rises past the sand height within a metre or two of the water - so grass and earth
+ * ran down into the sea and the surf broke on them. Now a strip from the waterline inland is always
+ * sand, a few metres wide, widening and narrowing with the noise. `dist` is the shore distance the
+ * ground mesh carries in UV2.x (shoreline-detection.ts): metres to the waterline, positive on land.
+ * Rock keeps its place (the shader lays the sand under it). Mirrored on the CPU for the sprites.
+ */
+export const SHORE = {
+  SAND_WIDTH: 2.6,       // sand edge = SAND_WIDTH + patch * SAND_PATCH + fine * SAND_FINE metres from the water
+  SAND_PATCH: 1.0,
+  SAND_FINE: 0.35,
+  SAND_EDGE: 0.35,       // half the width of the sand/grass transition
+  WET_WIDTH: 1.2,        // dark wet sand from the waterline inland
+};
+
+/** 0 = the beach strip along the water, 1 = beyond it (whatever the rest of the rules say). */
+export function shoreLand(worldX: number, worldZ: number, dist: number): number {
+  const fine = simplexPerlin3D(worldX * GROUND.FINE_SCALE, worldZ * GROUND.FINE_SCALE, GROUND.FINE_Z);
+  const patch = simplexPerlin3D(worldX * GROUND.PATCH_SCALE, worldZ * GROUND.PATCH_SCALE, GROUND.PATCH_Z);
+  const value = dist - SHORE.SAND_WIDTH - patch * SHORE.SAND_PATCH - fine * SHORE.SAND_FINE;
+  return smoothstep(-SHORE.SAND_EDGE, SHORE.SAND_EDGE, value);
+}

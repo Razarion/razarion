@@ -15,14 +15,25 @@ import {ScaleBlock} from "@babylonjs/core/Materials/Node/Blocks/scaleBlock";
 import {OneMinusBlock} from "@babylonjs/core/Materials/Node/Blocks/oneMinusBlock";
 import {AddBlock} from "@babylonjs/core/Materials/Node/Blocks/addBlock";
 import {VectorMergerBlock} from "@babylonjs/core/Materials/Node/Blocks/vectorMergerBlock";
+import {MinBlock} from "@babylonjs/core/Materials/Node/Blocks/minBlock";
+import {MaxBlock} from "@babylonjs/core/Materials/Node/Blocks/maxBlock";
+import {LerpBlock} from "@babylonjs/core/Materials/Node/Blocks/lerpBlock";
+import {NegateBlock} from "@babylonjs/core/Materials/Node/Blocks/negateBlock";
 import type {Scene} from "@babylonjs/core/scene";
 import {generateWhitecapTexture} from "./whitecap-texture-generator";
+import {Showcase} from "./showcase";
 
 const TEX_PATH = "renderer/textures/";
 
 function floatInput(name: string, value: number): InputBlock {
   const b = new InputBlock(name, undefined, NodeMaterialBlockConnectionPointTypes.Float);
   b.value = value;
+  return b;
+}
+
+function color3Input(name: string, r: number, g: number, b_: number): InputBlock {
+  const b = new InputBlock(name, undefined, NodeMaterialBlockConnectionPointTypes.Color3);
+  b.value = new Color3(r, g, b_);
   return b;
 }
 
@@ -199,15 +210,81 @@ function buildWhitecapMaterial(scene: Scene): NodeMaterial {
   foamWaterAlpha.output.connectTo(finalAlpha.input);
   floatInput("wc intensity", 0.6).output.connectTo(finalAlpha.factor);
 
+  // ========== Caustics: the net of light the waves focus onto a shallow sea floor ==========
+  // Two drifting copies of the net (razarion-ai-content/scripts/caustics-texture.mjs) at 5 and 6.15 m per
+  // repeat - whole repeats per tile, so the seams match - and the dimmer of the two: where the nets cross
+  // the light flickers. Only over shallow ground (UV2.x), strongest at half a metre to two and a half.
+  const causticsTexture = new Texture(TEX_PATH + "water-caustics.webp", scene);
+  const causticLayer = (name: string, scale: number, speedX: number, speedY: number) => {
+    const scaled = new ScaleBlock(name + " uv");
+    uv.output.connectTo(scaled.input);
+    floatInput(name + " scale", scale).output.connectTo(scaled.factor);
+    const driftX = new ScaleBlock(name + " drift x");
+    time.output.connectTo(driftX.input);
+    floatInput(name + " speed x", speedX).output.connectTo(driftX.factor);
+    const driftY = new ScaleBlock(name + " drift y");
+    time.output.connectTo(driftY.input);
+    floatInput(name + " speed y", speedY).output.connectTo(driftY.factor);
+    const drift = new VectorMergerBlock(name + " drift");
+    driftX.output.connectTo(drift.x);
+    driftY.output.connectTo(drift.y);
+    const animated = new AddBlock(name + " uv animated");
+    scaled.output.connectTo(animated.left);
+    drift.xy.connectTo(animated.right);
+    const sample = new TextureBlock(name);
+    animated.output.connectTo(sample.uv);
+    sample.texture = causticsTexture;
+    return sample.r;
+  };
+  const causticNet = new MinBlock("caustic net");
+  causticLayer("caustics 1", 32, 0.05, 0.03).connectTo(causticNet.left);
+  causticLayer("caustics 2", 26, -0.035, 0.045).connectTo(causticNet.right);
+
+  const depth = new NegateBlock("water depth");
+  uv2Split.x.connectTo(depth.value);
+  const causticShallow = new SmoothStepBlock("caustic shallow");
+  depth.output.connectTo(causticShallow.value);
+  floatInput("caustic shallow e0", 0.05).output.connectTo(causticShallow.edge0);
+  floatInput("caustic shallow e1", 0.5).output.connectTo(causticShallow.edge1);
+  const causticDeep = new SmoothStepBlock("caustic deep");
+  depth.output.connectTo(causticDeep.value);
+  floatInput("caustic deep e0", 2).output.connectTo(causticDeep.edge0);
+  floatInput("caustic deep e1", 4).output.connectTo(causticDeep.edge1);
+  const causticNotDeep = new OneMinusBlock("caustic not deep");
+  causticDeep.output.connectTo(causticNotDeep.input);
+  const causticBand = new MultiplyBlock("caustic band");
+  causticShallow.output.connectTo(causticBand.left);
+  causticNotDeep.output.connectTo(causticBand.right);
+  const causticLight = new MultiplyBlock("caustic light");
+  causticNet.output.connectTo(causticLight.left);
+  causticBand.output.connectTo(causticLight.right);
+  const causticAlpha = new ScaleBlock("caustic alpha");
+  causticLight.output.connectTo(causticAlpha.input);
+  floatInput("caustic strength", 0.36).output.connectTo(causticAlpha.factor);
+
+  // Foam over caustics: the foam's colour wherever there is foam, the caustics' light elsewhere
+  const foamShare = new SmoothStepBlock("foam share");
+  finalAlpha.output.connectTo(foamShare.value);
+  floatInput("foam share e0", 0).output.connectTo(foamShare.edge0);
+  floatInput("foam share e1", 0.15).output.connectTo(foamShare.edge1);
+  const overlayColor = new LerpBlock("overlay color");
+  color3Input("caustic color", 0.9, 1.0, 0.92).output.connectTo(overlayColor.left);
+  foamTex.rgb.connectTo(overlayColor.right);
+  foamShare.output.connectTo(overlayColor.gradient);
+  const overlayAlpha = new MaxBlock("overlay alpha");
+  finalAlpha.output.connectTo(overlayAlpha.left);
+  causticAlpha.output.connectTo(overlayAlpha.right);
+
   // ========== Fragment output ==========
   const fragmentOutput = new FragmentOutputBlock("FragmentOutput");
-  foamTex.rgb.connectTo(fragmentOutput.rgb);
-  finalAlpha.output.connectTo(fragmentOutput.a);
+  overlayColor.output.connectTo(fragmentOutput.rgb);
+  overlayAlpha.output.connectTo(fragmentOutput.a);
 
   // ========== Build ==========
   mat.addOutputNode(vertexOutput);
   mat.addOutputNode(fragmentOutput);
   mat.build();
+  Showcase.applyToGround(mat);
 
   mat.alpha = 1;
   mat.alphaMode = 2; // ALPHA_COMBINE

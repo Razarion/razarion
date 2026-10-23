@@ -180,7 +180,8 @@ export class TerrainLoaderService {
         const tileData = tileMatrix[x]?.[y];
         if (!tileData) continue;
         const tileHeightMap = sliceTileHeightMap(heightMap, x, y, tileXCount, tileYCount);
-        const tile = buildTerrainTile(x, y, tileHeightMap, groundConfigId, tileData, sampleZ);
+        const relief = computeRelief(heightMap, tileXCount, tileYCount, x, y);
+        const tile = buildTerrainTile(x, y, tileHeightMap, relief, groundConfigId, tileData, sampleZ);
         const babylonTile = this.babylonRender.createTerrainTile(tile);
         babylonTile.addToScene();
         this.currentTiles.push(babylonTile);
@@ -323,6 +324,7 @@ function buildTerrainTile(
   tileX: number,
   tileY: number,
   heightMap: Uint16Array,
+  relief: Uint16Array,
   groundConfigId: number,
   tileData: NativeTerrainShapeTile,
   sampleZ: (worldX: number, worldY: number) => number
@@ -358,8 +360,7 @@ function buildTerrainTile(
 
   return {
     getGroundHeightMap: () => heightMap,
-    // The relief comes from the game worker; the studio has none and draws the ground without it.
-    getGroundRelief: () => null,
+    getGroundRelief: () => relief,
     getGroundConfigId: () => groundConfigId,
     getTerrainTileObjectLists: () => objectLists,
     getBabylonDecals: () => decals,
@@ -425,4 +426,53 @@ function sampleHeightAt(
   const idx = ty * (tileXCount * tileNodeSize) + tx * tileNodeSize + localY * NX + localX;
   const v = heightMap[idx];
   return v === undefined ? BabylonTerrainTileImpl.HEIGHT_DEFAULT : v * HP + HMIN;
+}
+
+/**
+ * Sky visibility and curvature per node of one tile, (n + 1) x (n + 1) - the game worker's
+ * computeRelief (TeaVMNativeTerrainShapeAccess.java), line for line, so the ground is shaded as in
+ * the game. Packed per node: high byte = sky visibility (255 = open sky), low byte = curvature
+ * (128 = flat, below = hollow, above = crest). Reads across tile edges from the planet-wide map.
+ */
+function computeRelief(heightMap: Uint16Array, tileXCount: number, tileYCount: number, tileX: number, tileY: number): Uint16Array {
+  const n = BabylonTerrainTileImpl.NODE_X_COUNT;
+  const tileNodeSize = BabylonTerrainTileImpl.TILE_NODE_SIZE;
+  const maxX = tileXCount * n - 1, maxY = tileYCount * n - 1;
+  const h = (x: number, y: number): number => {
+    x = x < 0 ? 0 : (x > maxX ? maxX : x);
+    y = y < 0 ? 0 : (y > maxY ? maxY : y);
+    const tx = (x / n) | 0, ty = (y / n) | 0;
+    return heightMap[(ty * tileXCount + tx) * tileNodeSize + (y - ty * n) * n + (x - tx * n)] * 0.01 - 200;
+  };
+  const DX = [1, 0.7071, 0, -0.7071, -1, -0.7071, 0, 0.7071];
+  const DY = [0, 0.7071, 1, 0.7071, 0, -0.7071, -1, -0.7071];
+  const RADII = [3, 8, 24];
+  const size = n + 1, out = new Uint16Array(size * size);
+  const ox = tileX * n, oy = tileY * n;
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+      const gx = ox + x, gy = oy + y, h0 = h(gx, gy);
+      let hidden = 0, ring = 0;
+      for (let d = 0; d < 8; d++) {
+        let steepest = 0;
+        for (let r = 0; r < 3; r++) {
+          const dist = RADII[r];
+          const dh = h(Math.round(gx + DX[d] * dist), Math.round(gy + DY[d] * dist)) - h0;
+          if (r === 1) {
+            ring += dh;
+          }
+          const slope = dh / dist;
+          if (slope > steepest) {
+            steepest = slope;
+          }
+        }
+        hidden += steepest / Math.sqrt(1 + steepest * steepest);
+      }
+      const sky = 1 - hidden / 8;
+      let curvature = -ring / 8 / 3;
+      curvature = curvature < -1 ? -1 : (curvature > 1 ? 1 : curvature);
+      out[y * size + x] = (Math.round(sky * 255) << 8) | Math.round((curvature + 1) * 127.5);
+    }
+  }
+  return out;
 }

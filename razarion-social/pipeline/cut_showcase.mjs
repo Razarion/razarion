@@ -9,6 +9,7 @@
 //   node cut_showcase.mjs --run 20261007-1800-hills-reveal --hook "My island looked boring"   # a Reel's first line
 //   node cut_showcase.mjs --list                                              # the runs in the log
 //   node cut_showcase.mjs --takes 1824-ground-reveal-07,1840-ground-ground-prototype \n//        --labels "Ground today,New ground mix" --name ground-before-after        # any takes of one shot
+//   node cut_showcase.mjs --lab --run 20261021-1713-wall-grass-foot --labels "..."  # takes of record_lab.mjs
 //
 // Every take of a run flew the same camera plan, so state i can supply seconds [i*L, (i+1)*L] of
 // its own take and the camera never jumps: the picture keeps moving while light, clouds, relief...
@@ -30,6 +31,7 @@ import { info, step, ok, warn, fail } from '../src/util/log.mjs';
 const execFileAsync = promisify(execFile);
 const SHOWCASE_DIR = join(PIPELINE_ROOT, 'data', 'showcase');
 const LOG_FILE = join(SHOWCASE_DIR, 'log.json');
+const LAB_LOG_FILE = join(PIPELINE_ROOT, 'data', 'lab', 'log.json');
 const CUT_DIR = join(SHOWCASE_DIR, 'cuts');
 const FPS = 30;
 const OUTRO_SECONDS = 4;
@@ -52,8 +54,11 @@ const LABELS = {
 
 async function main() {
   const args = parseArgs(process.argv.slice(2));
-  const log = existsSync(LOG_FILE) ? JSON.parse(readFileSync(LOG_FILE, 'utf8')) : [];
-  const runOf = (t) => t.file.replace(/^data\/showcase\//, '').replace(/-\d\d-[^-]+-(landscape|portrait)\.mp4$/, '');
+  // --lab: the takes of record_lab.mjs, whose experiments stand in for the showcase features
+  const logFile = args.lab ? LAB_LOG_FILE : LOG_FILE;
+  const log = (existsSync(logFile) ? JSON.parse(readFileSync(logFile, 'utf8')) : [])
+    .map((t) => ({ ...t, features: t.features ?? t.experiments ?? [] }));
+  const runOf = (t) => t.file.replace(/^data\/(showcase|lab)\//, '').replace(/-\d\d-[^-]+-(landscape|portrait)\.mp4$/, '');
   if (args.list || (!args.run && !args.takes)) {
     const runs = [...new Set(log.map(runOf))];
     for (const r of runs) info(`  ${r}  (${log.filter((t) => runOf(t) === r).length} takes)`);

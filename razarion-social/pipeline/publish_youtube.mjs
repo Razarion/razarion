@@ -5,6 +5,7 @@
 //
 //   node publish_youtube.mjs                    # what it would upload, and how it would be filed
 //   node publish_youtube.mjs --live --limit 1
+//   node publish_youtube.mjs --live --id own-20261023194300    # one entry out of turn
 //   node publish_youtube.mjs --live
 //
 // Two things about YouTube that the other three do not have:
@@ -47,7 +48,12 @@ function short(text, width = 76) {
  * at most 180 seconds. A master that fits is uploaded untouched, because YouTube re-encodes
  * everything it is given and a conversion first would only throw detail away.
  */
-async function prepareClip(item, dryRun) {
+async function prepareClip(item, dryRun, long = false) {
+  // A long devlog (entry.long) goes up as the normal landscape video it is, untouched
+  if (long) {
+    const file = item.landscape && join(PIPELINE_ROOT, item.landscape);
+    return { file: file && existsSync(file) ? file : null, pending: null };
+  }
   const formatName = PLATFORM_FORMAT.youtube;
   const master = join(PIPELINE_ROOT, masterFor(item, formatName));
   if (!existsSync(master)) return { file: null, pending: null };
@@ -93,6 +99,8 @@ async function main() {
   const queue = all
     .filter((e) => e.status === 'ok')
     .filter((e) => !posted.posted[e.id])
+    // --id: just that entry, ahead of the queue
+    .filter((e) => !args.id || e.id === String(args.id))
     .sort((a, b) => Date.parse(a.date) - Date.parse(b.date));
 
   info(`${all.filter((e) => e.status === 'ok').length} entries marked ok`);
@@ -117,7 +125,7 @@ async function main() {
     info('');
     for (const entry of batch) {
       const item = (entry.media || [])[0];
-      const { file, pending } = item ? await prepareClip(item, true) : { file: null };
+      const { file, pending } = item ? await prepareClip(item, true, entry.long) : { file: null };
       info(`  ${entry.date.slice(0, 10)}  ${entry.privacy || 'private'}`);
       info(`     ${short(entry.title)}`);
       if (!file) {
@@ -143,7 +151,7 @@ async function main() {
     step(short(entry.title));
 
     const item = (entry.media || [])[0];
-    const { file } = item ? await prepareClip(item, false) : { file: null };
+    const { file } = item ? await prepareClip(item, false, entry.long) : { file: null };
     if (!file) {
       fail(`${entry.id}: ${item ? masterFor(item, PLATFORM_FORMAT.youtube) : 'no media'} is missing on disk.`);
       warn(`Stopping. ${published} upload(s) went out.`);
@@ -151,10 +159,12 @@ async function main() {
     }
 
     // Every clip goes up as a Short (see prepareClip), so the feed it lands in is the phone one the
-    // reels are made for, not the main video feed where a twelve-second clip has no chance.
+    // reels are made for, not the main video feed where a twelve-second clip has no chance. A long
+    // devlog is the exception, and brings its own thumbnail.
     const spec = {
       video: file,
       videoSize: statSync(file).size,
+      thumbnail: entry.long && entry.thumbnail ? join(PIPELINE_ROOT, entry.thumbnail) : undefined,
       youtube: {
         title: entry.title,
         description: entry.description,

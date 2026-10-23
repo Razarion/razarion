@@ -31,6 +31,15 @@ const take = (name) => join(SHOWCASE_DIR, `${name}.mp4`);
 const graphic = (name) => join(SHOWCASE_DIR, 'graphics', `${name}.png`);
 const cut = (name) => join(CUT_DIR, `${name}-landscape.mp4`);
 
+/** The run stamps of the rock takes on the finished material (record_showcase.mjs --label rock-final). */
+const ROCK_NOW = { pond: '20261012-1642', tower: '20261012-1649', lake: '20261012-1650', ridge: '20261012-1647' };
+/** The beach takes before the shore strip (--label beach-before) and with the lagoon (--label beach-lagoon). */
+const BEACH_BEFORE = { shore: '20261012-1734', cove: '20261012-1735', strand: '20261012-1737', shallows: '20261012-1739' };
+const BEACH_NOW = { shore: '20261014-1828', cove: '20261014-1830', strand: '20261014-1832', shallows: '20261014-1833' };
+/** Takes of the terrain lab (record_lab.mjs): the wall at the ridge without and with the cliff experiments, the lab today. */
+const labTake = (name) => join(PIPELINE_ROOT, 'data', 'lab', `${name}.mp4`);
+const LAB_WALL = (state) => labTake(`20261021-1713-wall-grass-foot-${state}-landscape`);
+
 /**
  * Segments: {clip, from, to, title?, subtitle?} plays a stretch of a file with an optional caption,
  * {card: [title, subtitle], seconds} a text card, {split: [left, right], labels, from, to} the same
@@ -62,7 +71,7 @@ const STORIES = {
   // they came from.
   'bot-1': [
     { clip: take('20261011-0748-garrison-final-reveal-05-all-landscape'), from: 3, to: 8, title: 'My RTS bot bases look like this now.' },
-    { clip: take('20261011-final-platform-landscape'), from: 4, to: 8.5 },
+    { clip: take('20261011-0755-platform-final-reveal-05-all-landscape'), from: 4, to: 8.5 },
     { clip: take('20261011-0748-garrison-final-reveal-01-none-landscape'), from: 3, to: 8, title: 'A week ago: grey parking lots.' },
     { card: ['Razarion devlog', 'Bot bases: markings, a logo, clouds and a bed of gravel'], seconds: 3.5 },
     { card: ['1 · The Garrison', 'Same camera - one improvement more every few seconds'], seconds: 3 },
@@ -73,13 +82,13 @@ const STORIES = {
     { image: graphic('bot-pebbles'), seconds: 6 },
     { card: ['3 · Under the hood', 'The same base as a wire model'], seconds: 3 },
     {
-      split: [take('20261011-wire-garrison-landscape'), take('20261011-0748-garrison-final-reveal-05-all-landscape')],
+      split: [take('20261011-0807-garrison-wire-01-all-landscape'), take('20261011-0748-garrison-final-reveal-05-all-landscape')],
       labels: ['Wireframe', 'Rendered'], from: 4, to: 14,
     },
-    { clip: take('20261011-wire-platform-landscape'), from: 6, to: 12 },
+    { clip: take('20261011-0808-platform-wire-01-all-landscape'), from: 6, to: 12 },
     { card: ['4 · Ramps and big plates', 'Chevrons point the way up'], seconds: 3 },
-    { clip: take('20261011-final-spire-landscape'), from: 4, to: 12 },
-    { clip: take('20261011-final-occupy-landscape'), from: 4, to: 11 },
+    { clip: take('20261011-0803-spire-final-01-all-landscape'), from: 4, to: 12 },
+    { clip: take('20261011-0801-occupy-final-01-all-landscape'), from: 4, to: 11 },
     { image: graphic('bot-shadow'), seconds: 7 },
     { image: graphic('bot-performance'), seconds: 7 },
     {
@@ -89,11 +98,81 @@ const STORIES = {
     { card: ['Next', 'The bases get company: props and buildings made for them'], seconds: 3.5 },
     { outro: 5 },
   ],
+  // Before: the takes of dcb48d423, the cliffs and boulders as they were; now: the same camera plans
+  // on the shared rock material.
+  'rock-1': [
+    { clip: take(`${ROCK_NOW.pond}-pond-rock-final-01-all-landscape`), from: 3, to: 8, title: 'Cliffs and boulders in my RTS - one stone now.' },
+    { clip: take('20261011-1102-pond-rock-before-01-all-landscape'), from: 3, to: 8, title: 'Before: two kinds of rock that did not match.' },
+    { card: ['Razarion devlog', 'Rocks: one stone for cliffs and boulders, moss, and the light of the ground'], seconds: 3.5 },
+    { image: graphic('rock-one-stone'), seconds: 7 },
+    { card: ['1 · A pond', 'Same camera - before, then now'], seconds: 3 },
+    { clip: cut('ch-rock-pond') },
+    { card: ['2 · A tall rock at a cliff', 'The boulder now continues the cliff behind it'], seconds: 3 },
+    { clip: cut('ch-rock-tower') },
+    { image: graphic('rock-moss'), seconds: 8 },
+    { card: ['3 · Around a lake', 'A ring of cliff, lit by the same sun, clouds and sky as the ground'], seconds: 3.5 },
+    { clip: cut('ch-rock-lake') },
+    { image: graphic('rock-shadow-bug'), seconds: 7 },
+    { card: ['4 · A ridge', 'Low over the rocks in the south-west'], seconds: 3 },
+    { clip: cut('ch-rock-ridge') },
+    {
+      split: [take('20261011-1103-tower-rock-before-01-all-landscape'), take(`${ROCK_NOW.tower}-tower-rock-final-01-all-landscape`)],
+      labels: ['Before', 'Now'], from: 4, to: 16,
+    },
+    { card: ['Next', 'The terrain keeps going - one piece at a time'], seconds: 3.5 },
+    { outro: 5 },
+  ],
+  // Before: the takes of 856ade507, sand by height alone; now: the shore strip, wet sand, the sea floor,
+  // the lagoon and caustics (record_showcase.mjs --label beach-lagoon, state 01-all).
+  'beach-1': [
+    { clip: take(`${BEACH_NOW.cove}-cove-beach-lagoon-01-all-landscape`), from: 3, to: 8, title: 'The beaches in my RTS, now.' },
+    { clip: take(`${BEACH_BEFORE.shore}-shore-beach-before-01-all-landscape`), from: 3, to: 8, title: 'Before: the surf broke on grass.' },
+    { card: ['Razarion devlog', 'Beaches: sand along every waterline, wet sand, and a turquoise lagoon'], seconds: 3.5 },
+    { card: ['1 · Grass in the sea', 'Most of the coast rises out of the water within a metre or two - too steep for sand by height alone'], seconds: 4.5 },
+    { clip: cut('ch-beach-shore') },
+    { card: ['2 · A beach all the way round', 'Now a strip of sand follows every waterline, wider and narrower with the noise'], seconds: 4 },
+    { clip: cut('ch-beach-cove') },
+    { card: ['3 · Wet sand', 'Dark where the surf runs - and the surf runs on sand only'], seconds: 3.5 },
+    { clip: cut('ch-beach-strand') },
+    { card: ['4 · The lagoon', 'Pale aqua over the sand, turquoise, then blue - and a net of light on the floor'], seconds: 3.5 },
+    { clip: cut('ch-beach-shallows') },
+    {
+      split: [take(`${BEACH_BEFORE.cove}-cove-beach-before-01-all-landscape`), take(`${BEACH_NOW.cove}-cove-beach-lagoon-01-all-landscape`)],
+      labels: ['Before', 'Now'], from: 4, to: 16,
+    },
+    { card: ['Next', 'The terrain keeps going - one piece at a time'], seconds: 3.5 },
+    { outro: 5 },
+  ],
+  // A devlog of an experiment that did not make it: the lab stays, the cliff walls are parked on a
+  // branch. The wall takes are of the lab with the experiments switched (terrain-mountains branch).
+  'lab-1': [
+    { clip: LAB_WALL('03-cliffStep+grassFoot'), from: 2, to: 7, title: 'I tried to give the cliffs in my RTS a real wall.' },
+    { clip: LAB_WALL('01-none'), from: 2, to: 7, title: 'Today they are painted onto the ground.' },
+    { card: ['Razarion devlog', 'A terrain lab - and cliffs that went back in the drawer'], seconds: 3.5 },
+    { card: ['1 · A lab for the terrain', 'The game\'s own renderer over the starting island, without the game: sliders, switches, one reload'], seconds: 4.5 },
+    { clip: labTake('20261023-1931-beach-lab-today-01-none-landscape') },
+    { clip: labTake('20261023-1932-ridge-lab-today-01-none-landscape'), from: 2, to: 12 },
+    { card: ['2 · A step instead of a slope', 'Slopes over 3 m become a flat foot, a wall and a flat top - only in the picture, the game keeps its heights'], seconds: 4.5 },
+    { clip: cut('ch-lab-wall') },
+    { card: ['3 · The wall itself', 'A mesh of its own along the step, 20 cm quads pushed out into rounded blocks by noise'], seconds: 4 },
+    { clip: LAB_WALL('02-cliffStep') },
+    {
+      split: [LAB_WALL('01-none'), LAB_WALL('03-cliffStep+grassFoot')],
+      labels: ['Painted', 'Wall'], from: 3, to: 13,
+    },
+    { card: ['Not good enough', 'It reads like a garden wall, not like a cliff. So it goes back in the drawer - for now.'], seconds: 4.5 },
+    { card: ['Next', 'The lab stays - the next terrain idea starts there'], seconds: 3.5 },
+    { outro: 5 },
+  ],
 };
 
 /** The thumbnail: a still of the finished base with a short, big line on it. */
 const THUMBNAILS = {
-  'bot-1': { clip: take('20261011-0748-garrison-final-reveal-05-all-landscape'), at: 9, lines: ['BOT BASES', 'REBUILT'] },
+  // The Platform: the finished base with the logo, and open sea at the lower left for the words
+  'bot-1': { clip: take('20261011-0755-platform-final-reveal-05-all-landscape'), at: 9, lines: ['BOT BASES', 'REBUILT'], top: 470 },
+  'rock-1': { clip: take(`${ROCK_NOW.lake}-lake-rock-final-01-all-landscape`), at: 22, lines: ['ROCKS', 'ONE STONE'], top: 300 },
+  'beach-1': { clip: take(`${BEACH_NOW.cove}-cove-beach-lagoon-01-all-landscape`), at: 20, lines: ['BEACHES', 'FIXED'], top: 300 },
+  'lab-1': { clip: LAB_WALL('03-cliffStep+grassFoot'), at: 8, lines: ['CLIFFS', 'NOT YET'], top: 470 },
 };
 
 async function main() {
@@ -194,7 +273,7 @@ async function makeThumbnail(name) {
   const ctx = canvas.getContext('2d');
   ctx.drawImage(await loadImage(frame), 0, 0, 1280, 720);
   // Dark on the left for the words, the base stays bright
-  const shade = ctx.createLinearGradient(0, 0, 760, 0);
+  const shade = ctx.createLinearGradient(0, 0, 820, 0);
   shade.addColorStop(0, 'rgba(12,10,9,0.85)');
   shade.addColorStop(1, 'rgba(12,10,9,0)');
   ctx.fillStyle = shade;
@@ -203,9 +282,9 @@ async function makeThumbnail(name) {
   spec.lines.forEach((line, i) => {
     ctx.lineWidth = 10;
     ctx.strokeStyle = 'rgba(0,0,0,0.6)';
-    ctx.strokeText(line, 60, 300 + i * 135);
+    ctx.strokeText(line, 60, (spec.top ?? 300) + i * 135);
     ctx.fillStyle = i === 0 ? COLORS.text : COLORS.accent;
-    ctx.fillText(line, 60, 300 + i * 135);
+    ctx.fillText(line, 60, (spec.top ?? 300) + i * 135);
   });
   const out = join(CUT_DIR, `devlog-${name}-thumbnail.png`);
   writeFileSync(out, canvas.toBuffer('image/png'));

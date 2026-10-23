@@ -38,7 +38,7 @@ import {buildBotGroundGravelMaterial} from "./bot-ground-gravel-material";
 import {addCloudShadow} from "./cloud-shadow-node";
 import {Showcase} from "./showcase";
 import {initPerm, scatterNoise, SEED} from "./procedural-textures";
-import {bareShare} from "./ground-rules";
+import {bareShare, shoreLand} from "./ground-rules";
 import {BabylonRenderServiceAccessImpl, RazarionMetadataType} from "./babylon-render-service-access-impl.service";
 import {FloatArray, Nullable} from "@babylonjs/core/types";
 import type {Scene} from "@babylonjs/core/scene";
@@ -134,6 +134,8 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
   private terrainObjectsDropped = false;
   private terrainObjectDropTimer: ReturnType<typeof setTimeout> | null = null;
   private groundHeights: number[] = [];
+  /** UV2 of the ground mesh: per node shore distance and arc length (shoreline-detection.ts) */
+  private shoreDistances: ArrayLike<number> = [];
   private tileXOffset: number = 0;
   private tileYOffset: number = 0;
   // Boot/scroll-freeze fix: bot-ground and decal geometry are Java proxies — every getX()/getY()/xPos
@@ -391,6 +393,7 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
           }
           this.groundMesh.setVerticesData(VertexBuffer.UV3Kind, reliefUv3);
           this.groundMesh.setVerticesData(VertexBuffer.UV2Kind, ground.uv2);
+          this.shoreDistances = ground.uv2;
           this.pathMask = ground.pathMask;
           this.vegetationMask = ground.vegetationMask;
           this.groundTypePixels = ground.pixels;
@@ -903,6 +906,7 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
 
     this.botGroundMeshes = [];
     this.groundHeights = [];
+    this.shoreDistances = [];
     this.botGroundBoxes = null;
     this.decalBoxes = null;
   }
@@ -1413,6 +1417,10 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     if (height <= BabylonTerrainTileImpl.WATER_LEVEL - 0.5) {
       return TerrainZone.UNDERWATER;
     }
+    // The sand strip along the waterline (ground-rules.ts SHORE), where nothing else grows
+    if (Showcase.isOn("shoreSand") && this.shoreLandAt(worldX, worldZ) < 0.5) {
+      return TerrainZone.BEACH;
+    }
     // Under plants the ground shader draws growth (vegetation-mask.ts), and grass grows there
     if (growth > 0.5 && height > BabylonTerrainTileImpl.WATER_LEVEL) {
       return TerrainZone.UPPER;
@@ -1434,6 +1442,15 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     const slope = 1 - 1 / Math.sqrt(1 + dx * dx + dz * dz);
     // Earth and stones where the shader draws them (ground-rules.ts); in between, as often as they show
     return Math.random() < bareShare(worldX, worldZ, slope) ? TerrainZone.UNDER : TerrainZone.UPPER;
+  }
+
+  /** ground-rules.ts shoreLand at the nearest node; 1 (beyond the beach) if the tile has no shore data */
+  private shoreLandAt(worldX: number, worldZ: number): number {
+    const xCount = BabylonTerrainTileImpl.NODE_X_COUNT + 1;
+    const localX = Math.round(worldX - this.tileXOffset);
+    const localY = Math.round(worldZ - this.tileYOffset);
+    const dist = this.shoreDistances[(localX + localY * xCount) * 2];
+    return dist === undefined ? 1 : shoreLand(worldX, worldZ, dist);
   }
 
   /** Fast height lookup from cached heightmap — no raycasting */

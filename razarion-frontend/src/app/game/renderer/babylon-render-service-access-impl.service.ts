@@ -48,6 +48,15 @@ import "@babylonjs/core/Shaders/postprocess.vertex";
 // Same for the decoder of the .env environment texture: without it the image-based lighting never
 // loaded, and the models were lit by the sun alone.
 import "@babylonjs/core/Shaders/rgbdDecode.fragment";
+// And for the sun's shadow map and the GUI layers. Babylon imports these itself when first needed, but
+// that dynamic import broke in a dev-server tab whose prebundled dependencies had been rebuilt (new
+// Babylon imports elsewhere): the shaders came back as index.html, the shadow map shader did not
+// compile and no shadow was drawn anywhere.
+import "@babylonjs/core/Shaders/shadowMap.vertex";
+import "@babylonjs/core/Shaders/shadowMap.fragment";
+import "@babylonjs/core/Shaders/depthBoxBlur.fragment";
+import "@babylonjs/core/Shaders/layer.vertex";
+import "@babylonjs/core/Shaders/layer.fragment";
 import {Matrix, Vector2, Vector3} from "@babylonjs/core/Maths/math.vector";
 import {BuildProgressBubble} from "./build-progress-bubble";
 import {AbstractMesh} from "@babylonjs/core/Meshes/abstractMesh";
@@ -540,6 +549,12 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     // Console fallback in case F9 is intercepted by the browser/IDE.
     (window as any).togglePerfDebug = () => self.togglePerfDebug();
     (window as any).togglePerfOverlay = () => self.togglePerfOverlay();
+    // Where the camera looks, for reporting a spot on the map (x, height, z)
+    (window as any).razWhere = () => {
+      const camera = self.scene.activeCamera as any;
+      const t = camera?.target ?? camera?.getTarget?.();
+      return t ? {x: Math.round(t.x), y: Math.round(t.y), z: Math.round(t.z)} : null;
+    };
     window.addEventListener("keydown", e => {
       if (!self.keyPressed.has(e.key)) {
         self.keyPressed.set(e.key, Date.now());

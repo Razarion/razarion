@@ -23,6 +23,7 @@ import {materialsForFirstFrame, materialsForModels} from "./start-gate-materials
 import {BabylonMaterialContainer, GlbContainer, ParticleSystemSetContainer} from "./babylon-model-container";
 import {GltfHelper} from "./gltf-helper";
 import {WindPlugin} from "./wind-plugin";
+import {RockMaterials} from "./rock-material";
 import {BabylonRenderServiceAccessImpl} from './babylon-render-service-access-impl.service';
 import {BuildAnimationPhase, RenderObject} from './render-object';
 import {whenTerrainReady} from './boot-gate';
@@ -341,6 +342,18 @@ export class BabylonModelService {
           // Its own copy: the glb may share the material with a model that must stand still (a rock).
           m.material = m.material.clone(`${m.material.name}#wind`)!;
           new WindPlugin(m.material);
+        } else if (!wind && m.material) {
+          // Everything that does not sway is rock: the cliffs' stone and light on it (rock-material.ts),
+          // and the cliffs' sun. The sun lights only the meshes on its list (the ground's), so the rocks
+          // had sky light alone - no lit and shaded side - beside a cliff that has one. They cast shadows
+          // but take none: the sun's exponential shadow map is tuned for the ground, and a rock reading its
+          // own depth from it shadowed itself all over.
+          const sun = this.renderer?.directionalLight;
+          if (sun && !sun.includedOnlyMeshes.includes(m)) {
+            sun.includedOnlyMeshes.push(m);
+          }
+          m.receiveShadows = false;
+          RockMaterials.apply(m);
         }
         sourceMeshes.push(m);
       }

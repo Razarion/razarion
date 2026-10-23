@@ -1,0 +1,595 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cliff Lab</title>
+<style>
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #9cc3e6; font: 12px system-ui, sans-serif; }
+  canvas { width: 100%; height: 100%; display: block; outline: none; }
+  #panel { position: absolute; top: 8px; left: 8px; background: rgba(20, 24, 28, .82); color: #e8eef2; padding: 8px 10px;
+    border-radius: 6px; width: 250px; max-height: calc(100% - 32px); overflow: auto; }
+  #panel h1 { font-size: 13px; margin: 0 0 6px; }
+  #panel h2 { font-size: 11px; margin: 10px 0 2px; color: #9fb4c4; text-transform: uppercase; letter-spacing: .05em; }
+  .row { display: grid; grid-template-columns: 92px 1fr 38px; gap: 4px; align-items: center; margin: 2px 0; }
+  .row input { width: 100%; }
+  .row span { text-align: right; font-variant-numeric: tabular-nums; }
+  button { margin: 2px 2px 0 0; background: #3a4a58; color: #fff; border: 0; border-radius: 4px; padding: 3px 7px; cursor: pointer; }
+  label.check { display: block; margin: 2px 0; }
+  #stats { margin-top: 6px; color: #9fb4c4; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="panel">
+  <h1>Cliff Lab</h1>
+  <div>
+    <button data-view="ref">Ansicht Vorlage</button>
+    <button data-view="game">Ansicht Spiel</button>
+    <button data-view="close">Nah</button>
+    <button data-view="lip">Kante</button>
+  </div>
+  <div id="sliders"></div>
+  <label class="check"><input type="checkbox" id="ssao" checked> SSAO</label>
+  <label class="check"><input type="checkbox" id="shadows" checked> Schatten</label>
+  <label class="check"><input type="checkbox" id="wire"> Drahtgitter</label>
+  <div id="stats"></div>
+</div>
+<script src="https://cdn.babylonjs.com/v8.45.0/babylon.js"></script>
+<script>
+// Cliff Lab: a limestone wall of rounded blocks with a grass lip, free of the game's 1 m height field -
+// to see what the look needs before taking it back to cliff-skin.ts.
+const TEX = '/renderer/textures/';
+
+const P = {
+  height: {label: 'Wandhöhe', min: 2, max: 12, step: 0.5, value: 7, wall: true},
+  amplitude: {label: 'Vorstehen', min: 0, max: 3, step: 0.05, value: 1, wall: true},
+  blockWidth: {label: 'Blockbreite', min: 1, max: 8, step: 0.1, value: 2, wall: true},
+  blockHeight: {label: 'Blockhöhe', min: 1, max: 12, step: 0.1, value: 2.7, wall: true},
+  warp: {label: 'Verbiegen', min: 0, max: 2, step: 0.05, value: 1.3, wall: true},
+  round: {label: 'Rundung', min: 0, max: 1, step: 0.05, value: 0.45, wall: true},
+  crack: {label: 'Fugenbreite', min: 0.02, max: 0.6, step: 0.01, value: 0.53, wall: true},
+  crackDark: {label: 'Fuge dunkel', min: 0, max: 1, step: 0.05, value: 0.15, wall: true},
+  lip: {label: 'Graskante', min: 0, max: 0.8, step: 0.05, value: 0.2, wall: true},
+  ledge: {label: 'Gras auf Fels', min: 0, max: 3, step: 0.1, value: 1, grass: true},
+  lipHang: {label: 'Überhängen', min: 0, max: 1.5, step: 0.05, value: 0.8, grass: true},
+  lean: {label: 'Überhang', min: -0.5, max: 0.5, step: 0.05, value: 0.05, wall: true},
+  rough: {label: 'Rauheit', min: 0, max: 0.4, step: 0.01, value: 0.3, wall: true},
+  brightness: {label: 'Helligkeit', min: 0.3, max: 1, step: 0.01, value: 0.72, tex: true},
+  contrast: {label: 'Kontrast', min: 0, max: 1.5, step: 0.05, value: 0.95, tex: true},
+  grain: {label: 'Korn', min: 0, max: 2, step: 0.05, value: 1.4, mat: true},
+  grainScale: {label: 'Korn m', min: 0.3, max: 4, step: 0.1, value: 2.6, mat: true},
+  bladeDensity: {label: 'Büschel/m²', min: 0, max: 40, step: 1, value: 14, grass: true},
+  bladeHeight: {label: 'Halmhöhe', min: 0.05, max: 0.8, step: 0.01, value: 0.28, grass: true},
+  grassTone: {label: 'Grün', min: 0.6, max: 1.6, step: 0.05, value: 1.0, grassTex: true},
+  sunAzimuth: {label: 'Sonne Az.', min: -180, max: 180, step: 1, value: -49, light: true},
+  sunElevation: {label: 'Sonne Höhe', min: 5, max: 85, step: 1, value: 35, light: true},
+};
+const GROUPS = [['Form', ['height', 'amplitude', 'blockWidth', 'blockHeight', 'warp', 'round', 'crack', 'crackDark', 'lean', 'rough', 'lip']],
+  ['Stein', ['brightness', 'contrast', 'grain', 'grainScale']], ['Gras', ['bladeDensity', 'bladeHeight', 'grassTone', 'lipHang', 'ledge']], ['Licht', ['sunAzimuth', 'sunElevation']]];
+
+// ---------------------------------------------------------------- noise
+function hash2(x, y, seed) {
+  let h = (x * 374761393 + y * 668265263 + seed * 2147483647) | 0;
+  h = Math.imul(h ^ (h >>> 13), 1274126177);
+  return ((h ^ (h >>> 16)) >>> 0) / 4294967296;
+}
+const smoothstep = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
+function noise2(x, y) {
+  const x0 = Math.floor(x), y0 = Math.floor(y), fx = x - x0, fy = y - y0;
+  const g = (ix, iy) => { const a = hash2(ix, iy, 7) * Math.PI * 2; return (Math.cos(a) * (x - ix) + Math.sin(a) * (y - iy)); };
+  const ux = fx * fx * (3 - 2 * fx), uy = fy * fy * (3 - 2 * fy);
+  const a = g(x0, y0) + (g(x0 + 1, y0) - g(x0, y0)) * ux;
+  const b = g(x0, y0 + 1) + (g(x0 + 1, y0 + 1) - g(x0, y0 + 1)) * ux;
+  return (a + (b - a) * uy) * 1.4;
+}
+const fbm = (x, y) => noise2(x, y) * 0.6 + noise2(x * 2.1 + 5, y * 2.1) * 0.28 + noise2(x * 4.3, y * 4.3 + 9) * 0.12;
+function worley(x, y) {
+  const cx = Math.floor(x), cy = Math.floor(y);
+  let f1 = 9, f2 = 9, id = 0;
+  for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+    const ix = cx + dx, iy = cy + dy;
+    const px = ix + 0.15 + 0.7 * hash2(ix, iy, 1) - x, py = iy + 0.15 + 0.7 * hash2(ix, iy, 2) - y;
+    const d = Math.sqrt(px * px + py * py);
+    if (d < f1) { f2 = f1; f1 = d; id = hash2(ix, iy, 3); } else if (d < f2) { f2 = d; }
+  }
+  return {f1, f2, id};
+}
+
+// ---------------------------------------------------------------- the cliff line
+const X0 = -28, X1 = 28;
+const wallZ = x => 2.6 * Math.sin(x * 0.11) + 1.1 * Math.sin(x * 0.37 + 1);
+const wallZd = x => 2.6 * 0.11 * Math.cos(x * 0.11) + 1.1 * 0.37 * Math.cos(x * 0.37 + 1);
+const OFFSET = 0.35; // the wall stands this far in front of the plateau edge, so the ground's step hides behind it
+
+// ---------------------------------------------------------------- scene
+const canvas = document.getElementById('c');
+const engine = new BABYLON.Engine(canvas, true, {preserveDrawingBuffer: true, stencil: true});
+const scene = new BABYLON.Scene(engine);
+scene.clearColor = new BABYLON.Color4(0.62, 0.77, 0.9, 1);
+scene.fogMode = BABYLON.Scene.FOGMODE_EXP2;
+scene.fogDensity = 0.006;
+scene.fogColor = new BABYLON.Color3(0.72, 0.82, 0.9);
+
+const camera = new BABYLON.ArcRotateCamera('cam', 0, 0, 30, BABYLON.Vector3.Zero(), scene);
+camera.attachControl(canvas, true);
+camera.wheelPrecision = 20;
+camera.minZ = 0.1;
+camera.lowerRadiusLimit = 2;
+const VIEWS = {
+  ref: {alpha: -1.45, beta: 1.2, radius: 30, target: [0, 3, 0]},
+  game: {alpha: -1.57, beta: 0.62, radius: 45, target: [0, 2, 0]},
+  close: {alpha: -1.3, beta: 1.35, radius: 11, target: [2, 3, 0]},
+  lip: {alpha: -1.25, beta: 1.05, radius: 7, target: [3, 6.5, 0.5]},
+};
+function view(name) {
+  const v = VIEWS[name];
+  // The target first: setting it recomputes alpha, beta and radius from the camera's position
+  camera.setTarget(new BABYLON.Vector3(...v.target));
+  camera.alpha = v.alpha; camera.beta = v.beta; camera.radius = v.radius;
+}
+view('ref');
+
+const hemi = new BABYLON.HemisphericLight('sky', new BABYLON.Vector3(0, 1, 0), scene);
+hemi.intensity = 0.55;
+hemi.diffuse = new BABYLON.Color3(0.75, 0.85, 1);
+hemi.groundColor = new BABYLON.Color3(0.32, 0.36, 0.25);
+hemi.specular = BABYLON.Color3.Black();
+const sun = new BABYLON.DirectionalLight('sun', new BABYLON.Vector3(0, -1, 0), scene);
+sun.intensity = 2.3;
+sun.diffuse = new BABYLON.Color3(1, 0.96, 0.88);
+sun.specular = new BABYLON.Color3(0.15, 0.15, 0.15);
+sun.shadowMinZ = 1; sun.shadowMaxZ = 120;
+function placeSun() {
+  const az = P.sunAzimuth.value * Math.PI / 180, el = P.sunElevation.value * Math.PI / 180;
+  // Direction the light travels; azimuth 0 = from the lowland (-z) straight at the wall
+  const from = new BABYLON.Vector3(Math.sin(az) * Math.cos(el), Math.sin(el), -Math.cos(az) * Math.cos(el));
+  sun.direction = from.scale(-1);
+  sun.position = from.scale(60);
+}
+placeSun();
+const shadow = new BABYLON.ShadowGenerator(4096, sun);
+shadow.usePercentageCloserFiltering = true;
+shadow.filteringQuality = BABYLON.ShadowGenerator.QUALITY_HIGH;
+shadow.bias = 0.0008;
+shadow.normalBias = 0.02;
+
+// ---------------------------------------------------------------- textures
+// Limestone made from the rock scan: its luminance only, compressed around a light grey
+const rockImage = new Image();
+rockImage.crossOrigin = 'anonymous';
+let limeTexture = null;
+function buildLimeTexture() {
+  if (!rockImage.complete || !rockImage.naturalWidth) return;
+  const w = rockImage.naturalWidth, h = rockImage.naturalHeight;
+  if (!limeTexture) {
+    limeTexture = new BABYLON.DynamicTexture('lime', {width: w, height: h}, scene, true);
+    limeTexture.wrapU = limeTexture.wrapV = BABYLON.Texture.WRAP_ADDRESSMODE;
+  }
+  const ctx = limeTexture.getContext();
+  ctx.drawImage(rockImage, 0, 0);
+  const img = ctx.getImageData(0, 0, w, h), d = img.data;
+  let mean = 0;
+  for (let i = 0; i < d.length; i += 4) mean += 0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2];
+  mean /= d.length / 4;
+  const b = P.brightness.value * 255, c = P.contrast.value;
+  for (let i = 0; i < d.length; i += 4) {
+    const l = 0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2];
+    const v = b * (1 + c * (l / mean - 1));
+    d[i] = Math.min(255, v * 0.99); d[i + 1] = Math.min(255, v * 0.99); d[i + 2] = Math.min(255, v * 0.95);
+  }
+  ctx.putImageData(img, 0, 0);
+  limeTexture.update(false);
+  wallMaterial.diffuseTexture = limeTexture;
+}
+rockImage.onload = buildLimeTexture;
+rockImage.src = TEX + 'rock-diffuse.webp';
+
+const wallMaterial = new BABYLON.StandardMaterial('wall', scene);
+wallMaterial.diffuseColor = new BABYLON.Color3(1, 1, 1);
+wallMaterial.specularColor = new BABYLON.Color3(0.06, 0.06, 0.06);
+const rockNormal = new BABYLON.Texture(TEX + 'rock-normal.webp', scene);
+wallMaterial.bumpTexture = rockNormal;
+function applyMaterial() {
+  rockNormal.uScale = rockNormal.vScale = 1 / P.grainScale.value;
+  rockNormal.level = P.grain.value;
+  wallMaterial.invertNormalMapX = wallMaterial.invertNormalMapY = false;
+}
+applyMaterial();
+
+// A lawn drawn blade by blade: thousands of short strokes in a few greens, tiling (each stroke drawn
+// again across the edges). The game's ground grass read as camouflage spots up close.
+const GRASS_TEX = 1024;
+const grassTexture = new BABYLON.DynamicTexture('lawn', {width: GRASS_TEX, height: GRASS_TEX}, scene, true);
+grassTexture.wrapU = grassTexture.wrapV = BABYLON.Texture.WRAP_ADDRESSMODE;
+grassTexture.anisotropicFilteringLevel = 8;
+const GREENS = [[100, 132, 44], [122, 150, 52], [142, 162, 64], [88, 120, 38], [154, 168, 80], [128, 144, 58]];
+function drawLawn() {
+  const ctx = grassTexture.getContext(), N = GRASS_TEX, tone = P.grassTone.value;
+  const shade = (c, k) => `rgb(${Math.min(255, c[0] * k * (2 - tone) | 0)},${Math.min(255, c[1] * k * tone | 0)},${Math.min(255, c[2] * k | 0)})`;
+  ctx.fillStyle = shade([92, 120, 42], 1);
+  ctx.fillRect(0, 0, N, N);
+  let seed = 1;
+  const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  for (let i = 0; i < 26000; i++) {
+    const x = rnd() * N, y = rnd() * N, len = 6 + rnd() * 16, a = -Math.PI / 2 + (rnd() - 0.5) * 1.4;
+    const c = GREENS[(rnd() * GREENS.length) | 0], k = 0.75 + rnd() * 0.5;
+    ctx.strokeStyle = shade(c, k);
+    ctx.lineWidth = 1 + rnd() * 1.6;
+    const bend = (rnd() - 0.5) * 3;
+    for (const ox of [-N, 0, N]) for (const oy of [-N, 0, N]) {
+      const px = x + ox, py = y + oy;
+      if (px < -30 || px > N + 30 || py < -30 || py > N + 30) continue;
+      ctx.beginPath();
+      ctx.moveTo(px, py);
+      ctx.quadraticCurveTo(px + Math.cos(a) * len * 0.5 + bend, py + Math.sin(a) * len * 0.5, px + Math.cos(a) * len, py + Math.sin(a) * len);
+      ctx.stroke();
+    }
+  }
+  grassTexture.update(true);
+}
+drawLawn();
+// Large patches lighter and darker, yellower and greener: one lawn tile alone repeats every 2 m
+const MACRO = 256;
+const macroTexture = new BABYLON.DynamicTexture('lawn macro', {width: MACRO, height: MACRO}, scene, true);
+{
+  const ctx = macroTexture.getContext(), img = ctx.createImageData(MACRO, MACRO);
+  for (let j = 0; j < MACRO; j++) for (let i = 0; i < MACRO; i++) {
+    const n = fbm(i * 0.035, j * 0.035), m = fbm(i * 0.012 + 40, j * 0.012);
+    const v = 0.8 + 0.2 * n;
+    const k = (i + j * MACRO) * 4;
+    img.data[k] = 255 * Math.min(1, v * (0.92 + 0.12 * m));
+    img.data[k + 1] = 255 * Math.min(1, v);
+    img.data[k + 2] = 255 * Math.min(1, v * (0.9 - 0.1 * m));
+    img.data[k + 3] = 255;
+  }
+  ctx.putImageData(img, 0, 0);
+  macroTexture.update(true);
+}
+const grassMaterial = new BABYLON.StandardMaterial('grass', scene);
+grassTexture.uScale = grassTexture.vScale = 30;
+grassMaterial.diffuseTexture = grassTexture;
+grassMaterial.lightmapTexture = macroTexture;
+grassMaterial.useLightmapAsShadowmap = true;
+grassMaterial.diffuseColor = new BABYLON.Color3(1.25, 1.25, 1.2);
+grassMaterial.specularColor = BABYLON.Color3.Black();
+
+// ---------------------------------------------------------------- 3D grass: clumps of crossed blade cards
+const BLADE_TEX = 256;
+const bladeTexture = new BABYLON.DynamicTexture('blades', {width: BLADE_TEX, height: BLADE_TEX}, scene, true);
+bladeTexture.hasAlpha = true;
+{
+  const ctx = bladeTexture.getContext(), N = BLADE_TEX;
+  ctx.clearRect(0, 0, N, N);
+  let seed = 7;
+  const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  for (let i = 0; i < 22; i++) {
+    const x = N * (0.1 + 0.8 * rnd()), h = N * (0.55 + 0.45 * rnd()), bend = (rnd() - 0.5) * N * 0.35, w = 3 + rnd() * 5;
+    const c = GREENS[(rnd() * GREENS.length) | 0], k = 0.8 + rnd() * 0.45;
+    const grad = ctx.createLinearGradient(0, N, 0, N - h);
+    grad.addColorStop(0, `rgb(${c[0] * k * 0.72 | 0},${c[1] * k * 0.76 | 0},${c[2] * k * 0.66 | 0})`);
+    grad.addColorStop(1, `rgb(${Math.min(255, c[0] * k * 1.25) | 0},${Math.min(255, c[1] * k * 1.2) | 0},${c[2] * k | 0})`);
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.moveTo(x - w, N);
+    ctx.quadraticCurveTo(x - w * 0.5 + bend * 0.3, N - h * 0.5, x + bend, N - h);
+    ctx.quadraticCurveTo(x + w * 0.5 + bend * 0.3, N - h * 0.5, x + w, N);
+    ctx.fill();
+  }
+  bladeTexture.update(true);
+}
+const bladeMaterial = new BABYLON.StandardMaterial('blades', scene);
+bladeMaterial.diffuseTexture = bladeTexture;
+bladeMaterial.useAlphaFromDiffuseTexture = true;
+bladeMaterial.transparencyMode = BABYLON.Material.MATERIAL_ALPHATEST;
+bladeMaterial.alphaCutOff = 0.4;
+bladeMaterial.backFaceCulling = false;
+bladeMaterial.specularColor = BABYLON.Color3.Black();
+bladeMaterial.diffuseColor = new BABYLON.Color3(1.05, 1.05, 1);
+
+/** Three crossed cards, normals straight up: lit like the lawn under them, no dark backs. */
+function bladeClump() {
+  const positions = [], normals = [], uvs = [], indices = [];
+  for (let k = 0; k < 3; k++) {
+    const a = k * Math.PI / 3, cx = Math.cos(a) * 0.5, cz = Math.sin(a) * 0.5, base = positions.length / 3;
+    positions.push(-cx, 0, -cz, cx, 0, cz, cx, 1, cz, -cx, 1, -cz);
+    for (let i = 0; i < 4; i++) normals.push(0, 1, 0);
+    uvs.push(0, 0, 1, 0, 1, 1, 0, 1);
+    indices.push(base, base + 1, base + 2, base, base + 2, base + 3);
+  }
+  const vd = new BABYLON.VertexData();
+  vd.positions = positions; vd.normals = normals; vd.uvs = uvs; vd.indices = indices;
+  const mesh = new BABYLON.Mesh('grass clumps', scene);
+  vd.applyToMesh(mesh);
+  mesh.material = bladeMaterial;
+  mesh.receiveShadows = true;
+  mesh.isPickable = false;
+  return mesh;
+}
+let clumps = null;
+function buildGrass() {
+  clumps?.dispose();
+  clumps = null;
+  const density = P.bladeDensity.value;
+  if (density <= 0) return;
+  clumps = bladeClump();
+  const H = P.height.value, bh = P.bladeHeight.value;
+  let seed = 3;
+  const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  const matrices = [];
+  // tilt: radians towards the outward direction (ox, oz) - over the edge and down the face
+  const add = (x, y, z, scale, tilt = 0, ox = 0, oz = 0, width = 1) => {
+    const w = (0.35 + 0.25 * rnd()) * width, h = bh * scale * (0.6 + 0.8 * rnd());
+    let q = BABYLON.Quaternion.RotationYawPitchRoll(rnd() * Math.PI, (rnd() - 0.5) * 0.3, (rnd() - 0.5) * 0.3);
+    if (tilt) {
+      // About the edge's tangent: up turns towards the outside (Babylon is left-handed: up x out, not out x up)
+      const axis = BABYLON.Vector3.Cross(BABYLON.Vector3.Up(), new BABYLON.Vector3(ox, 0, oz)).normalize();
+      q = BABYLON.Quaternion.RotationAxis(axis, tilt).multiply(q);
+    }
+    const m = BABYLON.Matrix.Compose(new BABYLON.Vector3(w, h, w), q, new BABYLON.Vector3(x, y - 0.02, z));
+    for (let i = 0; i < 16; i++) matrices.push(m.m[i]);
+  };
+  const area = (GX1 - GX0) * (GZ1 - GZ0);
+  for (let n = Math.round(area * density); n > 0; n--) {
+    const x = GX0 + rnd() * (GX1 - GX0), z = GZ0 + rnd() * (GZ1 - GZ0);
+    const d = z - wallZ(x);
+    // Not in the step behind the wall, not inside the stone at its foot
+    if (d > -0.55 && d < 0.05) continue;
+    // Thinned in patches, as a lawn is
+    if (fbm(x * 0.15, z * 0.15) < -0.35 * rnd()) continue;
+    add(x, groundHeight(x, z), z, 1);
+  }
+  // The lip: a dense fringe along the wall's top edge, the outer row leaning out over the stone and
+  // hanging down its face in places, cushions of thicker growth here and there
+  for (let x = X0; x < X1; x += 0.05) {
+    const zx = wallZ(x), dz = wallZd(x), len = Math.hypot(1, dz), ox = dz / len, oz = -1 / len;
+    const edge = OFFSET + pushAt(x, H - 0.25, H).push;
+    const cushion = smoothstep(0.1, 0.6, noise2(x * 0.45, 3.3));
+    const t = rnd();
+    const out = -0.5 + t * (edge + 0.5 + P.lip.value);
+    const y = groundHeight(x, zx) + 0.02;
+    // Over the edge: lean out, the further out the more, some hanging down the face
+    const over = smoothstep(edge - 0.3, edge + P.lip.value, out);
+    const tilt = over * (0.5 + rnd() * (0.6 + 1.4 * cushion * P.lipHang.value));
+    const drop = over * 0.15 * rnd();
+    add(x + ox * out, y - drop, zx + oz * out, 1.2 + 1.3 * cushion * rnd(), tilt, ox, oz, 1 + cushion);
+  }
+  // Ledges: wherever the stone looks up - the blocks' shoulders under the lip above all - grass grows
+  // on it, standing along the stone's normal. Denser towards the top.
+  if (wall && P.ledge.value > 0) {
+    const pos = wall.getVerticesData(BABYLON.VertexBuffer.PositionKind), nor = wall.getVerticesData(BABYLON.VertexBuffer.NormalKind);
+    for (let i = 0; i < pos.length; i += 3) {
+      const ny = nor[i + 1];
+      if (ny < 0.45) continue;
+      const v = pos[i + 1] / H;
+      const chance = P.ledge.value * 0.12 * smoothstep(0.45, 0.85, ny) * (0.25 + 0.75 * smoothstep(0.4, 0.95, v));
+      if (rnd() > chance) continue;
+      const hx = nor[i], hz = nor[i + 2], hl = Math.hypot(hx, hz) || 1;
+      add(pos[i], pos[i + 1] + 0.02, pos[i + 2], 0.9 + 0.8 * rnd(), Math.acos(Math.min(1, ny)) * (0.7 + 0.5 * rnd()), hx / hl, hz / hl);
+    }
+  }
+  // The foot: grass growing up against the stone
+  for (let x = X0; x < X1; x += 0.1) {
+    const zx = wallZ(x), dz = wallZd(x), len = Math.hypot(1, dz), ox = dz / len, oz = -1 / len;
+    const out = OFFSET + 0.05 + rnd() * 0.6;
+    add(x + ox * out, groundHeight(x + ox * out, zx + oz * out), zx + oz * out, 1.5);
+  }
+  clumps.thinInstanceSetBuffer('matrix', new Float32Array(matrices), 16, true);
+  document.getElementById('stats').textContent =
+    `Wand ${wall ? (wall.getTotalVertices() / 1000).toFixed(0) : 0}k Vertices, Boden ${(ground.getTotalVertices() / 1000).toFixed(0)}k, ${(matrices.length / 16 / 1000).toFixed(0)}k Grasbüschel`;
+}
+
+// ---------------------------------------------------------------- ground: lowland, plateau, a narrow grass lip
+const GX0 = -30, GX1 = 30, GZ0 = -24, GZ1 = 18, GS = 0.125;
+let ground = null;
+function groundHeight(x, z) {
+  const d = z - wallZ(x);
+  const H = P.height.value;
+  const undulate = 0.18 * fbm(x * 0.09, z * 0.09);
+  // The step lies behind the wall; the plateau's edge comes down to just above the wall's top
+  return H * smoothstep(-0.32, -0.04, d) + undulate;
+}
+function buildGround() {
+  ground?.dispose();
+  const nx = Math.round((GX1 - GX0) / GS), nz = Math.round((GZ1 - GZ0) / GS);
+  const positions = [], uvs = [], indices = [];
+  for (let j = 0; j <= nz; j++) for (let i = 0; i <= nx; i++) {
+    const x = GX0 + i * GS, z = GZ0 + j * GS;
+    positions.push(x, groundHeight(x, z), z);
+    uvs.push(i / nx, j / nz);
+  }
+  for (let j = 0; j < nz; j++) for (let i = 0; i < nx; i++) {
+    const a = i + j * (nx + 1), b = a + 1, c = a + nx + 1, d = c + 1;
+    indices.push(a, c, b, b, c, d);
+  }
+  ground = meshFrom('ground', positions, indices, uvs, null, [0, 1, 0]);
+  ground.material = grassMaterial;
+  ground.receiveShadows = true;
+  shadow.addShadowCaster(ground);
+}
+
+// ---------------------------------------------------------------- the wall
+const WS = 0.08;  // metres between the wall's vertices, along and up
+let wall = null;
+function pushAt(x, y, H) {
+  // Bent by noise, so the blocks are not polygons
+  const wx = x + P.warp.value * 1.6 * fbm(x * 0.21 + 3, y * 0.21), wy = y + P.warp.value * 1.6 * fbm(x * 0.21, y * 0.21 + 11);
+  const c = worley(wx / P.blockWidth.value, wy / P.blockHeight.value + 0.37);
+  // A cushion: rounds into its crack, bulges from its middle; every block stands out a little differently
+  const edge = smoothstep(0, P.crack.value, c.f2 - c.f1);
+  const block = Math.sqrt(edge);
+  const dome = 1 - P.round.value * Math.min(1, c.f1 * c.f1 * 1.3);
+  const v = y / H;
+  // Out of the ground at the foot, back under the grass at the top
+  const swell = Math.sqrt(smoothstep(-0.02, 0.18, v)) * Math.sqrt(smoothstep(1.02, 0.8, v));
+  const rough = P.rough.value * fbm(x * 0.9, y * 0.9) + 0.035 * noise2(x * 3.7, y * 3.7);
+  const push = P.amplitude.value * (0.12 + 0.88 * block * dome) * (0.65 + 0.35 * c.id) * swell
+    + P.lean.value * v * P.amplitude.value + rough * swell;
+  return {push, crack: 1 - edge, v};
+}
+function buildWall() {
+  wall?.dispose();
+  const H = P.height.value;
+  const cols = Math.round((X1 - X0) / WS);
+  // Up the face from below the lowland, then round back over into the plateau below the grass
+  const ys = [];
+  for (let y = -0.3; y <= H - 0.25; y += WS) ys.push({y, crown: 0});
+  const CROWN_ROWS = 8;
+  for (let k = 1; k <= CROWN_ROWS; k++) ys.push({y: 0, crown: k / CROWN_ROWS});
+  const rows = ys.length;
+  const positions = [], uvs = [], colors = [], indices = [];
+  for (let r = 0; r < rows; r++) for (let i = 0; i <= cols; i++) {
+    const x = X0 + i * WS;
+    const zx = wallZ(x), dz = wallZd(x), len = Math.hypot(1, dz);
+    const ox = dz / len, oz = -1 / len; // outward, towards the lowland
+    let y, out, sky = 1;
+    if (ys[r].crown === 0) {
+      y = ys[r].y;
+      const p = pushAt(x, y, H);
+      out = OFFSET + p.push;
+      sky = 1 - p.crack * P.crackDark.value;
+      // The undercut at the foot sees less sky
+      sky *= 0.55 + 0.45 * smoothstep(0, 0.12, p.v);
+    } else {
+      // Quarter round from the face's top back under the plateau
+      const a = ys[r].crown * Math.PI / 2;
+      const top = pushAt(x, H - 0.25, H);
+      y = H - 0.25 + 0.2 * (1 - Math.cos(a));
+      out = (OFFSET + top.push) * Math.cos(a) - 0.6 * Math.sin(a);
+      sky = 1 - top.crack * P.crackDark.value * Math.cos(a);
+    }
+    positions.push(x + ox * out, y, zx + oz * out);
+    uvs.push(x / 4, y / 4 + ys[r].crown * 0.3);
+    colors.push(sky, sky, sky, 1);
+  }
+  for (let r = 0; r < rows - 1; r++) for (let i = 0; i < cols; i++) {
+    const a = i + r * (cols + 1), b = a + 1, c = a + cols + 1, d = c + 1;
+    indices.push(a, c, b, b, c, d);
+  }
+  wall = meshFrom('wall', positions, indices, uvs, colors, [0, 0, -1]);
+  buildLip(cols, H);
+  wall.material = wallMaterial;
+  wall.receiveShadows = true;
+  shadow.addShadowCaster(wall);
+  document.getElementById('stats').textContent =
+    `Wand ${(positions.length / 3 / 1000).toFixed(0)}k Vertices, Boden ${ground ? (ground.getTotalVertices() / 1000).toFixed(0) : 0}k`;
+}
+
+// The plateau's grass running out over the wall's top: a ribbon from behind the edge, rounded down over
+// the stone, its front edge tufted by noise
+let lip = null;
+function buildLip(cols, H) {
+  lip?.dispose();
+  lip = null;
+  if (P.lip.value <= 0) return;
+  const ROWS = 7;
+  const positions = [], uvs = [], indices = [];
+  for (let r = 0; r <= ROWS; r++) for (let i = 0; i <= cols; i++) {
+    const x = X0 + i * WS;
+    const zx = wallZ(x), dz = wallZd(x), len = Math.hypot(1, dz);
+    const ox = dz / len, oz = -1 / len;
+    const top = pushAt(x, H - 0.25, H).push + OFFSET;
+    const tuft = 0.5 + 0.5 * noise2(x * 2.3, 1.7) + 0.35 * noise2(x * 7.1, 4.2);
+    const reach = top + P.lip.value * Math.max(0.15, tuft);
+    const t = r / ROWS;
+    // From 0.6 m behind the edge forward to the tufted front, rounding down at the front
+    const out = -0.6 + (reach + 0.6) * t;
+    const y = groundHeight(x, zx) + 0.03 - 0.45 * Math.pow(t, 3) * P.lip.value / 0.35 * 0.5;
+    positions.push(x + ox * out, y, zx + oz * out);
+    uvs.push((x - GX0) / (GX1 - GX0), (zx + oz * out - GZ0) / (GZ1 - GZ0));
+  }
+  for (let r = 0; r < ROWS; r++) for (let i = 0; i < cols; i++) {
+    const a = i + r * (cols + 1), b = a + 1, c = a + cols + 1, d = c + 1;
+    indices.push(a, c, b, b, c, d);
+  }
+  lip = meshFrom('lip', positions, indices, uvs, null, [0, 1, 0]);
+  lip.material = grassMaterial;
+  lip.receiveShadows = true;
+  shadow.addShadowCaster(lip);
+}
+
+/**
+ * A mesh whose triangles face the way given (on average): Babylon culls by winding, so the winding is
+ * turned round when the computed normals point the other way.
+ */
+function meshFrom(name, positions, indices, uvs, colors, facing) {
+  let normals = [];
+  BABYLON.VertexData.ComputeNormals(positions, indices, normals);
+  let dot = 0;
+  for (let i = 0; i < normals.length; i += 3) dot += normals[i] * facing[0] + normals[i + 1] * facing[1] + normals[i + 2] * facing[2];
+  // Babylon's default: front faces wind clockwise as seen - ComputeNormals' normal is the front's
+  if (dot < 0) {
+    for (let i = 0; i < indices.length; i += 3) { const t = indices[i + 1]; indices[i + 1] = indices[i + 2]; indices[i + 2] = t; }
+    normals = [];
+    BABYLON.VertexData.ComputeNormals(positions, indices, normals);
+  }
+  const vd = new BABYLON.VertexData();
+  vd.positions = positions; vd.indices = indices; vd.normals = normals; vd.uvs = uvs;
+  if (colors) vd.colors = colors;
+  const mesh = new BABYLON.Mesh(name, scene);
+  vd.applyToMesh(mesh);
+  return mesh;
+}
+
+// ---------------------------------------------------------------- post
+const pipeline = new BABYLON.DefaultRenderingPipeline('post', true, scene, [camera]);
+pipeline.fxaaEnabled = true;
+pipeline.imageProcessingEnabled = true;
+pipeline.imageProcessing.toneMappingEnabled = true;
+pipeline.imageProcessing.toneMappingType = BABYLON.ImageProcessingConfiguration.TONEMAPPING_ACES;
+pipeline.imageProcessing.exposure = 1.1;
+pipeline.imageProcessing.contrast = 1.15;
+let ssao = null;
+function setSsao(on) {
+  if (on && !ssao) {
+    ssao = new BABYLON.SSAO2RenderingPipeline('ssao', scene, {ssaoRatio: 0.75, blurRatio: 1}, [camera]);
+    ssao.radius = 1.2; ssao.totalStrength = 1.3; ssao.samples = 16; ssao.maxZ = 150; ssao.expensiveBlur = true;
+  } else if (!on && ssao) {
+    ssao.dispose(); ssao = null;
+  }
+}
+setSsao(true);
+
+// ---------------------------------------------------------------- UI
+const sliders = document.getElementById('sliders');
+let rebuildTimer = 0, grassTimer = 0;
+for (const [title, keys] of GROUPS) {
+  const h = document.createElement('h2'); h.textContent = title; sliders.appendChild(h);
+  for (const k of keys) {
+    const p = P[k];
+    const row = document.createElement('div'); row.className = 'row';
+    row.innerHTML = `<label>${p.label}</label><input type="range" min="${p.min}" max="${p.max}" step="${p.step}" value="${p.value}"><span>${p.value}</span>`;
+    const input = row.querySelector('input'), out = row.querySelector('span');
+    input.addEventListener('input', () => {
+      p.value = +input.value; out.textContent = p.value;
+      if (p.wall) { clearTimeout(rebuildTimer); rebuildTimer = setTimeout(() => { if (k === 'height') buildGround(); buildWall(); applyWire(); }, 60); }
+      if (p.tex) buildLimeTexture();
+      if (p.grass || p.wall) { clearTimeout(grassTimer); grassTimer = setTimeout(buildGrass, 150); }
+      if (p.grassTex) drawLawn();
+      if (p.mat) applyMaterial();
+      if (p.light) placeSun();
+    });
+    sliders.appendChild(row);
+  }
+}
+document.querySelectorAll('[data-view]').forEach(b => b.addEventListener('click', () => view(b.dataset.view)));
+document.getElementById('ssao').addEventListener('change', e => setSsao(e.target.checked));
+document.getElementById('shadows').addEventListener('change', e => { sun.shadowEnabled = e.target.checked; });
+const applyWire = () => { const on = document.getElementById('wire').checked; wallMaterial.wireframe = on; grassMaterial.wireframe = on; };
+document.getElementById('wire').addEventListener('change', applyWire);
+
+buildGround();
+buildWall();
+buildGrass();
+const fps = document.createElement('div');
+document.getElementById('panel').appendChild(fps);
+let fpsFrame = 0;
+engine.runRenderLoop(() => {
+  scene.render();
+  if (++fpsFrame % 30 === 0) fps.textContent = `${engine.getFps().toFixed(0)} fps, ${(1000 / engine.getFps()).toFixed(1)} ms`;
+});
+addEventListener('resize', () => engine.resize());
+window.lab = {scene, P, view, buildWall, buildGround, buildGrass, camera};
+</script>
+</body>
+</html>

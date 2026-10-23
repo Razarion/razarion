@@ -1,6 +1,7 @@
 import {NodeMaterial} from "@babylonjs/core/Materials/Node/nodeMaterial";
 import {Texture} from "@babylonjs/core/Materials/Textures/texture";
 import {Color3} from "@babylonjs/core/Maths/math.color";
+import {DotBlock} from "@babylonjs/core/Materials/Node/Blocks/dotBlock";
 import {DerivativeBlock} from "@babylonjs/core/Materials/Node/Blocks/Fragment/derivativeBlock";
 import {InputBlock} from "@babylonjs/core/Materials/Node/Blocks/Input/inputBlock";
 import {NodeMaterialBlockConnectionPointTypes} from "@babylonjs/core/Materials/Node/Enums/nodeMaterialBlockConnectionPointTypes";
@@ -8,7 +9,6 @@ import {NodeMaterialSystemValues} from "@babylonjs/core/Materials/Node/Enums/nod
 import {TransformBlock} from "@babylonjs/core/Materials/Node/Blocks/transformBlock";
 import {VertexOutputBlock} from "@babylonjs/core/Materials/Node/Blocks/Vertex/vertexOutputBlock";
 import {FragmentOutputBlock} from "@babylonjs/core/Materials/Node/Blocks/Fragment/fragmentOutputBlock";
-import {LightBlock} from "@babylonjs/core/Materials/Node/Blocks/Dual/lightBlock";
 import {PerturbNormalBlock} from "@babylonjs/core/Materials/Node/Blocks/Fragment/perturbNormalBlock";
 import {TextureBlock} from "@babylonjs/core/Materials/Node/Blocks/Dual/textureBlock";
 import {AddBlock} from "@babylonjs/core/Materials/Node/Blocks/addBlock";
@@ -22,15 +22,17 @@ import {VectorSplitterBlock} from "@babylonjs/core/Materials/Node/Blocks/vectorS
 import {VectorMergerBlock} from "@babylonjs/core/Materials/Node/Blocks/vectorMergerBlock";
 import {ClampBlock} from "@babylonjs/core/Materials/Node/Blocks/clampBlock";
 import {OneMinusBlock} from "@babylonjs/core/Materials/Node/Blocks/oneMinusBlock";
+import {MaxBlock} from "@babylonjs/core/Materials/Node/Blocks/maxBlock";
 import {PowBlock} from "@babylonjs/core/Materials/Node/Blocks/powBlock";
 import {GradientBlock, GradientBlockColorStep} from "@babylonjs/core/Materials/Node/Blocks/gradientBlock";
-import {TriPlanarBlock} from "@babylonjs/core/Materials/Node/Blocks/triPlanarBlock";
 import {cloudShadeNode, cloudTimeInput} from "./cloud-shadow-node";
 import {SimplexPerlin3DBlock} from "@babylonjs/core/Materials/Node/Blocks/simplexPerlin3DBlock";
 import {NormalizeBlock} from "@babylonjs/core/Materials/Node/Blocks/normalizeBlock";
 import type {Scene} from "@babylonjs/core/scene";
 import {Showcase} from "./showcase";
-import {GROUND} from "./ground-rules";
+import {GROUND, SHORE} from "./ground-rules";
+import {rockSurface} from "./rock-material";
+import {terrainLight} from "./terrain-light";
 import type {NodeMaterialConnectionPoint} from "@babylonjs/core/Materials/Node/nodeMaterialBlockConnectionPoint";
 
 const TEX_PATH = "renderer/textures/";
@@ -267,11 +269,36 @@ export function buildGroundMaterial(scene: Scene, groundUtilityTexture: Texture 
 
   const beachEdge0 = floatInput("beach edge0", 0.23);
   const beachEdge1 = floatInput("beach edge1", 0.30);
-  const beachStep = new SmoothStepBlock("Smooth step beach");
-  beachValue.output.connectTo(beachStep.value);
-  beachEdge0.output.connectTo(beachStep.edge0);
-  beachEdge1.output.connectTo(beachStep.edge1);
+  const beachStepByHeight = new SmoothStepBlock("Smooth step beach");
+  beachValue.output.connectTo(beachStepByHeight.value);
+  beachEdge0.output.connectTo(beachStepByHeight.edge0);
+  beachEdge1.output.connectTo(beachStepByHeight.edge1);
+
+  // A strip of sand along the waterline, whatever the height says (ground-rules.ts SHORE).
+  // UV2.x = shore distance in metres, positive on land (shoreline-detection.ts).
+  const shoreUv2 = new InputBlock("shore uv2");
+  shoreUv2.setAsAttribute("uv2");
+  const shoreUv2Split = new VectorSplitterBlock("Split shore UV2");
+  shoreUv2.output.connectTo(shoreUv2Split.xyIn);
+  const shoreDist = shoreUv2Split.x;
+  const noiseFine = worldNoise(worldXZ, "ground noise fine", GROUND.FINE_SCALE, GROUND.FINE_Z);
+  const shoreLandValue = weighted("shore land value", [[shoreDist, 1], [noisePatch, -SHORE.SAND_PATCH], [noiseFine, -SHORE.SAND_FINE]], -SHORE.SAND_WIDTH);
+  const shoreLand = new SmoothStepBlock("shore land");
+  shoreLandValue.connectTo(shoreLand.value);
+  floatInput("shore land edge0", -SHORE.SAND_EDGE).output.connectTo(shoreLand.edge0);
+  floatInput("shore land edge1", SHORE.SAND_EDGE).output.connectTo(shoreLand.edge1);
+  // Rock stays rock down to the water
+  const shoreKeep = new MaxBlock("shore keep rock");
+  shoreLand.output.connectTo(shoreKeep.left);
+  mountainBlend.output.connectTo(shoreKeep.right);
+  const shoreSand = new LerpBlock("shore sand");
+  floatInput("shore sand one", 1).output.connectTo(shoreSand.left);
+  shoreKeep.output.connectTo(shoreSand.right);
+  floatInput("shore sand strength", 1).output.connectTo(shoreSand.gradient);
   // beachStep: 0 = beach, 1 = land
+  const beachStep = new MultiplyBlock("beach step");
+  beachStepByHeight.output.connectTo(beachStep.left);
+  shoreSand.output.connectTo(beachStep.right);
 
   // ========== Diffuse textures ==========
   const groundUpperDiffuse = new TextureBlock("Ground upper");
@@ -283,40 +310,14 @@ export function buildGroundMaterial(scene: Scene, groundUtilityTexture: Texture 
   uvGroundUnderWarped.output.connectTo(groundUnderDiffuse.uv);
   groundUnderDiffuse.texture = new Texture(TEX_PATH + "ground-earth-diffuse.webp", scene);
 
-  // ========== TriPlanar for mountain (no stretching on steep faces) ==========
-  const triPlanarScale = floatInput("triplanar scale", 0.2);
-  const triPlanarPos = new ScaleBlock("Scale triplanar pos");
-  worldPos.output.connectTo(triPlanarPos.input);
-  triPlanarScale.output.connectTo(triPlanarPos.factor);
-
-  const mountainDiffuseTriplanar = new TriPlanarBlock("TriPlanar diffuse");
-  triPlanarPos.output.connectTo(mountainDiffuseTriplanar.position);
-  worldNormal.output.connectTo(mountainDiffuseTriplanar.normal);
-  mountainDiffuseTriplanar.texture = new Texture(TEX_PATH + "ground-mountain-diffuse.webp", scene);
-
-  // Mountain ambient occlusion (also triplanar)
-  const mountainAOTriplanar = new TriPlanarBlock("TriPlanar AO");
-  triPlanarPos.output.connectTo(mountainAOTriplanar.position);
-  worldNormal.output.connectTo(mountainAOTriplanar.normal);
-  mountainAOTriplanar.texture = new Texture(TEX_PATH + "ground-mountain-ao.webp", scene);
-
-  // Darken mountain diffuse for better contrast against grass
-  const mountainDiffuseDarken = new ScaleBlock("Mountain diffuse darken");
-  mountainDiffuseTriplanar.rgb.connectTo(mountainDiffuseDarken.input);
-  floatInput("mountain darken", 1.0).output.connectTo(mountainDiffuseDarken.factor);
-
-  // Blend AO: lerp(diffuse * AO, diffuse, aoStrength) — 0 = full AO, 1 = no AO
-  const mountainDiffuseMulAO = new MultiplyBlock("Mountain diffuse * AO");
-  mountainDiffuseDarken.output.connectTo(mountainDiffuseMulAO.left);
-  mountainAOTriplanar.rgb.connectTo(mountainDiffuseMulAO.right);
-  const mountainDiffuseAO = new LerpBlock("Mountain AO blend");
-  mountainDiffuseMulAO.output.connectTo(mountainDiffuseAO.left);
-  mountainDiffuseDarken.output.connectTo(mountainDiffuseAO.right);
-  floatInput("mountain ao strength", 0.7).output.connectTo(mountainDiffuseAO.gradient);
+  // ========== Rock (no stretching on steep faces) ==========
+  // The same rock, light and moss as the rock models (rock-material.ts)
+  const rock = rockSurface(scene, worldPos.output, worldNormal.output, worldXZ.xy);
+  const mountainDiffuseAO = rock.color;
 
   // Lerp ground/mountain by mountainBlend; the ground side comes from the ground materials below
   const diffuseMountainLerp = new LerpBlock("Lerp diffuse mountain");
-  mountainDiffuseAO.output.connectTo(diffuseMountainLerp.right);
+  mountainDiffuseAO.connectTo(diffuseMountainLerp.right);
   mountainBlend.output.connectTo(diffuseMountainLerp.gradient);
 
   // ========== Underwater depth gradient ==========
@@ -339,6 +340,23 @@ export function buildGroundMaterial(scene: Scene, groundUtilityTexture: Texture 
     new GradientBlockColorStep(0.60, new Color3(0.10, 0.25, 0.40)),     // y=-6: dark blue
     new GradientBlockColorStep(1.0, new Color3(0.012, 0.004, 0.004)),   // y=-10: deep dark
   ];
+  // A lagoon over sand: pale aqua where the water is a hand deep, turquoise at half a metre, blue from
+  // three metres on - the clear tropical shallows rather than green-grey water
+  const lagoonGradient = new GradientBlock("Underwater gradient lagoon");
+  underwaterNegate.output.connectTo(lagoonGradient.gradient);
+  lagoonGradient.colorSteps = [
+    new GradientBlockColorStep(0.0, new Color3(0.93, 0.90, 0.82)),      // y=0: light sand
+    new GradientBlockColorStep(0.02, new Color3(0.76, 0.93, 0.87)),     // y=-0.2: pale aqua
+    new GradientBlockColorStep(0.06, new Color3(0.45, 0.87, 0.86)),     // y=-0.6: turquoise
+    new GradientBlockColorStep(0.15, new Color3(0.22, 0.70, 0.80)),     // y=-1.5: deep turquoise
+    new GradientBlockColorStep(0.35, new Color3(0.09, 0.44, 0.68)),     // y=-3.5: blue
+    new GradientBlockColorStep(0.65, new Color3(0.04, 0.22, 0.46)),     // y=-6.5: deep blue
+    new GradientBlockColorStep(1.0, new Color3(0.02, 0.07, 0.18)),      // y=-10: deep
+  ];
+  const underwaterColor = new LerpBlock("Lerp underwater lagoon");
+  underwaterGradient.output.connectTo(underwaterColor.left);
+  lagoonGradient.output.connectTo(underwaterColor.right);
+  floatInput("lagoon strength", 1).output.connectTo(underwaterColor.gradient);
 
   // Underwater step: smoothstep on position.y, transition at 0 to 0.1
   // underwaterStep: 0 = underwater, 1 = above water
@@ -351,21 +369,50 @@ export function buildGroundMaterial(scene: Scene, groundUtilityTexture: Texture 
   const beachDiffuse = new TextureBlock("Beach diffuse");
   uvBeach.output.connectTo(beachDiffuse.uv);
   beachDiffuse.texture = new Texture(TEX_PATH + "ground-beach-diffuse.webp", scene);
+  // Pale coral sand along the water, not the photo's brown; the sand patches inland keep it
+  const sandBrightInland = new SmoothStepBlock("sand bright inland");
+  shoreDist.connectTo(sandBrightInland.value);
+  floatInput("sand bright near", 4).output.connectTo(sandBrightInland.edge0);
+  floatInput("sand bright far", 9).output.connectTo(sandBrightInland.edge1);
+  const sandBrightShore = new OneMinusBlock("sand bright shore");
+  sandBrightInland.output.connectTo(sandBrightShore.input);
+  const sandBrightAmount = new ScaleBlock("sand bright amount");
+  sandBrightShore.output.connectTo(sandBrightAmount.input);
+  floatInput("sand brighten", 0.4).output.connectTo(sandBrightAmount.factor);
+  const sandColor = new LerpBlock("Lerp sand bright");
+  beachDiffuse.rgb.connectTo(sandColor.left);
+  color3Input("sand bright color", 0.97, 0.94, 0.86).output.connectTo(sandColor.right);
+  sandBrightAmount.output.connectTo(sandColor.gradient);
 
   // Darken sand near waterline (wet sand effect)
   const beachDiffuseWet = new ScaleBlock("beach diffuse wet");
-  beachDiffuse.rgb.connectTo(beachDiffuseWet.input);
-  floatInput("wet sand darken", 0.9).output.connectTo(beachDiffuseWet.factor);
+  sandColor.output.connectTo(beachDiffuseWet.input);
+  floatInput("wet sand darken", 0.78).output.connectTo(beachDiffuseWet.factor);
 
   const wetDiffuseStep = new SmoothStepBlock("wet diffuse step");
   vectorSplitter.y.connectTo(wetDiffuseStep.value);
-  floatInput("wet diffuse e0", 0.15).output.connectTo(wetDiffuseStep.edge0);
+  floatInput("wet diffuse e0", 0.03).output.connectTo(wetDiffuseStep.edge0);
   floatInput("wet diffuse e1", -0.5).output.connectTo(wetDiffuseStep.edge1);
 
+  // The sand the surf reaches is dark and wet, a band along the water with a ragged edge
+  const wetShoreValue = weighted("wet shore value", [[shoreDist, 1], [noiseFine, -0.3]], 0);
+  const wetShoreDry = new SmoothStepBlock("wet shore dry");
+  wetShoreValue.connectTo(wetShoreDry.value);
+  floatInput("wet shore edge0", SHORE.WET_WIDTH * 0.4).output.connectTo(wetShoreDry.edge0);
+  floatInput("wet shore edge1", SHORE.WET_WIDTH).output.connectTo(wetShoreDry.edge1);
+  const wetShore = new OneMinusBlock("wet shore");
+  wetShoreDry.output.connectTo(wetShore.input);
+  const wetShoreAmount = new MultiplyBlock("wet shore amount");
+  wetShore.output.connectTo(wetShoreAmount.left);
+  floatInput("wet shore strength", 1).output.connectTo(wetShoreAmount.right);
+  const wetAmount = new MaxBlock("wet amount");
+  wetDiffuseStep.output.connectTo(wetAmount.left);
+  wetShoreAmount.output.connectTo(wetAmount.right);
+
   const beachDiffuseBlended = new LerpBlock("Lerp beach dry/wet");
-  beachDiffuse.rgb.connectTo(beachDiffuseBlended.left);
+  sandColor.output.connectTo(beachDiffuseBlended.left);
   beachDiffuseWet.output.connectTo(beachDiffuseBlended.right);
-  wetDiffuseStep.output.connectTo(beachDiffuseBlended.gradient);
+  wetAmount.output.connectTo(beachDiffuseBlended.gradient);
 
   // Grass edge shadow — thin dark strip on sand side to simulate raised grass
   // beachStep 0.05–0.4: shadow on sand right next to grass
@@ -393,11 +440,33 @@ export function buildGroundMaterial(scene: Scene, groundUtilityTexture: Texture 
   // shallowSandStep: 1 near surface (y=0), 0 at depth (y=-1)
   const shallowSandStep = new SmoothStepBlock("Smooth step shallow sand");
   vectorSplitter.y.connectTo(shallowSandStep.value);
-  floatInput("shallow sand edge0", -1.0).output.connectTo(shallowSandStep.edge0);
-  floatInput("shallow sand edge1", -0.1).output.connectTo(shallowSandStep.edge1);
+  floatInput("shallow sand edge0", -0.35).output.connectTo(shallowSandStep.edge0);
+  floatInput("shallow sand edge1", -0.02).output.connectTo(shallowSandStep.edge1);
+
+  // The sea floor is sand all the way down, not a flat colour: the depth colour carries the light and
+  // dark of the sand texture (its brightness against the texture's mean), fading out where the water
+  // above hides it anyway.
+  const sandLuminance = new DotBlock("sand luminance");
+  beachDiffuse.rgb.connectTo(sandLuminance.left);
+  // Luminance weights over the mean luminance of ground-beach-diffuse.webp (0.68)
+  color3Input("sand luminance weights", 0.3 / 0.68, 0.59 / 0.68, 0.11 / 0.68).output.connectTo(sandLuminance.right);
+  const floorDepthFade = new SmoothStepBlock("sea floor texture depth");
+  vectorSplitter.y.connectTo(floorDepthFade.value);
+  floatInput("sea floor texture deep", -7).output.connectTo(floorDepthFade.edge0);
+  floatInput("sea floor texture shallow", -1).output.connectTo(floorDepthFade.edge1);
+  const floorTextureAmount = new MultiplyBlock("sea floor texture amount");
+  floorDepthFade.output.connectTo(floorTextureAmount.left);
+  floatInput("sea floor strength", 1).output.connectTo(floorTextureAmount.right);
+  const floorShade = new LerpBlock("sea floor shade");
+  floatInput("sea floor flat", 1).output.connectTo(floorShade.left);
+  sandLuminance.output.connectTo(floorShade.right);
+  floorTextureAmount.output.connectTo(floorShade.gradient);
+  const underwaterTextured = new ScaleBlock("underwater textured");
+  underwaterColor.output.connectTo(underwaterTextured.input);
+  floorShade.output.connectTo(underwaterTextured.factor);
 
   const underwaterWithSand = new LerpBlock("Lerp underwater sand");
-  underwaterGradient.output.connectTo(underwaterWithSand.left);
+  underwaterTextured.output.connectTo(underwaterWithSand.left);
   beachDiffuseWet.output.connectTo(underwaterWithSand.right);
   shallowSandStep.output.connectTo(underwaterWithSand.gradient);
 
@@ -416,6 +485,12 @@ export function buildGroundMaterial(scene: Scene, groundUtilityTexture: Texture 
   const landMask = new MultiplyBlock("land mask");
   beachStep.output.connectTo(landMask.left);
   underwaterStep.output.connectTo(landMask.right);
+  // Hollow and crest tints are for soil and grass; on rock the yellow crest turned the stone olive
+  const notRock = new OneMinusBlock("not rock");
+  mountainBlend.output.connectTo(notRock.input);
+  const soilMask = new MultiplyBlock("soil mask");
+  landMask.output.connectTo(soilMask.left);
+  notRock.output.connectTo(soilMask.right);
 
   // Hollows darker (neutral - a green tint made them read as a different grass), crests lighter and
   // drier: the eye reads the shape from the colour
@@ -432,7 +507,7 @@ export function buildGroundMaterial(scene: Scene, groundUtilityTexture: Texture 
 
   const hollowAmount = new MultiplyBlock("hollow amount");
   hollowStep.output.connectTo(hollowAmount.left);
-  landMask.output.connectTo(hollowAmount.right);
+  soilMask.output.connectTo(hollowAmount.right);
   const hollowTint = new MultiplyBlock("hollow tint");
   diffuseFinal.output.connectTo(hollowTint.left);
   color3Input("hollow color", 0.80, 0.79, 0.75).output.connectTo(hollowTint.right);
@@ -443,7 +518,7 @@ export function buildGroundMaterial(scene: Scene, groundUtilityTexture: Texture 
 
   const crestAmount = new MultiplyBlock("crest amount");
   crestStep.output.connectTo(crestAmount.left);
-  landMask.output.connectTo(crestAmount.right);
+  soilMask.output.connectTo(crestAmount.right);
   const crestTint = new MultiplyBlock("crest tint");
   diffuseHollow.output.connectTo(crestTint.left);
   color3Input("crest color", 1.18, 1.10, 0.86).output.connectTo(crestTint.right);
@@ -469,7 +544,6 @@ export function buildGroundMaterial(scene: Scene, groundUtilityTexture: Texture 
   // crests, earth on slopes, gravel at the foot of rock. Noise at ~40 m, ~10 m and ~2.5 m makes the
   // patches and their edges ragged. Each overlay grows in by the height of its texture (overlayByHeight).
   // Lush, dry and gravel are tinted copies of the grass, earth and rock textures - no extra samplers.
-  const noiseFine = worldNoise(worldXZ, "ground noise fine", GROUND.FINE_SCALE, GROUND.FINE_Z);
   const ragged = weighted("ground ragged", [[noisePatch, 1], [noiseFine, GROUND.FINE_WEIGHT]], 0);
 
   const grass = groundUpperDiffuse.rgb;
@@ -501,13 +575,24 @@ export function buildGroundMaterial(scene: Scene, groundUtilityTexture: Texture 
   mountainBlendRaw.output.connectTo(gravelStep.value);
   floatInput("gravel edge0", 0.02).output.connectTo(gravelStep.edge0);
   floatInput("gravel edge1", 0.5).output.connectTo(gravelStep.edge1);
+  // Gravel keeps the old rock photo, seen from above as the old triplanar showed it on flat ground
+  // (top plane, z/x, 5 m per repeat) - the cliff rock's cracks on flat ground read as paving
+  const gravelUvRaw = new VectorMergerBlock("gravel uv raw");
+  vectorSplitter.z.connectTo(gravelUvRaw.x);
+  vectorSplitter.x.connectTo(gravelUvRaw.y);
+  const gravelUv = new ScaleBlock("gravel uv");
+  gravelUvRaw.xy.connectTo(gravelUv.input);
+  floatInput("gravel uv scale", 0.2).output.connectTo(gravelUv.factor);
+  const gravelTexture = new TextureBlock("gravel texture");
+  gravelUv.output.connectTo(gravelTexture.uv);
+  gravelTexture.texture = new Texture(TEX_PATH + "ground-mountain-diffuse.webp", scene);
   const gravelColor = new LerpBlock("gravel mix");
   earth.connectTo(gravelColor.left);
-  mountainDiffuseTriplanar.rgb.connectTo(gravelColor.right);
+  gravelTexture.rgb.connectTo(gravelColor.right);
   floatInput("gravel rock share", 0.6).output.connectTo(gravelColor.gradient);
   const gravelWeight = weighted("gravel weight", [[gravelStep.output, 1], [noiseMacro, GROUND.STONY_MACRO],
     [noisePatch, GROUND.STONY_PATCH], [noiseFine, GROUND.STONY_FINE], [slopeStep.output, GROUND.STONY_SLOPE]], GROUND.STONY_BIAS);
-  const [groundMaterials, gravelShare] = overlayByHeight("ground gravel", withEarth, tinted("gravel", gravelColor.output, 1.05, 1.02, 0.98), gravelWeight, mountainDiffuseTriplanar.r, 0.6);
+  const [groundMaterials, gravelShare] = overlayByHeight("ground gravel", withEarth, tinted("gravel", gravelColor.output, 1.05, 1.02, 0.98), gravelWeight, gravelTexture.r, 0.6);
   groundMaterials.connectTo(diffuseMountainLerp.left);
 
   // Grass share for the normal map and bump strength: 1 = grass normals, 0 = earth normals
@@ -534,9 +619,13 @@ export function buildGroundMaterial(scene: Scene, groundUtilityTexture: Texture 
   // ========== Growth under plants (blue channel of GroundUtility, see vegetation-mask.ts) ==========
   // A palm or a bush gets its own patch of darker, lusher grass - also on sand, where the land mask
   // would otherwise keep everything off - and a shaded core at its foot.
+  // Not on the beach strip along the water, though
+  const growthAbove = new MultiplyBlock("growth above water");
+  groundUtility.b.connectTo(growthAbove.left);
+  underwaterStep.output.connectTo(growthAbove.right);
   const growth = new MultiplyBlock("growth");
-  groundUtility.b.connectTo(growth.left);
-  underwaterStep.output.connectTo(growth.right);
+  growthAbove.output.connectTo(growth.left);
+  shoreSand.output.connectTo(growth.right);
   const growthGrass = new MultiplyBlock("growth grass");
   groundUpperDiffuse.rgb.connectTo(growthGrass.left);
   color3Input("growth color", 0.82, 0.92, 0.72).output.connectTo(growthGrass.right);
@@ -601,10 +690,7 @@ export function buildGroundMaterial(scene: Scene, groundUtilityTexture: Texture 
   underNormFlipG.output.connectTo(groundUnderNorm.y);
   groundUnderNormTex.b.connectTo(groundUnderNorm.z);
 
-  const mountainNormTriplanar = new TriPlanarBlock("TriPlanar norm");
-  triPlanarPos.output.connectTo(mountainNormTriplanar.position);
-  worldNormal.output.connectTo(mountainNormTriplanar.normal);
-  mountainNormTriplanar.texture = new Texture(TEX_PATH + "ground-mountain-norm.jpg", scene);
+  // Rock normals: rockSurface above
 
   // Lerp upper/under normals by height
   const normHeightLerp = new LerpBlock("Lerp norm height");
@@ -637,7 +723,7 @@ export function buildGroundMaterial(scene: Scene, groundUtilityTexture: Texture 
   // Lerp ground/mountain normals
   const normMountainLerp = new LerpBlock("Lerp norm mountain");
   normWithSplatter.output.connectTo(normMountainLerp.left);
-  mountainNormTriplanar.rgb.connectTo(normMountainLerp.right);
+  rock.normalMap.connectTo(normMountainLerp.right);
   mountainBlend.output.connectTo(normMountainLerp.gradient);
 
   // Lerp beach/land normals
@@ -683,18 +769,14 @@ export function buildGroundMaterial(scene: Scene, groundUtilityTexture: Texture 
   beachStep.output.connectTo(strengthLand.gradient);
 
   // Underwater: reduce bump strength heavily
-  const strengthUnderwater = floatInput("strength underwater", 0.05);
+  // Enough for the sand ripples of the sea floor to catch the sun
+  const strengthUnderwater = floatInput("strength underwater", 0.3);
   const strengthFinal = new LerpBlock("Lerp strength final");
   strengthUnderwater.output.connectTo(strengthFinal.left);
   strengthLand.output.connectTo(strengthFinal.right);
   underwaterStep.output.connectTo(strengthFinal.gradient);
 
   // ========== Wet sand zone — smooth flat sand near waterline ==========
-  const shoreUv2 = new InputBlock("shore uv2");
-  shoreUv2.setAsAttribute("uv2");
-  const shoreUv2Split = new VectorSplitterBlock("Split shore UV2");
-  shoreUv2.output.connectTo(shoreUv2Split.xyIn);
-
   // Wet sand band: 1 near waterline, 0 on dry land and deep water
   // Land side: ramps up as we approach the shore from dry sand
   const wetSandLand = new SmoothStepBlock("wet sand land");
@@ -725,7 +807,11 @@ export function buildGroundMaterial(scene: Scene, groundUtilityTexture: Texture 
   worldPos.output.connectTo(perturbNormal.worldPosition);
   // The hills rise 2 m over 40 m - a slope of a few percent the sun barely tells apart. For the
   // ground's light only, slopes count three times as steep, so light and shade draw the hills.
-  const reliefNormalScale = floatInput("relief normal exaggeration", 3);
+  // Not on rock: a cliff is steep already, and the boulders beside it are not exaggerated either.
+  const reliefNormalScale = new LerpBlock("relief normal exaggeration on soil");
+  floatInput("relief normal exaggeration", 3).output.connectTo(reliefNormalScale.left);
+  floatInput("relief normal exaggeration rock", 1).output.connectTo(reliefNormalScale.right);
+  mountainBlend.output.connectTo(reliefNormalScale.gradient);
   const normalXScaled = new ScaleBlock("normal x exaggerated");
   worldNormalSplit.x.connectTo(normalXScaled.input);
   reliefNormalScale.output.connectTo(normalXScaled.factor);
@@ -767,16 +853,6 @@ export function buildGroundMaterial(scene: Scene, groundUtilityTexture: Texture 
   specMountain.output.connectTo(specLerp.right);
   mountainBlend.output.connectTo(specLerp.gradient);
 
-  // ========== Light block ==========
-  const light = new LightBlock("Lights");
-  worldPos.output.connectTo(light.worldPosition);
-  perturbNormal.output.connectTo(light.worldNormal);
-  cameraPosition.output.connectTo(light.cameraPosition);
-  glossPow.output.connectTo(light.glossiness);
-  glossPower.output.connectTo(light.glossPower);
-  diffusePath.output.connectTo(light.diffuseColor);
-  specLerp.output.connectTo(light.specularColor);
-
   // Time for animation (shore foam, cloud shadows)
   const foamTime = cloudTimeInput(scene, mat, "FoamTime");
 
@@ -786,50 +862,14 @@ export function buildGroundMaterial(scene: Scene, groundUtilityTexture: Texture 
   const cloudShade = cloudShadeNode(worldXZ.xy, foamTime.output);
 
   // ========== Lighting ==========
-  // Sun: dimmed under clouds, and a little in hollows (the sky visibility also stands for the light
-  // that the ground around a hollow blocks at grazing angles).
-  const skyForSun = new LerpBlock("sky for sun");
-  floatInput("one", 1).output.connectTo(skyForSun.left);
-  reliefSplit.x.connectTo(skyForSun.right);
-  floatInput("sun occlusion", 0.4).output.connectTo(skyForSun.gradient);
-  const sunShade = new MultiplyBlock("sun shade");
-  cloudShade.connectTo(sunShade.left);
-  skyForSun.output.connectTo(sunShade.right);
-  const sunDiffuse = new ScaleBlock("sun diffuse");
-  light.diffuseOutput.connectTo(sunDiffuse.input);
-  sunShade.output.connectTo(sunDiffuse.factor);
-  const sunSpecular = new ScaleBlock("sun specular");
-  light.specularOutput.connectTo(sunSpecular.input);
-  cloudShade.connectTo(sunSpecular.factor);
-
-  // Sky light: cool from above, warm bounce from below, held back where the land around hides the sky.
-  // There was no ambient term before, so shadowed ground fell to 40% of the sun and nothing else.
-  const hemiGradient = new ScaleBlock("hemi gradient");
-  worldNormalSplit.y.connectTo(hemiGradient.input);
-  floatInput("half", 0.5).output.connectTo(hemiGradient.factor);
-  const hemiGradientOffset = new AddBlock("hemi gradient offset");
-  hemiGradient.output.connectTo(hemiGradientOffset.left);
-  floatInput("half offset", 0.5).output.connectTo(hemiGradientOffset.right);
-  const hemiColor = new LerpBlock("hemi color");
-  color3Input("ground bounce", 0.32, 0.27, 0.20).output.connectTo(hemiColor.left);
-  color3Input("sky color", 0.52, 0.53, 0.52).output.connectTo(hemiColor.right);
-  hemiGradientOffset.output.connectTo(hemiColor.gradient);
-  const ambientLight = new ScaleBlock("ambient light");
-  hemiColor.output.connectTo(ambientLight.input);
-  reliefSplit.x.connectTo(ambientLight.factor);
-  const ambientStrength = new ScaleBlock("ambient strength");
-  ambientLight.output.connectTo(ambientStrength.input);
-  floatInput("ambient intensity", 0.3).output.connectTo(ambientStrength.factor);
-  const ambient = new MultiplyBlock("ambient");
-  diffusePath.output.connectTo(ambient.left);
-  ambientStrength.output.connectTo(ambient.right);
-
-  const sunLight = new AddBlock("sun light");
-  sunDiffuse.output.connectTo(sunLight.left);
-  sunSpecular.output.connectTo(sunLight.right);
-  const addLighting = new AddBlock("Add");
-  sunLight.output.connectTo(addLighting.left);
-  ambient.output.connectTo(addLighting.right);
+  // Shared with the rock models (terrain-light.ts). The relief's sky visibility holds the sun back a
+  // little in hollows and the sky light more; there was no sky term before, so shadowed ground fell to
+  // 40% of the sun and nothing else.
+  const lighting = terrainLight({
+    worldPosition: worldPos.output, cameraPosition: cameraPosition.output, litNormal: perturbNormal.output,
+    normalY: worldNormalSplit.y, diffuse: diffusePath.output, specular: specLerp.output,
+    glossiness: glossPow.output, glossPower: glossPower.output, skyVisibility: reliefSplit.x, cloudShade,
+  });
 
   // ========== Shore foam overlay (UV2.x = signed distance to shoreline) ==========
   const uv2 = new InputBlock("uv2");
@@ -891,7 +931,16 @@ export function buildGroundMaterial(scene: Scene, groundUtilityTexture: Texture 
   // Foam alpha = textureAlpha * foamFade * foamOpacity
   const foamAlphaFaded = new MultiplyBlock("foam alpha faded");
   foamTex.a.connectTo(foamAlphaFaded.left);
-  foamFade.output.connectTo(foamAlphaFaded.right);
+  // The surf runs up the sand, never onto grass or earth (land mask: neither beach nor sea floor)
+  const foamOnLand = new MultiplyBlock("foam on land");
+  landMask.output.connectTo(foamOnLand.left);
+  floatInput("foam land mask strength", 1).output.connectTo(foamOnLand.right);
+  const foamNotOnLand = new OneMinusBlock("foam not on land");
+  foamOnLand.output.connectTo(foamNotOnLand.input);
+  const foamFadeMasked = new MultiplyBlock("foam fade masked");
+  foamFade.output.connectTo(foamFadeMasked.left);
+  foamNotOnLand.output.connectTo(foamFadeMasked.right);
+  foamFadeMasked.output.connectTo(foamAlphaFaded.right);
 
   const foamAlpha = new ScaleBlock("foam alpha");
   foamAlphaFaded.output.connectTo(foamAlpha.input);
@@ -902,7 +951,7 @@ export function buildGroundMaterial(scene: Scene, groundUtilityTexture: Texture 
 
   // Lerp ground to foam RGB based on alpha
   const finalColor = new LerpBlock("Lerp foam over ground");
-  addLighting.output.connectTo(finalColor.left);
+  lighting.connectTo(finalColor.left);
   foamTex.rgb.connectTo(finalColor.right);
   foamAlphaClamped.output.connectTo(finalColor.gradient);
 

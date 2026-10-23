@@ -162,7 +162,7 @@ The noise texture (`ground-splatter.jpg`) adds organic irregularity. The `smooth
 
 **Beach textures:** The beach uses dedicated diffuse (`ground-beach-diffuse.jpg`) and normal (`ground-beach-norm.jpg`) textures instead of a flat color. A UV scale of 4 controls texture tiling.
 
-**Wet sand effect:** Near the waterline, the beach diffuse is darkened to 90% to simulate wet sand. This uses a `smoothstep(0.15, -0.5, position.y)` — the effect transitions from dry sand (above y=0.15) through the waterline into shallow underwater (y=-0.5). The darkened texture is also used for the shallow underwater sand blend.
+**Wet sand effect:** Near the waterline the beach diffuse is darkened to 72%: by height (`smoothstep(0.15, -0.5, position.y)`) and by shore distance - a band up to `SHORE.WET_WIDTH` (1.2 m) inland from the waterline, frayed by the fine noise, where the surf runs. The darkened texture is also used for the shallow underwater sand blend.
 
 **Wet sand bump reduction:** In a zone near the shoreline (controlled by UV2.x shore distance), the bump strength is reduced from the normal beach value (0.44) to near-flat (0.05), creating the smooth wet sand appearance seen on real beaches.
 
@@ -179,13 +179,29 @@ Where `beachStep = 0` → sand, `beachStep = 1` → grass/terrain. The splatter 
 
 The height bias factor (1.2×) makes higher terrain favor grass and lower terrain favor sand.
 
+**Shore strip:** Most of the coast rises past the sand height within a metre or two of the water, so by height alone grass and earth ran into the sea and the surf broke on them. The shore distance (UV2.x) adds a strip of sand along every waterline: `shoreLand = smoothstep(-0.35, 0.35, dist - 2.6 - patch * 1.0 - fine * 0.35)` (`SHORE` in `ground-rules.ts`, 0.7-4 m wide), multiplied into `beachStep`. Rock keeps its place (`max(shoreLand, mountainBlend)`), growth under plants stays off the strip, and the sprites read the same rule (`shoreLand`), so no grass tuft stands in it. The shore foam is masked by the land mask (beach step x underwater step): it runs up the sand, never over grass or earth.
+
 **Grass edge shadow:** A darkening strip (80% brightness) is applied on the sand side near the grass edge (`beachStep 0.3–0.5`), simulating the shadow cast by raised grass onto the sand below.
 
-**Underwater blending:** A `smoothstep(0.0, 0.1, position.y)` determines the underwater factor. Below water level, a depth gradient replaces the land diffuse color. In the shallow underwater zone (y=0 to y=-1), the sand texture is blended over the gradient for a natural sand-to-water transition.
+**Underwater blending:** A `smoothstep(0.0, 0.1, position.y)` determines the underwater factor. Below water level, a depth gradient replaces the land diffuse color. In the very shallow zone (y=0 to y=-0.35), the sand texture is blended over the gradient for a natural sand-to-water transition.
+
+**Bright sand:** Within 4 m of the water (fading out by 9 m) the sand texture is lerped 40% toward a pale coral white (0.97, 0.94, 0.86); the sand patches inland keep the texture's brown.
 
 ### Underwater Depth Gradient
 
-Uses `position.y` scaled by 0.1 to drive a color gradient:
+Uses `position.y` scaled by 0.1 to drive a color gradient - the lagoon, clear tropical shallows over sand (`lagoon strength` 1):
+
+| Depth (y)  | Gradient | Color                          |
+|------------|----------|--------------------------------|
+| 0.0m       | 0.0      | Light sand (0.93, 0.90, 0.82) |
+| -0.2m      | 0.02     | Pale aqua                      |
+| -0.6m      | 0.06     | Turquoise (0.45, 0.87, 0.86)  |
+| -1.5m      | 0.15     | Deep turquoise                 |
+| -3.5m      | 0.35     | Blue                           |
+| -6.5m      | 0.65     | Deep blue                      |
+| -10.0m     | 1.0      | Deep (0.02, 0.07, 0.18)        |
+
+The earlier gradient (green-grey water, still in the shader for the showcase's "seaFloor off"):
 
 | Depth (y)  | Gradient | Color                          |
 |------------|----------|--------------------------------|
@@ -196,7 +212,7 @@ Uses `position.y` scaled by 0.1 to drive a color gradient:
 | -6.0m      | 0.60     | Dark blue                      |
 | -10.0m     | 1.0      | Near black                     |
 
-In the shallow zone (y=0 to y=-1), the sand diffuse texture (darkened) is blended over the gradient, providing a textured sand floor visible through shallow water.
+In the very shallow zone (y=0 to y=-0.35, before: -1), the sand diffuse texture (darkened) is blended over the gradient. Below that the gradient is shaded by the brightness of the sand texture (luminance over its mean, 0.68), fading out between -1 m and -7 m, so the sea floor stays sand rather than a flat colour, and the underwater bump strength (0.3) lets its ripples catch the sun.
 
 **Normal mapping:** Separate normal maps per layer (beach, ground upper/under, mountain triplanar) are blended with the same lerp chain. The ground-under normal has its green channel flipped (DirectX → OpenGL convention). Bump strengths: beach 0.44, ground upper 0.4, ground under 2.0, mountain 1.5, underwater 0.05. At the upper/under transition, the splatter normal (derived from screen-space derivatives, strength 0.3) is blended in for 3D edge depth. Near the shoreline, the wet sand zone reduces bump to 0.05 for a smooth flat appearance.
 
@@ -328,6 +344,10 @@ A separate transparent mesh sits just above the water surface (`y = 0.02`) with 
 - **Threshold** (`smoothstep(0.15, 0.35)`) on multiplied noise — only where both layers are bright, whitecaps appear
 - **Procedural foam texture** (generated at runtime) providing bubbly/frothy detail within each patch
 - **Water mask** — only visible where ground height < 0 (underwater areas)
+
+### Caustics
+
+The whitecap overlay also draws caustics, the net of light the waves focus onto a shallow sea floor: `water-caustics.webp` (Worley F2 - F1 veins, generated by `razarion-ai-content/scripts/caustics-texture.mjs`) sampled twice at 32 and 26 repeats per tile (whole repeats, so tile seams match), drifting apart, and the minimum of the two taken - where the nets cross the light flickers. Ground depth from UV2.x limits them to 0.05-5 m, strongest at 0.5-2.5 m. On the surface plane rather than the floor: at the game camera the parallax over two metres of water does not show, and the ground shader has no texture unit left.
 
 ### Water Material Tuning
 

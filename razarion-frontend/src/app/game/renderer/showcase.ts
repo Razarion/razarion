@@ -1,6 +1,8 @@
 import type {Scene} from "@babylonjs/core/scene";
 import type {Material} from "@babylonjs/core/Materials/material";
 import {NodeMaterial} from "@babylonjs/core/Materials/Node/nodeMaterial";
+import {TriPlanarBlock} from "@babylonjs/core/Materials/Node/Blocks/triPlanarBlock";
+import {Texture} from "@babylonjs/core/Materials/Textures/texture";
 import {InputBlock} from "@babylonjs/core/Materials/Node/Blocks/Input/inputBlock";
 import type {DirectionalLight} from "@babylonjs/core/Lights/directionalLight";
 import {ImageProcessingPostProcess} from "@babylonjs/core/PostProcesses/imageProcessingPostProcess";
@@ -18,10 +20,13 @@ import {WindPlugin} from "./wind-plugin";
  * light, neutral tints for relief, zero strength for clouds, wind, paths and growth. The hills are in
  * the height map and cannot be switched here. The bot features switch the bot-ground plates back to
  * the dashed border per 8 m box (botMarkings), to the raw asphalt photo (botAsphalt) and to no cloud
- * shadows on the plates (botClouds) and to no gravel bed around them (botGravel).
+ * shadows on the plates (botClouds) and to no gravel bed around them (botGravel). rockMaterial switches the
+ * cliffs back to the brown Rock1 copy without moss and the rock models back to their own glb colours.
+ * shoreSand drops the sand strip along the waterline (sand by height only, surf over grass), seaFloor the
+ * textured sea floor, its ripples and the caustics.
  */
-export type ShowcaseFeature = "light" | "clouds" | "relief" | "wind" | "paths" | "growth" | "botMarkings" | "botAsphalt" | "botClouds" | "botGravel";
-export const SHOWCASE_FEATURES: ShowcaseFeature[] = ["light", "clouds", "relief", "wind", "paths", "growth", "botMarkings", "botAsphalt", "botClouds", "botGravel"];
+export type ShowcaseFeature = "light" | "clouds" | "relief" | "wind" | "paths" | "growth" | "botMarkings" | "botAsphalt" | "botClouds" | "botGravel" | "rockMaterial" | "shoreSand" | "seaFloor";
+export const SHOWCASE_FEATURES: ShowcaseFeature[] = ["light", "clouds", "relief", "wind", "paths", "growth", "botMarkings", "botAsphalt", "botClouds", "botGravel", "rockMaterial", "shoreSand", "seaFloor"];
 
 /** What the showcase needs of BabylonRenderServiceAccessImpl. */
 export interface ShowcaseRenderer {
@@ -43,10 +48,18 @@ const GROUND_OFF: Record<ShowcaseFeature, Record<string, BlockValue>> = {
   botAsphalt: {"grain strength": 0},
   botClouds: {"bot cloud shadow strength": 0},
   botGravel: {},   // the gravel meshes, see applyScene
+  rockMaterial: {"rock moss strength": 0, "triplanar scale": 0.2, "triplanar sharpness": 1},   // and TEXTURE_OFF; the models read isOn
+  shoreSand: {"shore sand strength": 0, "wet shore strength": 0, "wet sand darken": 0.9, "wet diffuse e0": 0.15, "foam land mask strength": 0, "sand brighten": 0},   // the sprites read isOn
+  seaFloor: {"sea floor strength": 0, "strength underwater": 0.05, "caustic strength": 0, "lagoon strength": 0, "shallow sand edge0": -1, "shallow sand edge1": -0.1},
+};
+
+/** Textures of ground-material.ts blocks with the feature off. */
+const TEXTURE_OFF: Partial<Record<ShowcaseFeature, Record<string, string>>> = {
+  rockMaterial: {"TriPlanar diffuse": "renderer/textures/ground-mountain-diffuse.webp", "TriPlanar norm": "renderer/textures/ground-mountain-norm.jpg"},
 };
 
 /** The materials the inputs above live in. */
-const SWITCHED_MATERIALS = ["Ground", "BotGround top", "BotGround side"];
+const SWITCHED_MATERIALS = ["Ground", "BotGround top", "BotGround side", "Whitecaps"];
 
 /** The sun before it was lowered and warmed (commit bde8a8c9a). */
 const OLD_SUN = {direction: new Vector3(-3, -10, 3), intensity: 0.8, diffuse: new Color3(1, 1, 1)};
@@ -72,6 +85,11 @@ export class Showcase {
   private static readonly registered = new WeakSet<Material>();
   /** The value each ground input had when first switched, per material: that is "on". */
   private static readonly onValues = new WeakMap<InputBlock, BlockValue>();
+  /** The texture each switched texture block had when first switched: that is "on". */
+  private static readonly onTextures = new WeakMap<TriPlanarBlock, Texture | null>();
+  private static readonly offTextures = new Map<string, Texture>();
+  /** Switches that are not shader inputs, kept by the module that owns them (rock-material.ts). */
+  private static readonly listeners: { feature: ShowcaseFeature, apply: (on: boolean) => void }[] = [];
 
   /** The director activates before the renderer has its scene and sun; they are read at the first switch. */
   static install(renderer: ShowcaseRenderer): void {
@@ -84,6 +102,8 @@ export class Showcase {
       features: SHOWCASE_FEATURES,
       keepShadows: (keep: boolean) => Showcase.keepShadows = keep,
       hideGui: (hide: boolean) => Showcase.hideGui(hide),
+      /** The scene, for looking into a shot from the recording scripts. */
+      scene: () => Showcase.renderer?.getScene(),
       /** The whole scene as a wire model - the technical shots of a devlog. */
       wireframe: (on: boolean) => {
         const scene = Showcase.renderer?.getScene();
@@ -114,6 +134,12 @@ export class Showcase {
     }
     Showcase.applyScene();
     Showcase.scene?.materials.forEach(m => Showcase.applyToGround(m));
+    Showcase.listeners.filter(l => l.feature === feature).forEach(l => l.apply(on));
+  }
+
+  /** Called with the new state whenever the feature is switched. */
+  static listen(feature: ShowcaseFeature, apply: (on: boolean) => void): void {
+    Showcase.listeners.push({feature, apply});
   }
 
   /** A material that is not named like the ones above but carries switchable inputs. */
@@ -138,6 +164,19 @@ export class Showcase {
           Showcase.onValues.set(block, Showcase.copy(block.value));
         }
         block.value = Showcase.copy(Showcase.off.has(feature) ? offValue : Showcase.onValues.get(block)!);
+      }
+      for (const [name, url] of Object.entries(TEXTURE_OFF[feature] ?? {})) {
+        const block = material.getBlockByName(name);
+        if (!(block instanceof TriPlanarBlock)) {
+          continue;
+        }
+        if (!Showcase.onTextures.has(block)) {
+          Showcase.onTextures.set(block, block.texture);
+        }
+        if (!Showcase.offTextures.has(url)) {
+          Showcase.offTextures.set(url, new Texture(url, material.getScene()));
+        }
+        block.texture = Showcase.off.has(feature) ? Showcase.offTextures.get(url)! : Showcase.onTextures.get(block)!;
       }
     }
   }

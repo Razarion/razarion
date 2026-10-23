@@ -47,6 +47,8 @@ const SHAPES = {
 const SERIES = {
   terrain: ['light', 'clouds', 'relief', 'wind', 'paths', 'growth'],
   bot: ['botMarkings', 'botAsphalt', 'botClouds', 'botGravel'],
+  rock: ['rockMaterial'],
+  beach: ['shoreSand', 'seaFloor'],
 };
 
 /**
@@ -98,6 +100,46 @@ const SHOTS = {
     about: 'bot: a large Phase 3 plate (Occupy 5m), high and wide',
     series: 'bot', target: [1608, 248], height: 4, shadows: 'off',
     keys: [{ alpha: Math.PI - 0.3, beta: 0.9, radius: 95 }, { alpha: Math.PI + 0.2, beta: 0.8, radius: 85 }],
+  },
+  pond: {
+    about: 'rock: boulders and a low cliff at a pond, slow turn',
+    series: 'rock', target: [690, 562], height: 4,
+    keys: [{ alpha: Math.PI - 0.45, beta: 0.85, radius: 46 }, { alpha: Math.PI - 0.05, beta: 0.75, radius: 40 }],
+  },
+  tower: {
+    about: 'rock: a tall rock standing against a cliff edge',
+    series: 'rock', target: [553, 506], height: 3,
+    keys: [{ alpha: Math.PI - 0.5, beta: 0.8, radius: 40 }, { alpha: Math.PI - 0.1, beta: 0.72, radius: 34 }],
+  },
+  lake: {
+    about: 'rock: a cliff ring around a lake',
+    series: 'rock', target: [741, 563], height: 4, shadows: 'off',
+    keys: [{ alpha: Math.PI + 0.45, beta: 0.85, radius: 55 }, { alpha: Math.PI + 0.1, beta: 0.75, radius: 48 }],
+  },
+  shore: {
+    about: 'beach: grass running down to the water on the east coast',
+    series: 'beach', target: [255, 170], height: 0.5,
+    keys: [{ alpha: -1.45, beta: 0.72, radius: 40 }, { alpha: -1.15, beta: 0.66, radius: 34 }],
+  },
+  cove: {
+    about: 'beach: the north cove with its islet, shallows and surf',
+    series: 'beach', target: [262, 58], height: 0.5,
+    keys: [{ alpha: Math.PI - 0.1, beta: 0.82, radius: 42 }, { alpha: Math.PI + 0.25, beta: 0.74, radius: 36 }],
+  },
+  strand: {
+    about: 'beach: the long south-west beach with grass patches',
+    series: 'beach', target: [125, 245], height: 0.5,
+    keys: [{ alpha: Math.PI - 0.15, beta: 0.8, radius: 44 }, { alpha: Math.PI + 0.15, beta: 0.72, radius: 38 }],
+  },
+  shallows: {
+    about: 'beach: over the shallow sea floor in the west, low',
+    series: 'beach', target: [45, 285], height: 0, shadows: 'off',
+    keys: [{ alpha: Math.PI + 0.25, beta: 0.78, radius: 46 }, { alpha: Math.PI + 0.5, beta: 0.7, radius: 40 }],
+  },
+  ridge: {
+    about: 'rock: a rock ridge in the south-west, low',
+    series: 'rock', target: [117, 800], height: 6,
+    keys: [{ alpha: Math.PI - 0.4, beta: 0.8, radius: 55 }, { alpha: Math.PI, beta: 0.7, radius: 48 }],
   },
 };
 

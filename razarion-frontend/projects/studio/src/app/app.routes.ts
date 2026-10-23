@@ -4,6 +4,7 @@ import {ThumbnailsTaskComponent} from './tasks/thumbnails-task.component';
 import {SceneComposerTaskComponent} from './tasks/scene-composer-task.component';
 import {RadiusTaskComponent} from './tasks/radius-task.component';
 import {DirectorTaskComponent} from './tasks/director-task.component';
+import {TerrainLabTaskComponent} from './tasks/terrain-lab-task.component';
 
 export const routes: Routes = [
   {
@@ -14,6 +15,7 @@ export const routes: Routes = [
       {path: 'scenes', component: SceneComposerTaskComponent},
       {path: 'radius', component: RadiusTaskComponent},
       {path: 'director', component: DirectorTaskComponent},
+      {path: 'terrain-lab', component: TerrainLabTaskComponent},
       {path: '', redirectTo: 'thumbnails', pathMatch: 'full'}
     ]
   },
