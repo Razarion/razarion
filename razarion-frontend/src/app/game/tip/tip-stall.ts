@@ -27,6 +27,8 @@ export const TipTaskName = {
   SEND_SELL_COMMAND: 'SEND_SELL_COMMAND',
   /** Unlocking units with crystals (405): the unlock button, on a phone behind the menu. */
   SEND_UNLOCK_COMMAND: 'SEND_UNLOCK_COMMAND',
+  /** Picking up a box (404): select a unit, then tap the box. */
+  SEND_PICK_BOX_COMMAND: 'SEND_PICK_BOX_COMMAND',
   IDLE_ITEM: 'IDLE_ITEM'
 } as const;
 
@@ -115,6 +117,11 @@ export const TipStallReason = {
   AWAIT_SELL_CLICK: 'AWAIT_SELL_CLICK',
   /** The hint stands on the unlock button (or the menu, or the dialog's Unlock); not pressed. */
   AWAIT_UNLOCK_CLICK: 'AWAIT_UNLOCK_CLICK',
+  /** No box anywhere on the planet: they drop now and then, the tip waits for the next one. */
+  NO_BOX: 'NO_BOX',
+  BOX_OUT_OF_VIEW: 'BOX_OUT_OF_VIEW',
+  /** A unit is selected and the prompt stands on the box; the player has not tapped it. */
+  AWAIT_PICK_BOX_CLICK: 'AWAIT_PICK_BOX_CLICK',
   /** The group tip is up and the player has not put a second unit into the selection yet. */
   AWAIT_GROUP: 'AWAIT_GROUP',
   /**

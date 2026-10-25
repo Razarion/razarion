@@ -15,7 +15,7 @@ import {TipStallReason, TipTaskName} from '../tip-stall';
  * LOAD, SAIL and UNLOAD are the three steps off the noob island (quest 392 split in three): the
  * actor is the unit that crosses, the container is whatever can carry it.
  */
-export type TipKind = 'BUILD' | 'FABRICATE' | 'HARVEST' | 'ATTACK' | 'LOAD' | 'SAIL' | 'UNLOAD' | 'SELL' | 'CLEAR' | 'UNLOCK';
+export type TipKind = 'BUILD' | 'FABRICATE' | 'HARVEST' | 'ATTACK' | 'LOAD' | 'SAIL' | 'UNLOAD' | 'SELL' | 'CLEAR' | 'UNLOCK' | 'BOX';
 
 export interface TipQuestSpec {
   questId: number | null;
@@ -36,7 +36,7 @@ export interface TipQuestSpec {
 
 /** An order this client sent that the engine may not have taken up yet (W8). */
 export interface PendingOrder {
-  kind: 'attack' | 'harvest' | 'build' | 'finalize' | 'fabricate' | 'move' | 'load' | 'unload' | 'other';
+  kind: 'attack' | 'harvest' | 'build' | 'finalize' | 'fabricate' | 'move' | 'load' | 'unload' | 'pickBox' | 'other';
   /** The quest-relevant type of the order: what is attacked, built or fabricated. */
   targetTypeId: number | null;
   /** The engine has reported the unit busy since the order - it arrived. */
@@ -48,7 +48,7 @@ export interface Point {
   y: number;
 }
 
-/** A resource field the harvest tip can point at. An id only when it is rendered, for the prompt. */
+/** A resource field the harvest tip, or a box the box tip, can point at. An id only when it is rendered, for the prompt. */
 export interface ResourcePoint extends Point {
   id: number | null;
 }
@@ -74,6 +74,9 @@ export interface DecisionInput {
   /** HARVEST: fields on screen, and the nearest field anywhere as the worker knows it. */
   resourcesOnScreen: ResourcePoint[];
   nearestResource: (from: Point) => Point | null;
+  /** BOX: boxes on screen, and the nearest box anywhere. Optional for the callers that never ask. */
+  boxesOnScreen?: ResourcePoint[];
+  nearestBox?: (from: Point) => Point | null;
   /** BUILD with a region (386): where the arrow goes and whether the region is in view. */
   region: { point: Point | null, inView: boolean } | null;
   /**
@@ -107,7 +110,8 @@ export interface DecisionInput {
 
 export type Guidance =
   { kind: 'quiet' } |
-  { kind: 'prompt', itemId: number, resource: boolean, text: string } |
+  /** box: the prompt stands on a box, not on a base item (resource: on a resource field). */
+  { kind: 'prompt', itemId: number, resource: boolean, text: string, box?: boolean } |
   { kind: 'arrow', x: number, y: number } |
   { kind: 'button', itemTypeId: number } |
   /** reach: the part of the region the unload placer takes is marked, not the whole region. */
@@ -137,7 +141,8 @@ export const PROMPT = {
   ATTACK: 'Click to attack',
   HARVEST: 'Click to harvest',
   CONTINUE_BUILDING: 'Click to continue building',
-  LOAD: 'Click to load'
+  LOAD: 'Click to load',
+  PICK_BOX: 'Click to pick up'
 } as const;
 
 export function decide(input: DecisionInput): Decision {
@@ -162,6 +167,8 @@ export function decide(input: DecisionInput): Decision {
       return decideClear(input);
     case 'UNLOCK':
       return {guidance: {kind: 'unlock'}, taskName: TipTaskName.SEND_UNLOCK_COMMAND, reason: TipStallReason.AWAIT_UNLOCK_CLICK};
+    case 'BOX':
+      return decideBox(input);
   }
 }
 
@@ -391,6 +398,48 @@ function harvestStep(input: DecisionInput, harvesters: TipItemState[]): Decision
     guidance: {kind: 'arrow', x: field.x, y: field.y},
     taskName: TipTaskName.SEND_HARVEST_COMMAND,
     reason: TipStallReason.RESOURCE_OUT_OF_VIEW
+  };
+}
+
+// --- BOX ------------------------------------------------------------------------------------------
+
+/**
+ * Picking up a box (404). Any unit that moves can pick one up; the tip asks for the actor type, the
+ * vipers the player has at that level. No tip on 404 until 2026-10-25, and 11 of 35 never found a
+ * box - half of the boxes expired where nobody looked (PROD game_history). Boxes drop now and then:
+ * with none on the planet the tip waits quietly.
+ */
+function decideBox(input: DecisionInput): Decision {
+  const units = own(input, input.quest.actorTypeId);
+  if (units.length === 0) {
+    return replaceActor(input, input.quest.actorTypeId);
+  }
+  // Only an order this client sent: a viper busy with a fight is not on its way to a box.
+  if (units.some(unit => input.orders.get(unit.id)?.kind === 'pickBox')) {
+    return quiet(TipTaskName.IDLE_ITEM, TipStallReason.AWAIT_IDLE);
+  }
+  const selected = units.filter(unit => input.selectedIds.has(unit.id));
+  const from = selected.length > 0 ? centroid(selected) : centroid(units);
+  const boxesOnScreen = input.boxesOnScreen ?? [];
+  const visible = boxesOnScreen.length > 0 ? nearestTo(boxesOnScreen, from) : null;
+  const box = visible ?? input.nearestBox?.(from) ?? null;
+  if (!box) {
+    return quiet(TipTaskName.SEND_PICK_BOX_COMMAND, TipStallReason.NO_BOX);
+  }
+  if (selected.length === 0) {
+    return selectStep(input, units);
+  }
+  if (visible && visible.id !== null) {
+    return {
+      guidance: {kind: 'prompt', itemId: visible.id, resource: false, box: true, text: PROMPT.PICK_BOX},
+      taskName: TipTaskName.SEND_PICK_BOX_COMMAND,
+      reason: TipStallReason.AWAIT_PICK_BOX_CLICK
+    };
+  }
+  return {
+    guidance: {kind: 'arrow', x: box.x, y: box.y},
+    taskName: TipTaskName.SEND_PICK_BOX_COMMAND,
+    reason: TipStallReason.BOX_OUT_OF_VIEW
   };
 }
 

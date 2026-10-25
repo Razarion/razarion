@@ -107,9 +107,13 @@ public class PathingNodeWrapper {
         return nodeIndex.equals(other.nodeIndex);
     }
 
+    /**
+     * Not Index.hashCode() (31 * x + y): on the node grid that repeats every 31 columns, and the closed
+     * and open lists of A* - tens of thousands of neighbouring nodes - ended up in long bucket chains.
+     */
     @Override
     public int hashCode() {
-        return nodeIndex.hashCode();
+        return nodeIndex.getX() * 0x9E3779B1 + nodeIndex.getY();
     }
 
     @Override

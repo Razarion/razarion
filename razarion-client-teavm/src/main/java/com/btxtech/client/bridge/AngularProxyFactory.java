@@ -11,6 +11,7 @@ import com.btxtech.uiservice.Diplomacy;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.inventory.InventoryUiService;
 import com.btxtech.uiservice.item.BaseItemUiService;
+import com.btxtech.uiservice.item.BoxUiService;
 import com.btxtech.uiservice.item.ResourceUiService;
 import com.btxtech.uiservice.questvisualization.InGameQuestVisualizationService;
 import com.btxtech.uiservice.terrain.InputService;
@@ -302,6 +303,13 @@ public class AngularProxyFactory {
         JsObject proxy = JsObject.create();
         setMethod2DObj(proxy, "getNearestResourcePosition", (x, y) ->
                 DtoConverter.convertVertex(service.getNearestResourcePosition(x, y)));
+        return proxy;
+    }
+
+    public static JSObject createBoxUiServiceProxy(BoxUiService service) {
+        JsObject proxy = JsObject.create();
+        setMethod2DObj(proxy, "getNearestBoxPosition", (x, y) ->
+                DtoConverter.convertVertex(service.getNearestBoxPosition(x, y)));
         return proxy;
     }
 
