@@ -52,11 +52,18 @@ async function pasteFallback(expectedState) {
 /**
  * Runs the browser half of an authorisation-code flow and resolves with the code.
  * Starts a one-shot local server on `port` unless `manual` is set.
+ *
+ * `onAuthUrl` hands the authorisation page to the caller instead of opening a browser: the
+ * engine's dashboard redirects the click that started the flow there (pipeline/engine.mjs). The
+ * local server is already listening when it is called. `doneUrl` is linked from the page the
+ * browser lands on afterwards.
  */
-export async function authorise({ authUrl, port, state, manual = false }) {
-  step('Opening the authorisation page in your browser.');
-  console.log('\nIf nothing opens, visit this URL yourself:\n' + authUrl + '\n');
-  openBrowser(authUrl);
+export async function authorise({ authUrl, port, state, manual = false, onAuthUrl = null, doneUrl = null }) {
+  if (!onAuthUrl) {
+    step('Opening the authorisation page in your browser.');
+    console.log('\nIf nothing opens, visit this URL yourself:\n' + authUrl + '\n');
+    openBrowser(authUrl);
+  }
 
   if (manual) return pasteFallback(state);
 
@@ -76,7 +83,8 @@ export async function authorise({ authUrl, port, state, manual = false }) {
         `<!doctype html><meta charset="utf-8"><title>Razarion</title>` +
           `<body style="font-family:system-ui;padding:3rem;background:#111;color:#eee">` +
           `<h1>${code ? 'Authorised' : 'Authorisation failed'}</h1>` +
-          `<p>${code ? 'You can close this tab and return to the terminal.' : error || 'No code returned.'}</p>`
+          `<p>${code ? (doneUrl ? 'Done.' : 'You can close this tab and return to the terminal.') : error || 'No code returned.'}</p>` +
+          (doneUrl ? `<p><a style="color:#6aa0ff" href="${doneUrl}">Back to the dashboard</a></p>` : '')
       );
       server.close();
 
@@ -87,7 +95,7 @@ export async function authorise({ authUrl, port, state, manual = false }) {
     });
 
     server.on('error', reject);
-    server.listen(port, '127.0.0.1');
+    server.listen(port, '127.0.0.1', () => onAuthUrl?.(authUrl));
     // Nobody sits at a terminal for five minutes; failing loudly beats hanging forever.
     setTimeout(() => {
       server.close();

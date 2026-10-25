@@ -5,6 +5,8 @@ rem 1. scheduled\run.ps1: check the token, fill the queue (plan.mjs), upload med
 rem    one approved post per network - exactly what the schedule does.
 rem 2. Then the review page opens for whatever the run made.
 rem    Keep this window open while you need the page; closing it stops the page.
+rem While the engine runs (scheduled\install-engine.ps1), both steps only open its dashboard:
+rem run.ps1 steps aside, and review.mjs finds the port taken and opens the page that is there.
 
 cd /d "%~dp0"
 title Razarion Social

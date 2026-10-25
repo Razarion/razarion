@@ -44,3 +44,31 @@ export function isOpen(post) {
 export function isWaiting(post) {
   return Object.values(post.entries).some((e) => e.state === 'review');
 }
+
+/**
+ * Per network, how many entries will still go out: approved ones, and ones on "review" that the
+ * auto-approval has not held back (lib/approve.mjs). A held one waits for a person and may wait
+ * for ever, so it does not keep the planner from making the next.
+ */
+export function pendingPerNetwork(queue = loadQueue()) {
+  const counts = Object.fromEntries(Object.keys(REVIEW_TARGETS).map((n) => [n, 0]));
+  for (const post of queue) {
+    for (const [net, e] of Object.entries(post.entries)) {
+      if (e.state === 'ok' || (e.state === 'review' && !e.entry.held)) counts[net]++;
+    }
+  }
+  return counts;
+}
+
+/**
+ * How full the buffer is: the emptiest of the enabled networks that take every post. Counting a
+ * post as open while any one network still lacks it let a single stuck network - YouTube with an
+ * expired token, October 2026 - fill the buffer for all of them, and the planner made nothing for
+ * two weeks. YouTube only takes clips, so it never decides unless it is the only one enabled.
+ */
+export function bufferLevel(networks = { x: true, ig: true, fb: true, yt: true }, queue = loadQueue()) {
+  const counts = pendingPerNetwork(queue);
+  const every = ['x', 'ig', 'fb'].filter((n) => networks[n]);
+  const deciding = every.length ? every : ['yt'].filter((n) => networks[n]);
+  return { level: deciding.length ? Math.min(...deciding.map((n) => counts[n])) : 0, counts, deciding };
+}

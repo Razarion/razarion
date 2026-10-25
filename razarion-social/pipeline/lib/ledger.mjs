@@ -91,6 +91,9 @@ export function record(ledger, item) {
     // a later comparison of reach per tone reads.
     ...(item.tone ? { tone: item.tone } : {}),
     ...(item.note ? { note: item.note } : {}),
+    // Made unattended by the planner, so the auto-approval may let it out (lib/approve.mjs). A post
+    // made by hand stays on "review" for whoever made it.
+    ...(item.auto ? { auto: true } : {}),
   };
   const at = ledger.items.findIndex((e) => e.id === entry.id);
   if (at >= 0) ledger.items[at] = { ...ledger.items[at], ...entry };

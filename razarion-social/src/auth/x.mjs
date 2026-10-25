@@ -19,7 +19,8 @@ const redirectUri = () => env.X_REDIRECT_URI || `http://127.0.0.1:${port()}`;
 
 const basicAuth = (id, secret) => 'Basic ' + Buffer.from(`${id}:${secret}`).toString('base64');
 
-export async function authoriseX() {
+/** `options` go to authorise() in loopback.mjs: onAuthUrl and doneUrl, for the dashboard. */
+export async function authoriseX(options = {}) {
   const [clientId, clientSecret] = requireEnv('X_CLIENT_ID', 'X_CLIENT_SECRET');
   const state = randomUrlSafe(16);
   const { verifier, challenge } = pkcePair();
@@ -37,7 +38,7 @@ export async function authoriseX() {
       code_challenge_method: 'S256',
     });
 
-  const code = await authorise({ authUrl, port: port(), state });
+  const code = await authorise({ authUrl, port: port(), state, ...options });
   const token = await postForm(
     TOKEN_URL,
     {

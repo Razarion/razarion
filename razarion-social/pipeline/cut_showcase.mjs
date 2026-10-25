@@ -187,7 +187,7 @@ async function main() {
     writeFileSync(linkFile, lines.join('\n') + '\n');
     info(`  links: ${linkFile}`);
     for (const sn of shown.filter((x) => !x.published)) {
-      warn(`  ${sn.feature}: commit not on GitHub yet - its link only works after a push (${sn.url.split('/blob/')[1].slice(0, 9)})`);
+      warn(`  ${sn.feature}: these lines are not on GitHub's master yet - the link goes to the file, without lines, until they are pushed`);
     }
   }
 }

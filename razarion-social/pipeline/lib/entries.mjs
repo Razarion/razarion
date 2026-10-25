@@ -3,7 +3,7 @@ import {
 } from './paths.mjs';
 import { buildTitle, buildDescription, buildTags, DEFAULT_PRIVACY } from './youtube.mjs';
 import { loadLedger, saveLedger, record, hashMedia, mediumOf } from './ledger.mjs';
-import { trackedLink } from './links.mjs';
+import { trackedLink, onMaster } from './links.mjs';
 
 // Instagram's caption ceiling and X's post ceiling. Facebook's is 63206, which nothing here
 // approaches.
@@ -34,6 +34,8 @@ export const BASE_HASHTAGS = ['rts', 'indiedev', 'opensource', 'webassembly', 'b
  * stays the reference: it is kept as source_text and still feeds the YouTube tags.
  */
 export function buildEntries({ id, date, text, link, tags = [], media = [], source = 'composed', written = null }) {
+  text = onMaster(text);
+  if (written) written = Object.fromEntries(Object.entries(written).map(([k, v]) => [k, onMaster(v)]));
   const hashtags = [...BASE_HASHTAGS, ...tags].slice(0, 10).map((t) => '#' + t);
 
   // X gets the text without the link, and it is the one network where that is the better post.
@@ -137,7 +139,7 @@ const TARGETS = [
  * compares against later. The media are hashed, so the same clip handed in again under another
  * name is recognised.
  */
-export async function writeAndRecord(entries, { format, subject = null, summary = null, tone = null }) {
+export async function writeAndRecord(entries, { format, subject = null, summary = null, tone = null, auto = false }) {
   const post = entries.x || entries.fb || entries.ig;
   const written = writeEntries(entries);
   const ledger = loadLedger();
@@ -150,6 +152,7 @@ export async function writeAndRecord(entries, { format, subject = null, summary 
     media: await hashMedia(post.media),
     summary: summary ?? post.source_text,
     tone,
+    auto,
   });
   saveLedger(ledger);
   return written;

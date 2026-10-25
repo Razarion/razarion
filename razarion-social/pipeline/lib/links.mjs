@@ -43,6 +43,18 @@ export function trackedLink(url, network, campaign) {
   return `${parsed.origin}/${network}${campaign && campaign !== 'bio' ? '/' + campaign : ''}`;
 }
 
+// A link into the repository at a commit dies when that commit is squashed away, which happens to
+// every commit before it goes public (c22320973 in DfyqT9wpPPA's description was one). master is
+// the only ref that survives, so every blob/tree link in a post points there.
+const PINNED = /(https:\/\/github\.com\/Razarion\/razarion\/(?:blob|tree))\/[0-9a-f]{7,40}(?=[/#\s]|$)/gi;
+const COMMIT = /https:\/\/github\.com\/Razarion\/razarion\/commit\/[0-9a-f]{7,40}\b/gi;
+
+/** Every repository link in `text` moved off a commit: blob/tree onto master, a commit to the repo. */
+export function onMaster(text) {
+  if (typeof text !== 'string') return text;
+  return text.replace(PINNED, '$1/master').replace(COMMIT, 'https://github.com/Razarion/razarion');
+}
+
 /** What goes into each profile's link field - set by hand, once, in each network's settings. */
 export function bioLinks(base = 'https://www.razarion.com/') {
   return Object.fromEntries(NETWORKS.map((n) => [n, trackedLink(base, n, 'bio')]));

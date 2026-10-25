@@ -1,11 +1,17 @@
 #!/usr/bin/env node
 // The planner: keeps a few posts waiting for review, so there is always something to approve and
 // the schedule never runs dry. It decides what to make and runs produce.mjs for it; it approves
-// nothing and publishes nothing.
+// nothing and publishes nothing. With --auto, what it makes is marked for lib/approve.mjs.
 //
 //   node plan.mjs               # fill the queue up to the target
 //   node plan.mjs --dry-run     # say what it would make, make nothing
-//   node plan.mjs --target 4    # keep four posts open instead of three
+//   node plan.mjs --target 4    # keep four posts open instead of the buffer in the settings
+//   node plan.mjs --max 1       # make at most one this run
+//   node plan.mjs --auto        # mark what it makes for the auto-approval (what engine.mjs runs)
+//
+// The buffer, the formats and their gaps come from state/schedule.json (lib/schedule.mjs), set on
+// the dashboard. How full the buffer is counts per network (lib/queue.mjs, bufferLevel), so one
+// stuck network does not stop the others from getting new posts.
 //
 // What it makes: the formats in PLAN, the one that ran longest ago first, each no more often than
 // its gap allows. A format that has nothing worth making (every duel pair done lately, a quiet
@@ -20,43 +26,41 @@ import { join } from 'node:path';
 import { parseArgs } from './lib/args.mjs';
 import { PIPELINE_ROOT } from './lib/paths.mjs';
 import { loadLedger, lastOf } from './lib/ledger.mjs';
-import { loadQueue, isOpen, isWaiting } from './lib/queue.mjs';
+import { bufferLevel } from './lib/queue.mjs';
+import { loadSchedule } from './lib/schedule.mjs';
 import { info, step, ok, warn, fail } from '../src/util/log.mjs';
-
-// Posts open - waiting for review, or approved and not out yet - that the planner tops up to.
-// Three is one scheduled week (Monday, Wednesday, Friday) of approved posts.
-const TARGET = 3;
 
 // A run makes at most this many. A queue emptied by a week away is refilled over two runs, and
 // the texts of one run are not all written in the same breath.
 const MAX_PER_RUN = 2;
 
-// Days a format waits after its last post. The formats' own rules still apply on top: a duel
-// pair repeats only after 120 days, a week and a devlog only once per ISO week.
-const PLAN = [
-  // Clips reach four to five times what a card does on Instagram (metrics.mjs, September), so a
-  // battle may go every day.
-  { format: 'battle', gapDays: 1 },
-  { format: 'week-in-numbers', gapDays: 6 },
-  { format: 'devlog', gapDays: 6 },
-  { format: 'duel', gapDays: 2 },
-];
+// The order breaks ties between formats that last ran at the same time. Their gaps are in the
+// settings; the formats' own rules still apply on top: a duel pair repeats only after 120 days, a
+// week and a devlog only once per ISO week. Clips reach four to five times what a card does on
+// Instagram (metrics.mjs, September), so a battle may go every day.
+const ORDER = ['battle', 'week-in-numbers', 'devlog', 'duel'];
+
+function plan(settings) {
+  return ORDER
+    .filter((format) => settings.formats[format]?.enabled)
+    .map((format) => ({ format, gapDays: settings.formats[format].gapDays }));
+}
 
 const DAY = 86_400_000;
 
 /** The formats that may run now, the one that ran longest ago first; never-run ones lead. */
-function candidates(ledger, now = new Date()) {
-  return PLAN
+function candidates(ledger, settings, now = new Date()) {
+  return plan(settings)
     .map((p, order) => ({ ...p, order, last: lastOf(ledger, p.format)?.date ?? null }))
     .filter((p) => !p.last || now - Date.parse(p.last) >= p.gapDays * DAY)
     .sort((a, b) => (a.last ? Date.parse(a.last) : 0) - (b.last ? Date.parse(b.last) : 0) || a.order - b.order);
 }
 
 /** Runs produce.mjs for one format. Resolves to its output and whether a post came out of it. */
-function produce(format) {
+function produce(format, auto) {
   const before = loadLedger().items.length;
   return new Promise((resolve) => {
-    const child = spawn(process.execPath, [join(PIPELINE_ROOT, 'produce.mjs'), '--format', format], {
+    const child = spawn(process.execPath, [join(PIPELINE_ROOT, 'produce.mjs'), '--format', format, ...(auto ? ['--auto'] : [])], {
       cwd: PIPELINE_ROOT,
       stdio: ['ignore', 'pipe', 'pipe'],
     });
@@ -77,20 +81,21 @@ function indent(text) {
 
 async function main() {
   const args = parseArgs(process.argv.slice(2));
-  const target = Number(args.target ?? TARGET);
+  const settings = loadSchedule();
+  const target = Number(args.target ?? settings.buffer);
   const dryRun = Boolean(args['dry-run']);
+  const auto = Boolean(args.auto);
 
-  const open = loadQueue().filter(isOpen);
-  const waiting = open.filter(isWaiting).length;
-  info(`Queue: ${open.length} open (${waiting} waiting for review, ${open.length - waiting} approved and not out yet), target ${target}.`);
+  const { level, counts, deciding } = bufferLevel(settings.networks);
+  info(`Buffer: ${level} of ${target} (still to go out: ${Object.entries(counts).map(([n, c]) => `${n} ${c}`).join(', ')}; counted on ${deciding.join(', ') || 'nothing'}).`);
 
-  const wanted = Math.min(MAX_PER_RUN, target - open.length);
+  const wanted = Math.min(Number(args.max ?? MAX_PER_RUN), target - level);
   if (wanted <= 0) {
     ok('The queue is full enough. Nothing made.');
     return;
   }
 
-  const due = candidates(loadLedger());
+  const due = candidates(loadLedger(), settings);
   if (!due.length) {
     ok('Every format ran within its gap. Nothing made.');
     return;
@@ -106,7 +111,7 @@ async function main() {
   for (const { format } of due) {
     if (made >= wanted) break;
     step(`produce.mjs --format ${format}`);
-    const result = await produce(format);
+    const result = await produce(format, auto);
     info(indent(result.output));
     if (result.made) {
       made++;
@@ -115,7 +120,7 @@ async function main() {
     }
   }
 
-  if (made) ok(`${made} post(s) made. Read and approve them: node review.mjs --open`);
+  if (made) ok(auto ? `${made} post(s) made for the auto-approval.` : `${made} post(s) made. Read and approve them: node review.mjs --open`);
   else warn('No format had anything to make this time.');
 }
 

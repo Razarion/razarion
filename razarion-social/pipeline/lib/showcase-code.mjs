@@ -1,6 +1,8 @@
 // The code behind each terrain improvement, for the panels in cut_showcase.mjs and the links in the
-// post. Read from git at the commit that made the change, so the picture and the GitHub permalink
-// show the same lines - never from the working tree, which moves on.
+// post. The panel is read from git at the commit that made the change - never from the working
+// tree, which moves on. The link goes to master instead: commits are squashed before they go
+// public, so a link to one dies (lib/links.mjs, onMaster). The lines are looked up in GitHub's
+// master, so the link marks the lines the panel shows for as long as they are there.
 
 import { execFileSync } from 'node:child_process';
 import { basename, join } from 'node:path';
@@ -78,17 +80,30 @@ export function loadSnippet(feature) {
     return line;
   });
   const indent = Math.min(...lines.filter((l) => l.trim()).map((l) => l.match(/^ */)[0].length));
-  let published = false;
-  try {
-    published = git(['branch', '-r', '--contains', sha]).trim().length > 0;
-  } catch { /* unknown commit on the remote side */ }
+  const range = rangeOnMaster(spec, all);
   return {
     feature,
     file: spec.file,
     lines: lines.map((l) => l.slice(indent).replace(/\s+$/, '')),
-    url: `${GITHUB_REPO}/blob/${sha}/${spec.file}#L${spec.from}-L${spec.to}`,
-    published,
+    url: `${GITHUB_REPO}/blob/master/${spec.file}${range ? `#L${range.from}-L${range.to}` : ''}`,
+    // false: GitHub's master does not have these lines - not pushed yet, or changed since
+    published: !!range,
   };
+}
+
+/** Where the snippet's lines stand in origin/master's copy of the file, or null. */
+function rangeOnMaster(spec, linesAtRef) {
+  let master;
+  try {
+    master = git(['show', `origin/master:${spec.file}`]).split('\n').map((l) => l.replace(/\r$/, ''));
+  } catch {
+    return null;
+  }
+  const block = linesAtRef.slice(spec.from - 1, spec.to).map((l) => l.replace(/\r$/, ''));
+  for (let at = 0; at + block.length <= master.length; at++) {
+    if (block.every((line, i) => master[at + i] === line)) return { from: at + 1, to: at + block.length };
+  }
+  return null;
 }
 
 const KEYWORDS = new Set(['const', 'let', 'var', 'for', 'if', 'else', 'return', 'new', 'function', 'continue',

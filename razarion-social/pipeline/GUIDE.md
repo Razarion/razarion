@@ -9,7 +9,30 @@ Alle Befehle laufen in diesem Verzeichnis:
 cd C:\dev\projects\razarion\code\razarion2\razarion-social\pipeline
 ```
 
-## Der übliche Ablauf
+## Vollautomatisch: die Engine
+
+Seit dem 25.10.2026 läuft alles als Windows-Task im Hintergrund: `engine.mjs` macht Beiträge,
+gibt sie frei, postet sie zu festen Zeiten und hält die Logins am Leben. Eingestellt und
+beobachtet wird auf dem **Dashboard: http://127.0.0.1:4711**. Dort stehen der Countdown zum
+nächsten Post, die Warteschlange mit Zeiten, die History und die Einstellungen (Tage, Uhrzeiten,
+Puffer, Formate, Netzwerke, Freigabe automatisch oder von Hand, Pause).
+
+```
+scheduled\install-engine.ps1            # Task einrichten (bei Anmeldung, versteckt) und starten
+scheduled\install-engine.ps1 -Remove    # Task entfernen
+```
+
+- **Freigabe:** Nur Beiträge, die die Engine selbst gemacht hat, gehen ohne dich raus, und nur,
+  wenn sie die Prüfung in `lib/approve.mjs` bestehen. Was durchfällt (Vorlagentext, zu lang,
+  abgeschnittene Karte), steht mit „held: …" auf der Seite und wartet auf dich.
+- **Login abgelaufen:** Das Netzwerk pausiert, die anderen posten weiter. Es kommt eine
+  Windows-Benachrichtigung, und auf dem Dashboard steht der Knopf „Reconnect" (Google, X) oder
+  ein Feld für den neuen Token (Instagram, Facebook).
+- **Protokoll:** `state/engine.log` (alles), `state/engine.json` (History), `state/schedule.json`
+  (Einstellungen).
+- Solange die Engine läuft, tut `Razarion-Social.cmd` nichts außer das Dashboard zu öffnen.
+
+## Der übliche Ablauf (ohne Engine)
 
 ```
 1. Beitrag erzeugen      plan.mjs (macht der Zeitplan)   oder   produce / compose / generate

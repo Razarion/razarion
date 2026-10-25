@@ -10,6 +10,7 @@
 //   node produce.mjs --format week-in-numbers --url http://localhost:8080
 //   node produce.mjs --format duel --tone question      # instead of the tone that is due
 //   node produce.mjs --format duel --no-writer          # the format's template text only
+//   node produce.mjs --format duel --auto               # may go out without a person (lib/approve.mjs)
 //
 // The texts come from lib/writer.mjs (claude -p on the subscription), one per network, in the
 // tone used longest ago among those the format allows. Without a login the template goes in.
@@ -151,7 +152,7 @@ async function main() {
   for (const flag of made.flags ?? []) {
     for (const e of [entries.x, entries.ig, entries.fb, entries.yt]) if (e && !e.flags.includes(flag)) e.flags.push(flag);
   }
-  const targets = await writeAndRecord(entries, { format: format.name, subject: made.subject, tone });
+  const targets = await writeAndRecord(entries, { format: format.name, subject: made.subject, tone, auto: Boolean(args.auto) });
 
   ok(`${format.name} (${made.subject}, ${tone}) written as ${id} to ${targets.join(', ')}.`);
   info(`  X ${entries.lengths.x}/280   Instagram ${entries.lengths.ig}/2200   Facebook ${entries.lengths.fb}`);

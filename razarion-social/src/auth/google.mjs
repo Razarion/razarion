@@ -11,7 +11,8 @@ const SCOPES = ['https://www.googleapis.com/auth/youtube.upload', 'https://www.g
 const port = () => Number(env.GOOGLE_REDIRECT_PORT || 8723);
 const redirectUri = () => `http://127.0.0.1:${port()}`;
 
-export async function authoriseGoogle() {
+/** `options` go to authorise() in loopback.mjs: onAuthUrl and doneUrl, for the dashboard. */
+export async function authoriseGoogle(options = {}) {
   const [clientId, clientSecret] = requireEnv('GOOGLE_CLIENT_ID', 'GOOGLE_CLIENT_SECRET');
   const state = randomUrlSafe(16);
 
@@ -30,7 +31,7 @@ export async function authoriseGoogle() {
       state,
     });
 
-  const code = await authorise({ authUrl, port: port(), state });
+  const code = await authorise({ authUrl, port: port(), state, ...options });
   const token = await postForm(TOKEN_URL, {
     code,
     client_id: clientId,

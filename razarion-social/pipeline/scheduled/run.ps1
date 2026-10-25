@@ -63,6 +63,16 @@ function Invoke-Step([string]$Name, [string[]]$NodeArgs) {
 }
 
 Set-Location $Pipeline
+
+# While engine.mjs runs (install-engine.ps1), it makes and publishes on its own schedule. A run
+# from here at the same time could publish the same post twice, so this steps aside.
+try {
+    Invoke-WebRequest -Uri "http://127.0.0.1:4711/api/engine" -UseBasicParsing -TimeoutSec 3 | Out-Null
+    Write-Host "The engine is running and does this on its own schedule - nothing done here."
+    Write-Host "Dashboard: http://127.0.0.1:4711"
+    exit 0
+} catch { }
+
 Write-Log "=== Run started"
 
 # The token only renews when fewer than 14 days are left, so calling it more often costs nothing.

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Razarion Review</title>
+<title>Razarion Social</title>
 <style>
   :root {
     --bg: #f4f5f7; --panel: #ffffff; --line: #dde1e6; --text: #1d2126; --muted: #69717c;
@@ -82,7 +82,46 @@
   #toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); max-width: min(680px, 90vw);
     padding: 10px 16px; border-radius: 8px; background: var(--bad); color: #fff; box-shadow: 0 4px 16px rgba(0,0,0,.25); display: none; z-index: 10; }
   #toast.info { background: var(--ok); }
+  /* The engine's dashboard - only there when engine.mjs serves the page. */
+  #engine { display: none; gap: 16px; }
+  #engine.on { display: grid; }
+  .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; display: grid; gap: 10px; min-width: 0; }
+  .panel h2 { font-size: 14px; margin: 0; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .panel h2 .spacer { flex: 1; }
+  .status-row { display: flex; gap: 28px; flex-wrap: wrap; align-items: baseline; }
+  .big { font-size: 22px; font-weight: 650; font-variant-numeric: tabular-nums; }
+  .label { font-size: 12px; color: var(--muted); }
+  .nets-health { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+  .health { border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; display: grid; gap: 6px; align-content: start; min-width: 0; }
+  .health.auth { border-color: var(--bad); background: var(--bad-bg); }
+  .health.error { border-color: var(--warn); }
+  .health .msg { font-size: 12px; color: var(--muted); overflow-wrap: anywhere; }
+  .health a.button { display: inline-block; text-decoration: none; background: var(--bad); color: #fff; border-radius: 6px; padding: 5px 12px; font-weight: 600; justify-self: start; }
+  .health input { width: 100%; }
+  .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; background: var(--skip); }
+  .dot.ok { background: var(--ok); } .dot.auth { background: var(--bad); } .dot.error { background: var(--warn); }
+  table.q { width: 100%; border-collapse: collapse; font-size: 13px; }
+  table.q td, table.q th { text-align: left; padding: 5px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  table.q th { font-size: 12px; color: var(--muted); font-weight: 600; }
+  table.q td.when { white-space: nowrap; font-variant-numeric: tabular-nums; }
+  table.q td.text { overflow-wrap: anywhere; }
+  table.q a, .runs a { color: var(--accent); }
+  .settings { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px 20px; }
+  .settings fieldset { border: 0; padding: 0; margin: 0; display: grid; gap: 6px; align-content: start; }
+  .settings legend { font-size: 12px; color: var(--muted); font-weight: 600; padding: 0; margin-bottom: 4px; }
+  .settings label { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+  .settings input[type=number] { width: 60px; }
+  .settings input[type=text], .settings input[type=number], .health input { font: inherit; color: var(--text); background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 3px 7px; }
+  .days { display: flex; gap: 4px; flex-wrap: wrap; }
+  .days label { border: 1px solid var(--line); border-radius: 6px; padding: 2px 6px; }
+  .runs { display: grid; gap: 4px; font-size: 13px; max-height: 360px; overflow: auto; }
+  .runs .run { display: grid; grid-template-columns: 140px minmax(0, 1fr); gap: 8px; padding: 4px 0; border-bottom: 1px solid var(--line); }
+  .runs .when { color: var(--muted); font-variant-numeric: tabular-nums; }
+  .out-published { color: var(--ok); } .out-failed, .out-login { color: var(--bad); } .out-nothing { color: var(--muted); }
+  details > summary { cursor: pointer; font-weight: 600; font-size: 14px; }
   @media (max-width: 800px) {
+    .nets-health { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .runs .run { grid-template-columns: 1fr; }
     main { padding: 12px 0; }
     article.post { border-radius: 0; border-left: 0; border-right: 0; }
     .body { grid-template-columns: 1fr; }
@@ -94,7 +133,7 @@
 </head>
 <body>
 <header class="top">
-  <h1>Review</h1>
+  <h1>Razarion Social</h1>
   <span class="summary" id="summary"></span>
   <span class="spacer"></span>
   <div class="seg" id="filter">
@@ -103,7 +142,25 @@
   </div>
   <button id="reload">Reload</button>
 </header>
-<main id="list"></main>
+<main>
+  <section id="engine">
+    <div class="panel">
+      <h2>Engine <span class="chip" id="eng-job"></span><span class="spacer"></span>
+        <button id="eng-pause"></button><button id="eng-produce">Make a post now</button></h2>
+      <div class="status-row">
+        <div><div class="label">Next post</div><div class="big" id="eng-countdown">–</div><div class="label" id="eng-next"></div></div>
+        <div><div class="label">Posts a week, per network</div><div class="big" id="eng-perweek"></div></div>
+        <div><div class="label">Buffer (ready to go)</div><div class="big" id="eng-buffer"></div><div class="label" id="eng-buffer-detail"></div></div>
+        <div><div class="label">Approval</div><div class="big" id="eng-approval"></div></div>
+      </div>
+      <div class="nets-health" id="eng-health"></div>
+    </div>
+    <div class="panel"><h2>Queue</h2><div id="eng-queue"></div></div>
+    <div class="panel"><details><summary>Settings</summary><form id="eng-settings" class="settings" style="margin-top:12px"></form></details></div>
+    <div class="panel"><h2>History</h2><div class="runs" id="eng-runs"></div></div>
+  </section>
+  <div id="list" style="display:grid;gap:20px"></div>
+</main>
 <div id="toast"></div>
 
 <script>
@@ -243,6 +300,8 @@ function renderNet(post, net, label) {
   }).join('');
   const flags = [...e.flags.map((f) => `<span class="flag">${esc(f)}</span>`), ...e.notes.map((n) => `<span class="flag note">${esc(n)}</span>`)];
   if (e.edited) flags.push('<span class="flag note">edited by hand</span>');
+  if (e.held) flags.push(`<span class="flag" title="The auto-approval held this back. Approve it by hand, or skip it.">held: ${esc(e.held)}</span>`);
+  if (e.approved_by === 'auto') flags.push('<span class="flag note">approved automatically</span>');
   if (net === 'yt' && e.privacy) flags.push(`<span class="flag note">${esc(e.privacy)}</span>`);
   const dirty = isDirty(post.id, net);
   let actions;
@@ -383,6 +442,208 @@ window.addEventListener('beforeunload', (ev) => {
 });
 
 load().catch((err) => toast('Loading failed: ' + err.message));
+
+// ----- The engine (engine.mjs). When review.mjs serves the page alone there is no /api/engine,
+// and this part stays hidden.
+const NET_LABEL = Object.fromEntries(NETS);
+const DAY_NAMES = [['mon', 'Mon'], ['tue', 'Tue'], ['wed', 'Wed'], ['thu', 'Thu'], ['fri', 'Fri'], ['sat', 'Sat'], ['sun', 'Sun']];
+const FORMAT_NOTE = {
+  battle: 'clip, filmed on the live planet', duel: 'card, two units',
+  'week-in-numbers': 'card, the week in numbers', devlog: 'card, needs its lines written by hand',
+};
+const OUTCOME = { published: 'posted', nothing: 'nothing approved', failed: 'failed', login: 'login needed' };
+let engine = null;
+const when = (iso) => iso
+  ? new Date(iso).toLocaleString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })
+  : '–';
+const hasDrafts = () => Object.values(drafts).some((d) => Object.values(d).some((f) => Object.keys(f).length));
+
+async function loadEngine() {
+  const res = await fetch('/api/engine');
+  if (!res.ok) return;
+  const fresh = await res.json();
+  // A post the engine just made, approved or published changes the review list below as well.
+  const changed = engine && JSON.stringify(engine.runs[0]) !== JSON.stringify(fresh.runs[0]);
+  engine = fresh;
+  $('#engine').classList.add('on');
+  renderEngine();
+  if (changed && !hasDrafts()) load();
+}
+
+function renderEngine() {
+  const e = engine;
+  const s = e.settings;
+  $('#eng-job').textContent = s.paused ? 'paused' : e.job ? `busy: ${e.job.kind}${e.job.step ? ' – ' + e.job.step : ''}` : 'idle';
+  $('#eng-job').className = 'chip' + (s.paused ? ' tone' : '');
+  $('#eng-pause').textContent = s.paused ? 'Resume' : 'Pause';
+  $('#eng-next').textContent = e.next[0] ? when(e.next[0]) : 'no day or time set';
+  $('#eng-perweek').textContent = e.postsPerWeek;
+  $('#eng-buffer').textContent = `${e.buffer.level} / ${s.buffer}`;
+  $('#eng-buffer-detail').textContent = Object.entries(e.buffer.counts).map(([n, c]) => `${NET_LABEL[n]} ${c}`).join(' · ');
+  $('#eng-approval').textContent = s.autoApprove ? 'automatic' : 'by hand';
+  renderHealth();
+  renderQueue();
+  renderRuns();
+  if (!$('#eng-settings').contains(document.activeElement)) renderSettings();
+  tickCountdown();
+}
+
+function tickCountdown() {
+  if (!engine) return;
+  if (engine.settings.paused || !engine.next[0]) {
+    $('#eng-countdown').textContent = engine.settings.paused ? 'paused' : '–';
+    return;
+  }
+  const ms = Math.max(0, Date.parse(engine.next[0]) - Date.now());
+  const d = Math.floor(ms / 86400000), h = Math.floor(ms / 3600000) % 24, m = Math.floor(ms / 60000) % 60, sec = Math.floor(ms / 1000) % 60;
+  $('#eng-countdown').textContent = (d ? d + 'd ' : '') + [h, m, sec].map((x) => String(x).padStart(2, '0')).join(':');
+}
+setInterval(tickCountdown, 1000);
+
+function renderHealth() {
+  const box = $('#eng-health');
+  // A half-typed token must survive the refresh every ten seconds.
+  if (box.contains(document.activeElement) && document.activeElement.tagName === 'INPUT') return;
+  box.innerHTML = NETS.map(([net, label]) => {
+    const h = engine.health[net];
+    const on = engine.settings.networks[net];
+    const r = engine.reconnect[net];
+    const statusText = !on ? 'switched off'
+      : { ok: 'working', auth: 'login needed', error: 'last post failed', unknown: 'not checked yet' }[h.status] || h.status;
+    let fix = '';
+    if (on && (h.status === 'auth' || h.status === 'error')) {
+      fix = r.kind === 'oauth'
+        ? `<a class="button" href="${r.href}" target="_blank" rel="noopener">Reconnect ${label}</a>`
+        : `<div class="msg">${esc(r.hint)} <a href="${r.href}" target="_blank" rel="noopener">Open Meta</a></div>
+           <input placeholder="new token" data-token="${net}"><div><button data-save-token="${net}">Save token</button></div>`;
+    }
+    const expires = net === 'ig' && engine.instagramTokenExpires
+      ? `<div class="msg">token valid until ${new Date(engine.instagramTokenExpires).toLocaleDateString('en-GB')}, renewed automatically</div>` : '';
+    return `<div class="health ${on ? h.status : ''}">
+      <div><span class="dot ${on ? h.status : ''}"></span> <strong>${label}</strong> <span class="label">${esc(statusText)}</span></div>
+      ${h.message && h.status !== 'ok' ? `<div class="msg">${esc(h.message)}</div>` : ''}
+      ${expires}${fix}
+      <div class="actions">
+        ${on ? `<button data-publish="${net}" title="Posts the next approved post on ${label} now, outside the schedule">Post next now</button>` : ''}
+        ${on && (h.status === 'auth' || h.status === 'error') ? `<button data-reset="${net}" title="Mark it as working again; the next slot shows whether it is">Try again</button>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+  box.querySelectorAll('[data-publish]').forEach((b) => b.addEventListener('click', () =>
+    call('/api/run', { action: 'publish', net: b.dataset.publish }, `${NET_LABEL[b.dataset.publish]}: posting the next one`)));
+  box.querySelectorAll('[data-reset]').forEach((b) => b.addEventListener('click', () => call('/api/health/reset', { net: b.dataset.reset })));
+  box.querySelectorAll('[data-save-token]').forEach((b) => b.addEventListener('click', () => {
+    const net = b.dataset.saveToken;
+    call('/api/token', { net, token: box.querySelector(`[data-token="${net}"]`).value }, 'Token saved');
+  }));
+}
+
+function renderQueue() {
+  const rows = [];
+  for (const [net, label] of NETS) for (const q of engine.upcoming[net]) rows.push({ net, label, ...q });
+  rows.sort((a, b) => (a.at ? Date.parse(a.at) : Infinity) - (b.at ? Date.parse(b.at) : Infinity));
+  if (!rows.length) {
+    $('#eng-queue').innerHTML = '<div class="meta">Nothing waiting. The engine makes the next post when the buffer runs low.</div>';
+    return;
+  }
+  const whenCell = (r) => r.at ? esc(when(r.at))
+    : r.held ? '<span class="flag">held</span>'
+    : r.state === 'review' ? '<span class="state review">in review</span>'
+    : engine.health[r.net].status === 'auth' ? '<span class="flag">login needed</span>' : '–';
+  $('#eng-queue').innerHTML = `<table class="q"><tr><th>When</th><th>Network</th><th>Post</th><th>Text</th></tr>${rows.map((r) => `<tr>
+    <td class="when">${whenCell(r)}</td>
+    <td>${esc(r.label)}</td>
+    <td><a href="#post-${esc(r.id)}">${esc(r.format || r.id)}</a>${r.auto ? '' : ' <span class="chip">by hand</span>'}</td>
+    <td class="text">${esc(r.text)}${r.held ? `<div class="meta">${esc(r.held)}</div>` : ''}</td></tr>`).join('')}</table>`;
+}
+
+function describeRun(r) {
+  if (r.error && r.kind !== 'login') return `<span class="out-failed">${esc(r.kind)}: ${esc(r.error)}</span>`;
+  if (r.kind === 'publish' || r.kind === 'publish-now') {
+    const parts = (r.results || []).map((x) => `<span class="out-${x.outcome}">${esc(NET_LABEL[x.net])}: ${esc(OUTCOME[x.outcome] || x.outcome)}` +
+      `${x.preview ? ' – ' + esc(x.preview) : ''}${x.message && x.outcome !== 'published' ? ` <span class="meta">(${esc(x.message)})</span>` : ''}</span>`);
+    return `<b>${r.kind === 'publish' ? 'Slot' : 'Posted by hand'}</b><br>${parts.join('<br>')}`;
+  }
+  if (r.kind === 'produce') {
+    const made = r.made
+      ? `made <a href="#post-${esc(r.made.id)}">${esc(r.made.format)}</a> (${esc(r.made.subject || '')}, ${esc(r.made.tone || '')})`
+      : esc(r.note || 'nothing made');
+    const held = (r.held || []).map((h) => `<br><span class="out-failed">held on ${esc(NET_LABEL[h.net])}: ${esc(h.reason)}</span>`).join('');
+    return `<b>Produce</b> – ${made}${r.approved ? `, ${r.approved} approved` : ''}${held}`;
+  }
+  if (r.kind === 'login') return `<b>Login</b> ${esc(NET_LABEL[r.net])}: ${r.ok ? 'renewed' : `<span class="out-failed">${esc(r.error)}</span>`}`;
+  if (r.kind === 'refresh') return `<b>Token refresh</b> <span class="out-failed">${esc(r.error || '')}</span>`;
+  return esc(r.kind);
+}
+
+function renderRuns() {
+  $('#eng-runs').innerHTML = engine.runs.length
+    ? engine.runs.map((r) => `<div class="run"><span class="when">${esc(when(r.at))}</span><span>${describeRun(r)}</span></div>`).join('')
+    : '<div class="meta">Nothing yet.</div>';
+}
+
+function renderSettings() {
+  const s = engine.settings;
+  const check = (name, on, text) => `<label><input type="checkbox" name="${name}" ${on ? 'checked' : ''}> ${text}</label>`;
+  $('#eng-settings').innerHTML = `
+    <fieldset><legend>When posts go out</legend>
+      <div class="days">${DAY_NAMES.map(([d, l]) => `<label><input type="checkbox" name="day" value="${d}" ${s.days.includes(d) ? 'checked' : ''}>${l}</label>`).join('')}</div>
+      <label>Times <input type="text" name="times" value="${esc(s.times.join(', '))}" title="HH:MM, several separated by commas"></label>
+      <span class="meta">Each time on each day is one post per network.</span>
+    </fieldset>
+    <fieldset><legend>Making posts</legend>
+      <label>Keep <input type="number" name="buffer" min="0" max="20" value="${s.buffer}"> posts ready</label>
+      <label>Only between <input type="text" name="produceFrom" size="5" value="${esc(s.produceFrom)}"> and <input type="text" name="produceTo" size="5" value="${esc(s.produceTo)}"></label>
+      ${Object.entries(s.formats).map(([f, c]) => `<label><input type="checkbox" name="format-on" value="${f}" ${c.enabled ? 'checked' : ''}> ${f}, at most every
+        <input type="number" name="gap-${f}" min="0" max="60" value="${c.gapDays}"> days <span class="meta">${esc(FORMAT_NOTE[f] || '')}</span></label>`).join('')}
+    </fieldset>
+    <fieldset><legend>Approval</legend>
+      ${check('autoApprove', s.autoApprove, 'Approve the engine\'s own posts automatically')}
+      ${check('approveTemplate', s.approveTemplate, 'Also when the text is only the format\'s template')}
+      <legend style="margin-top:8px">Networks</legend>
+      ${NETS.map(([n, l]) => check('net-' + n, s.networks[n], l)).join('')}
+    </fieldset>
+    <fieldset><legend>&nbsp;</legend><div><button class="primary" type="submit">Save settings</button></div></fieldset>`;
+}
+
+$('#eng-settings').addEventListener('submit', (ev) => {
+  ev.preventDefault();
+  const f = ev.target;
+  const formats = Object.fromEntries(Object.keys(engine.settings.formats).map((name) => [name, {
+    enabled: [...f.querySelectorAll('[name=format-on]')].some((x) => x.value === name && x.checked),
+    gapDays: Number(f.querySelector(`[name="gap-${name}"]`).value),
+  }]));
+  call('/api/settings', {
+    days: [...f.querySelectorAll('[name=day]:checked')].map((x) => x.value),
+    times: f.times.value.split(/[\s,;]+/).filter(Boolean),
+    buffer: Number(f.buffer.value),
+    produceFrom: f.produceFrom.value.trim(),
+    produceTo: f.produceTo.value.trim(),
+    formats,
+    autoApprove: f.autoApprove.checked,
+    approveTemplate: f.approveTemplate.checked,
+    networks: Object.fromEntries(NETS.map(([n]) => [n, f['net-' + n].checked])),
+  }, 'Settings saved').then(() => { document.activeElement?.blur(); renderSettings(); });
+});
+
+async function call(path, body, message) {
+  try {
+    const res = await fetch(path, { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Review': '1' }, body: JSON.stringify(body) });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || res.statusText);
+    engine = data;
+    renderEngine();
+    if (message) toast(message, 'info');
+  } catch (err) {
+    toast(err.message);
+  }
+}
+
+$('#eng-pause').addEventListener('click', () => call('/api/settings', { paused: !engine.settings.paused }, engine.settings.paused ? 'Resumed' : 'Paused'));
+$('#eng-produce').addEventListener('click', () => call('/api/run', { action: 'produce' }, 'Making a post – a battle takes a few minutes'));
+
+loadEngine().catch(() => {});
+setInterval(() => loadEngine().catch(() => {}), 10_000);
 </script>
 </body>
 </html>
