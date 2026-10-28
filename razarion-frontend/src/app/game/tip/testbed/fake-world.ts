@@ -24,7 +24,8 @@ export type Order =
   { kind: 'harvest', resourceId: number } |
   { kind: 'build', typeId: number, x: number, y: number } |
   { kind: 'finalize', siteId: number } |
-  { kind: 'load', containerId: number };
+  { kind: 'load', containerId: number } |
+  { kind: 'pickBox', boxId: number };
 
 export interface Unit {
   id: number;
@@ -55,6 +56,12 @@ export interface Resource {
   amount: number;
 }
 
+export interface Box {
+  id: number;
+  x: number;
+  y: number;
+}
+
 export interface Respawn {
   typeId: number;
   x: number;
@@ -75,6 +82,8 @@ export type QuestCondition =
   { kind: 'in', typeId: number, region: { x: number, y: number }[] } |
   /** SELL */
   { kind: 'sold', typeId: number, count: number } |
+  /** BOX_PICKED */
+  { kind: 'boxPicked', count: number } |
   /** SYNC_ITEM_POSITION with typed counts: the finished items in the region (the base without one), whenever built. */
   { kind: 'owns', types: { typeId: number, count: number }[], region?: { x: number, y: number }[] };
 
@@ -124,6 +133,7 @@ export class World {
   private nextId = 1;
   readonly units = new Map<number, Unit>();
   readonly resources = new Map<number, Resource>();
+  readonly boxes = new Map<number, Box>();
   private readonly respawns = new Map<number, Respawn>();
   private pendingCommands: { dueAt: number, unitIds: number[], apply: () => void }[] = [];
   private pendingRespawns: { dueAt: number, respawn: Respawn }[] = [];
@@ -141,6 +151,7 @@ export class World {
   private questKills: number[] = [];
   private questSold: number[] = [];
   private questHarvested = 0;
+  private questBoxesPicked = 0;
   private questExistingIds = new Set<number>();
   onQuestPassed: (() => void) | null = null;
 
@@ -177,6 +188,16 @@ export class World {
     return resource;
   }
 
+  addBox(x: number, y: number): Box {
+    const box: Box = {id: this.nextId++, x, y};
+    this.boxes.set(box.id, box);
+    return box;
+  }
+
+  removeBox(boxId: number): void {
+    this.boxes.delete(boxId);
+  }
+
   removeResource(resourceId: number): void {
     this.resources.delete(resourceId);
   }
@@ -193,6 +214,7 @@ export class World {
     this.questKills = [];
     this.questSold = [];
     this.questHarvested = 0;
+    this.questBoxesPicked = 0;
     this.questExistingIds = new Set([...this.units.values()].filter(u => u.owner === 'own').map(u => u.id));
   }
 
@@ -473,6 +495,19 @@ export class World {
       case 'finalize':
         this.executeBuild(unit, order, seconds);
         break;
+      case 'pickBox': {
+        const box = this.boxes.get(order.boxId);
+        if (!box) {
+          unit.order = null;
+          break;
+        }
+        if (this.driveTo(unit, box.x, box.y, unit.spec.radius + 1, seconds)) {
+          this.boxes.delete(box.id);
+          this.questBoxesPicked++;
+          unit.order = null;
+        }
+        break;
+      }
       case 'load': {
         // SyncBaseItem.putInContainer: walks until the container is within the container's range.
         const container = this.units.get(order.containerId);
@@ -617,6 +652,9 @@ export class World {
       case 'in':
         passed = [...this.units.values()].some(u => u.owner === 'own' && u.spec.id === condition.typeId
           && u.containedIn === null && insidePolygon(u.x, u.y, condition.region));
+        break;
+      case 'boxPicked':
+        passed = this.questBoxesPicked >= condition.count;
         break;
       case 'sold':
         passed = this.questSold.filter(typeId => typeId === condition.typeId).length >= condition.count;
@@ -791,8 +829,8 @@ export class FakeBaseItem {
 }
 
 export class FakeResourceItem {
-  readonly itemType = {getId: () => 100, getName: () => 'Razarion'};
-  readonly diplomacy = Diplomacy.RESOURCE;
+  readonly itemType: { getId(): number, getName(): string } = {getId: () => 100, getName: () => 'Razarion'};
+  readonly diplomacy: Diplomacy = Diplomacy.RESOURCE;
   disposed = false;
   private promptText: string | null = null;
   private itemClickCallback: (() => void) | null = null;
@@ -856,6 +894,12 @@ export class FakeResourceItem {
   }
 }
 
+/** A box as the renderer holds it: clicked, prompted and disposed like a resource field. */
+export class FakeBoxItem extends FakeResourceItem {
+  override readonly itemType = {getId: () => 200, getName: () => 'Box'};
+  override readonly diplomacy: Diplomacy = Diplomacy.BOX;
+}
+
 /** The selection operations the renderer triggers when items come and go (W3, W7). */
 export interface RendererSelectionHooks {
   tryReattachItem(item: any): void;
@@ -877,6 +921,7 @@ export interface RendererSelectionHooks {
 export class FakeRenderer {
   private baseItems: FakeBaseItem[] = [];
   private resourceItems: FakeResourceItem[] = [];
+  private boxItems: FakeBoxItem[] = [];
   private readonly baseItemCreatedListeners: ((item: any) => void)[] = [];
   private readonly resourceRemovedListeners: ((item: any) => void)[] = [];
   private readonly viewFieldListeners: ViewFieldListener[] = [];
@@ -949,6 +994,22 @@ export class FakeRenderer {
       item.dispose();
       this.resourceRemovedListeners.forEach(listener => listener(item));
     }
+
+    const boxLeftovers = new Set(this.boxItems.map(item => item.getId()));
+    for (const box of this.world.boxes.values()) {
+      if (!this.world.inRenderBox(box.x, box.y, 1)) {
+        continue;
+      }
+      if (!this.boxItems.some(candidate => candidate.getId() === box.id)) {
+        this.boxItems.push(new FakeBoxItem(box.id, box.x, box.y, this.world));
+      }
+      boxLeftovers.delete(box.id);
+    }
+    for (const id of boxLeftovers) {
+      const item = this.boxItems.find(candidate => candidate.getId() === id)!;
+      this.boxItems = this.boxItems.filter(candidate => candidate !== item);
+      item.dispose();
+    }
   }
 
   onCameraMoved(): void {
@@ -973,6 +1034,10 @@ export class FakeRenderer {
 
   getBabylonResourceItemImpls(): any[] {
     return [...this.resourceItems];
+  }
+
+  getBabylonBoxItemImpls(): any[] {
+    return [...this.boxItems];
   }
 
   getCurrentViewField(): ViewField {
@@ -1135,6 +1200,10 @@ export class FakeRenderer {
 
   liveResourceItems(): FakeResourceItem[] {
     return [...this.resourceItems];
+  }
+
+  liveBoxItems(): FakeBoxItem[] {
+    return [...this.boxItems];
   }
 }
 

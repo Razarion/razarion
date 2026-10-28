@@ -2,6 +2,7 @@ package com.btxtech.uiservice.item;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Rectangle2D;
+import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBoxItemSimpleDto;
@@ -183,6 +184,30 @@ public class BoxUiService {
                 syncStaticItemSetPositionMonitor.handleOutOfView(viewFiledCenter);
             }
         }
+    }
+
+    /**
+     * Returns the position of the nearest box to the given position.
+     * This searches ALL boxes, not just visible ones - the box tip points at one out of view.
+     * Called from Angular/TypeScript.
+     */
+    @SuppressWarnings("unused") // Called by Angular
+    public Vertex getNearestBoxPosition(double fromX, double fromY) {
+        DecimalPosition from = new DecimalPosition(fromX, fromY);
+        SyncBoxItemSimpleDto nearest = null;
+        double minDistance = Double.MAX_VALUE;
+
+        synchronized (boxes) {
+            for (SyncBoxItemSimpleDto box : boxes.values()) {
+                double distance = box.getPosition().toXY().getDistance(from);
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    nearest = box;
+                }
+            }
+        }
+
+        return nearest != null ? nearest.getPosition() : null;
     }
 
     // Only for tests

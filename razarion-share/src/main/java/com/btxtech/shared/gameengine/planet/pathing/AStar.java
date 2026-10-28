@@ -1,5 +1,6 @@
 package com.btxtech.shared.gameengine.planet.pathing;
 
+import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.gameengine.planet.terrain.container.PathingNodeWrapper;
 
 import java.util.ArrayList;
@@ -113,7 +114,16 @@ public class AStar {
                 successor.setPredecessor(current);
                 successor.setG(tentativeG);
                 double heuristic = successorTilePosition.getDistance(destinationNode.getPathingNodeWrapper());
-                successor.setF(tentativeG + heuristic);
+                // The grid has four directions, so the cheapest way between two nodes is their
+                // Manhattan distance, and that is the estimate. The straight line used to be: it
+                // underestimates every diagonal by up to 41 %, so A* closed almost the whole
+                // rectangle between start and destination before it believed the direct way - 40
+                // times the nodes of the path, 200-1270 ms for 80-150 m on the PROD tick
+                // ([SlowPath], 24.10.2026). Among the many staircases of the same length the one
+                // closest to the straight line goes first, which keeps the path on the diagonal
+                // instead of turning it into an L.
+                successor.setF(tentativeG + manhattan(successorTilePosition, destinationNode.getPathingNodeWrapper()));
+                successor.setTieBreak(heuristic);
                 openList.add(successor);
                 if (smallestHeuristic > heuristic) {
                     smallestHeuristic = heuristic;
@@ -121,6 +131,11 @@ public class AStar {
                 }
             }
         }
+    }
+
+    private static double manhattan(PathingNodeWrapper from, PathingNodeWrapper to) {
+        return (Math.abs(from.getNodeIndex().getX() - to.getNodeIndex().getX())
+                + Math.abs(from.getNodeIndex().getY() - to.getNodeIndex().getY())) * TerrainUtil.NODE_SIZE;
     }
 
     public List<PathingNodeWrapper> convertPath() {

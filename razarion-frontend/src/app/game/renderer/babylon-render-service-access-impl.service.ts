@@ -2727,6 +2727,10 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     return this.babylonResourceItems;
   }
 
+  public getBabylonBoxItemImpls(): BabylonBoxItemImpl[] {
+    return this.babylonBoxItems;
+  }
+
   public addBaseItemCreatedListener(listener: (babylonBaseItem: BabylonBaseItemImpl) => void): void {
     this.baseItemCreatedListeners.push(listener);
   }

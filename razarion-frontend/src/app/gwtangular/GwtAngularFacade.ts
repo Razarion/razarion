@@ -23,6 +23,7 @@ export abstract class GwtAngularFacade {
   inventoryUiService!: InventoryUiService;
   terrainUiService!: TerrainUiService;
   resourceUiService!: ResourceUiService;
+  boxUiService!: BoxUiService;
   gameCommandService!: GameCommandService;
   itemCockpitBridge!: ItemCockpitBridge;
 
@@ -918,6 +919,16 @@ export interface ResourceUiService {
    * This searches ALL resources, not just visible ones.
    */
   getNearestResourcePosition(fromX: number, fromY: number): Vertex | null;
+}
+
+// ---------- BoxUiService ----------
+
+export interface BoxUiService {
+  /**
+   * Returns the position of the nearest box to the given position.
+   * This searches ALL boxes, not just visible ones.
+   */
+  getNearestBoxPosition(fromX: number, fromY: number): Vertex | null;
 }
 
 // ---------- Dialog ----------

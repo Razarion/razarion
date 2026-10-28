@@ -31,7 +31,15 @@ public class TerrainAnalyzer {
     private static final byte[] NO_BLOCKED_NODES = new byte[0];
     private final HeightMapAccess heightMapAccess;
     private final TerrainShapeManager terrainShapeManager;
-    private final Map<Index, TerrainType> terrainTypeCache = new HashMap<>();
+    private static final TerrainType[] TERRAIN_TYPES = TerrainType.values();
+    /**
+     * Terrain type per node, worked out once: one array per tile, the ordinal + 1, 0 = not yet. It was a
+     * HashMap keyed by Index, whose hash (31 * x + y) gives a whole planet of nodes only some 64 000
+     * values - long chains in every bucket, and A* asks for every node it looks at ([SlowPath] up to
+     * 1270 ms on PROD, 24.10.2026). Nodes off the tile grid keep the map.
+     */
+    private byte[][] terrainTypeTiles;
+    private final Map<Index, TerrainType> terrainTypeOffGrid = new HashMap<>();
     /**
      * Per tile bitmask (one bit per node, row-major) of the nodes blocked by terrain objects.
      * Built lazily per tile by stamping every blocking circle once, instead of scanning all
@@ -82,14 +90,36 @@ public class TerrainAnalyzer {
     }
 
     public TerrainType getTerrainType(Index terrainNodeIndex) {
-        TerrainType cached = terrainTypeCache.get(terrainNodeIndex);
-        if (cached != null) {
+        int x = terrainNodeIndex.getX();
+        int y = terrainNodeIndex.getY();
+        int tileXCount = terrainShapeManager != null ? terrainShapeManager.getTileXCount() : 0;
+        int tileYCount = terrainShapeManager != null ? terrainShapeManager.getTileYCount() : 0;
+        if (x < 0 || y < 0 || x >= tileXCount * NODE_X_COUNT || y >= tileYCount * NODE_Y_COUNT) {
+            TerrainType cached = terrainTypeOffGrid.get(terrainNodeIndex);
+            if (cached == null) {
+                cached = analyze(terrainNodeIndex);
+                terrainTypeOffGrid.put(terrainNodeIndex, cached);
+            }
             return cached;
         }
-
+        if (terrainTypeTiles == null) {
+            terrainTypeTiles = new byte[tileXCount * tileYCount][];
+        }
+        int tileX = x / NODE_X_COUNT;
+        int tileY = y / NODE_Y_COUNT;
+        int tile = tileX * tileYCount + tileY;
+        byte[] types = terrainTypeTiles[tile];
+        if (types == null) {
+            types = new byte[NODE_X_COUNT * NODE_Y_COUNT];
+            terrainTypeTiles[tile] = types;
+        }
+        int node = (y - tileY * NODE_Y_COUNT) * NODE_X_COUNT + (x - tileX * NODE_X_COUNT);
+        byte cached = types[node];
+        if (cached != 0) {
+            return TERRAIN_TYPES[cached - 1];
+        }
         TerrainType terrainType = analyze(terrainNodeIndex);
-        terrainTypeCache.put(terrainNodeIndex, terrainType);
-
+        types[node] = (byte) (terrainType.ordinal() + 1);
         return terrainType;
     }
 
@@ -99,7 +129,8 @@ public class TerrainAnalyzer {
      * planet. The blocked-node masks stay - they come from the terrain objects, not the heights.
      */
     public void clearTerrainTypeCache() {
-        terrainTypeCache.clear();
+        terrainTypeTiles = null;
+        terrainTypeOffGrid.clear();
     }
 
     private TerrainType analyze(Index terrainNodeIndex) {
@@ -218,9 +249,8 @@ public class TerrainAnalyzer {
      * NODE_Y_COUNT * NODE_X_COUNT).
      *
      * Calls {@link #analyze(Index)} rather than {@link #getTerrainType(Index)} on purpose: the
-     * result is the same, but the 25'600 nodes of a tile are not pushed into
-     * {@link #terrainTypeCache}. That cache serves the sparse node sets the pathing walks;
-     * filling it tile-wise would cost far more memory than the returned ordinal array.
+     * result is the same, and the editor overlay asking for a tile does not need to leave it in
+     * {@link #terrainTypeTiles}, which serves the nodes the pathing walks.
      */
     public int[] generateTerrainTypeOrdinals(Index terrainTileIndex) {
         Index nodeBase = tileIndexToNodeIndex(terrainTileIndex);

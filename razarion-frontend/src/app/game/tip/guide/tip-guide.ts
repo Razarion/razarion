@@ -62,6 +62,7 @@ export class TipGuide implements ViewFieldListener {
     [TipTaskName.START_UNLOAD_PLACER]: 4,
     [TipTaskName.SEND_UNLOAD_COMMAND]: 5,
     [TipTaskName.SEND_SELL_COMMAND]: 2,
+    [TipTaskName.SEND_PICK_BOX_COMMAND]: 2,
     [TipTaskName.SEND_BUILD_COMMAND]: 3,
     [TipTaskName.IDLE_ITEM]: 4
   };
@@ -290,6 +291,11 @@ export class TipGuide implements ViewFieldListener {
         const position = facade.resourceUiService?.getNearestResourcePosition(from.x, from.y);
         return position ? {x: position.getX(), y: position.getY()} : null;
       },
+      boxesOnScreen: quest.tip === 'BOX' ? this.boxesOnScreen((x, y) => onScreen(x, y, PROMPT.PICK_BOX)) : [],
+      nearestBox: from => {
+        const position = facade.boxUiService?.getNearestBoxPosition(from.x, from.y);
+        return position ? {x: position.getX(), y: position.getY()} : null;
+      },
       region: this.region && viewField
         ? {point: this.region.pointFor(regionAnchor ? {x: regionAnchor.x, y: regionAnchor.y} : null), inView: this.region.inView(viewField)}
         : null,
@@ -371,6 +377,11 @@ export class TipGuide implements ViewFieldListener {
       case 'group':
         return guidance.arrow ? {kind: 'point', x: guidance.arrow.x, y: guidance.arrow.y} : region;
       case 'prompt': {
+        if (guidance.box) {
+          const box = this.deps.renderService.getBabylonBoxItemImpls().find(item => item.getId() === guidance.itemId);
+          const position = box?.getPosition();
+          return position ? {kind: 'point', x: position.getX(), y: position.getY()} : region;
+        }
         if (guidance.resource) {
           const resource = this.deps.renderService.getBabylonResourceItemImpls().find(item => item.getId() === guidance.itemId);
           const position = resource?.getPosition();
@@ -433,7 +444,7 @@ export class TipGuide implements ViewFieldListener {
 
   private onOrder(order: OrderNote): void {
     const kind: PendingOrder['kind'] = order.kind === 'attack' || order.kind === 'harvest'
-    || order.kind === 'finalize' || order.kind === 'move' || order.kind === 'load' ? order.kind : 'other';
+    || order.kind === 'finalize' || order.kind === 'move' || order.kind === 'load' || order.kind === 'pickBox' ? order.kind : 'other';
     this.remember(order.unitIds, kind, order.targetTypeId);
   }
 
@@ -530,6 +541,17 @@ export class TipGuide implements ViewFieldListener {
       const position = resource.getPosition();
       if (position && onScreen(position.getX(), position.getY())) {
         result.push({id: resource.getId(), x: position.getX(), y: position.getY()});
+      }
+    }
+    return result;
+  }
+
+  private boxesOnScreen(onScreen: (x: number, y: number) => boolean): ResourcePoint[] {
+    const result: ResourcePoint[] = [];
+    for (const box of this.deps.renderService.getBabylonBoxItemImpls()) {
+      const position = box.getPosition();
+      if (position && onScreen(position.getX(), position.getY())) {
+        result.push({id: box.getId(), x: position.getX(), y: position.getY()});
       }
     }
     return result;

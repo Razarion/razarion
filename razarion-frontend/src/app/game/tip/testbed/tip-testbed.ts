@@ -5,7 +5,7 @@ import {TipStallTrackerService} from '../tip-stall-tracker.service';
 import {SelectionService} from '../../selection.service';
 import {ActionService} from '../../action.service';
 import {FirstInteractionTrackerService} from '../../tracking/first-interaction-tracker.service';
-import {FakeBaseItem, FakeItemCockpit, FakeResourceItem, QuestCondition, Unit, World} from './fake-world';
+import {FakeBaseItem, FakeBoxItem, FakeItemCockpit, FakeResourceItem, QuestCondition, Unit, World} from './fake-world';
 import {TipStallReason} from '../tip-stall';
 import {fakeBaseItemType, ItemTypeId, itemTypeSpec} from './fake-item-types';
 import {QuestMarkerService} from '../../cockpit/main/radar/quest-marker.service';
@@ -14,7 +14,7 @@ import {frameArrowJumpPoint} from '../../order-follow.service';
 /** A quest with a tip, as in catalog section 3. */
 export interface TipQuest {
   id: number;
-  tip: 'BUILD' | 'FABRICATE' | 'HARVEST' | 'ATTACK' | 'LOAD' | 'SAIL' | 'UNLOAD' | 'SELL';
+  tip: 'BUILD' | 'FABRICATE' | 'HARVEST' | 'ATTACK' | 'LOAD' | 'SAIL' | 'UNLOAD' | 'SELL' | 'BOX';
   actorTypeId: number;
   /** The typed part of the condition, which is also what the tip reads its target from. */
   typeCount: { typeId: number, count: number } | null;
@@ -103,7 +103,10 @@ export const QUESTS: Record<number, TipQuest> = {
     condition: {kind: 'owns', types: [{typeId: ItemTypeId.HARVESTER, count: 1}, {typeId: ItemTypeId.VIPER, count: 6}],
       region: REGION_PHASE2}},
   401: {id: 401, tip: 'SELL', actorTypeId: ItemTypeId.DOCKYARD, typeCount: {typeId: ItemTypeId.DOCKYARD, count: 1},
-    condition: {kind: 'sold', typeId: ItemTypeId.DOCKYARD, count: 1}}
+    condition: {kind: 'sold', typeId: ItemTypeId.DOCKYARD, count: 1}},
+  // Level 10: pick up a box with the vipers (2026-10-25).
+  404: {id: 404, tip: 'BOX', actorTypeId: ItemTypeId.VIPER, typeCount: null,
+    condition: {kind: 'boxPicked', count: 1}}
 };
 
 /** What is on the player's screen that a tip put there. */
@@ -313,8 +316,8 @@ export class TipTestbed {
     this.world.renderer.cancelPlacer();
   }
 
-  private onScreenItem(id: number): FakeBaseItem | FakeResourceItem {
-    const item = [...this.world.renderer.liveBaseItems(), ...this.world.renderer.liveResourceItems()]
+  private onScreenItem(id: number): FakeBaseItem | FakeResourceItem | FakeBoxItem {
+    const item = [...this.world.renderer.liveBaseItems(), ...this.world.renderer.liveResourceItems(), ...this.world.renderer.liveBoxItems()]
       .find(candidate => candidate.getId() === id);
     if (!item || !item.isOnScreen()) {
       throw new Error(`Test error: item ${id} is not on screen and cannot be clicked`);
@@ -370,7 +373,7 @@ export class TipTestbed {
         prompts.push({text, itemId: item.getId(), typeId: item.itemType.getId()});
       }
     }
-    for (const item of renderer.liveResourceItems()) {
+    for (const item of [...renderer.liveResourceItems(), ...renderer.liveBoxItems()]) {
       const text = item.getPromptText();
       if (text !== null && item.promptReadable()) {
         prompts.push({text, itemId: item.getId(), typeId: item.itemType.getId()});
@@ -546,6 +549,9 @@ export class TipTestbed {
     if (quest.tip === 'HARVEST') {
       return this.world.resources.size === 0;
     }
+    if (quest.tip === 'BOX') {
+      return this.world.boxes.size === 0;
+    }
     return false;
   }
 
@@ -558,6 +564,7 @@ export class TipTestbed {
     const candidates: { x: number, y: number }[] = [
       ...[...this.world.units.values()].map(unit => ({x: unit.x, y: unit.y})),
       ...[...this.world.resources.values()].map(resource => ({x: resource.x, y: resource.y})),
+      ...[...this.world.boxes.values()].map(box => ({x: box.x, y: box.y})),
       ...region,
       ...(region.length > 0 ? [{
         x: region.reduce((sum, corner) => sum + corner.x, 0) / region.length,
@@ -638,6 +645,18 @@ export class TipTestbed {
           return found ? {getX: () => found.x, getY: () => found.y} : null;
         }
       },
+      boxUiService: {
+        getNearestBoxPosition: (x: number, y: number) => {
+          let best: { x: number, y: number } | null = null;
+          for (const box of world.boxes.values()) {
+            if (!best || Math.hypot(box.x - x, box.y - y) < Math.hypot(best.x - x, best.y - y)) {
+              best = box;
+            }
+          }
+          const found = best;
+          return found ? {getX: () => found.x, getY: () => found.y} : null;
+        }
+      },
       gameUiControl: {
         getMyLimitation4ItemType: (typeId: number) => world.itemLimits.get(typeId) ?? Number.MAX_SAFE_INTEGER,
         getColdGameUiContext: () => ({
@@ -660,6 +679,7 @@ export class TipTestbed {
         },
         finalizeBuildCmd: (ids: number[], siteId: number) => world.command(ids, {kind: 'finalize', siteId}),
         loadContainerCmd: (ids: number[], containerId: number) => world.command(ids, {kind: 'load', containerId}),
+        pickBoxCmd: (ids: number[], boxId: number) => world.command(ids, {kind: 'pickBox', boxId}),
         setMoveCommandAckCallback: (callback: () => void) => moveAck = callback
       }
     };

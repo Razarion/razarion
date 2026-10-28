@@ -44,7 +44,7 @@ export class GuidanceView {
     }
     switch (guidance.kind) {
       case 'prompt': {
-        const item = this.findItem(guidance.itemId, guidance.resource);
+        const item = this.findItem(guidance.itemId, guidance.resource, !!guidance.box);
         // Misplaced: the prompt is up but built for the other side of the item, which the player
         // scrolled it to - see isSelectPromptMisplaced. Rebuilding is what turns the label round.
         if (item && (!item.isSelectPromptVisible() || item.isSelectPromptMisplaced?.())) {
@@ -144,7 +144,7 @@ export class GuidanceView {
 
   private takeDown(previous: Guidance, next: Guidance): void {
     if (previous.kind === 'prompt') {
-      this.findItem(previous.itemId, previous.resource)?.hideSelectPromptVisualization();
+      this.findItem(previous.itemId, previous.resource, !!previous.box)?.hideSelectPromptVisualization();
     }
     const arrowNext = next.kind === 'arrow' || (next.kind === 'group' && next.arrow !== null);
     if (!arrowNext) {
@@ -188,7 +188,7 @@ export class GuidanceView {
       viewField.getAngleTo(GwtInstance.newDecimalPosition(x, y)), {x, y});
   }
 
-  private findItem(id: number, resource: boolean): {
+  private findItem(id: number, resource: boolean, box: boolean): {
     isSelectPromptVisible(): boolean,
     /** Optional: the resource items do not carry a side. */
     isSelectPromptMisplaced?(): boolean,
@@ -198,6 +198,9 @@ export class GuidanceView {
     if (resource) {
       return this.renderService.getBabylonResourceItemImpls().find(item => item.getId() === id) ?? null;
     }
+    if (box) {
+      return this.renderService.getBabylonBoxItemImpls().find(item => item.getId() === id) ?? null;
+    }
     return this.renderService.getBabylonBaseItemById(id);
   }
 }
@@ -206,7 +209,7 @@ function samePrompt(one: Guidance, other: Guidance): boolean {
   if (one.kind !== 'prompt' || other.kind !== 'prompt') {
     return true;
   }
-  return one.itemId === other.itemId && one.text === other.text && one.resource === other.resource;
+  return one.itemId === other.itemId && one.text === other.text && one.resource === other.resource && !!one.box === !!other.box;
 }
 
 /** A marker cut to a ship's reach is rebuilt when the ship is another one or has moved. */

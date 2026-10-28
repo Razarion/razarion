@@ -10,6 +10,8 @@ public class AStarNode implements Comparable<AStarNode> {
     private final PathingNodeWrapper pathingNodeWrapper;
     private double f = 0;
     private double g; // Cost to this node
+    /** Straight-line distance to the destination: decides between nodes of the same f, see AStar. */
+    private double tieBreak;
     private AStarNode predecessor;
 
     AStarNode(PathingNodeWrapper pathingNodeWrapper) {
@@ -41,6 +43,10 @@ public class AStarNode implements Comparable<AStarNode> {
         this.g = g;
     }
 
+    public void setTieBreak(double tieBreak) {
+        this.tieBreak = tieBreak;
+    }
+
     public void setPredecessor(AStarNode predecessor) {
         this.predecessor = predecessor;
     }
@@ -51,7 +57,8 @@ public class AStarNode implements Comparable<AStarNode> {
 
     @Override
     public int compareTo(AStarNode o) {
-        return Double.compare(f, o.f);
+        int byF = Double.compare(f, o.f);
+        return byF != 0 ? byF : Double.compare(tieBreak, o.tieBreak);
     }
 
     @Override

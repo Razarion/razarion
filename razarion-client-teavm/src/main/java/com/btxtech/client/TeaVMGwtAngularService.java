@@ -16,6 +16,7 @@ import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.dialog.ModalDialogManager;
 import com.btxtech.uiservice.inventory.InventoryUiService;
 import com.btxtech.uiservice.item.BaseItemUiService;
+import com.btxtech.uiservice.item.BoxUiService;
 import com.btxtech.uiservice.item.ResourceUiService;
 import com.btxtech.uiservice.itemplacer.BaseItemPlacerService;
 import com.btxtech.uiservice.questvisualization.InGameQuestVisualizationService;
@@ -40,6 +41,7 @@ public class TeaVMGwtAngularService {
     private final ItemTypeService itemTypeService;
     private final BaseItemUiService baseItemUiService;
     private final ResourceUiService resourceUiService;
+    private final BoxUiService boxUiService;
     private final ModalDialogManager modalDialogManager;
     private final InventoryTypeService inventoryTypeService;
     private final InventoryUiService inventoryUiService;
@@ -57,6 +59,7 @@ public class TeaVMGwtAngularService {
                                   ModalDialogManager modalDialogManager,
                                   BaseItemUiService baseItemUiService,
                                   ResourceUiService resourceUiService,
+                                  BoxUiService boxUiService,
                                   ItemTypeService itemTypeService,
                                   TerrainTypeService terrainTypeService,
                                   InputService inputService,
@@ -74,6 +77,7 @@ public class TeaVMGwtAngularService {
         this.modalDialogManager = modalDialogManager;
         this.baseItemUiService = baseItemUiService;
         this.resourceUiService = resourceUiService;
+        this.boxUiService = boxUiService;
         this.itemTypeService = itemTypeService;
         this.terrainTypeService = terrainTypeService;
         this.inputService = inputService;
@@ -101,6 +105,7 @@ public class TeaVMGwtAngularService {
         facade.setJavaService("itemTypeService", AngularProxyFactory.createItemTypeServiceProxy(itemTypeService));
         facade.setJavaService("baseItemUiService", AngularProxyFactory.createBaseItemUiServiceProxy(baseItemUiService));
         facade.setJavaService("resourceUiService", AngularProxyFactory.createResourceUiServiceProxy(resourceUiService));
+        facade.setJavaService("boxUiService", AngularProxyFactory.createBoxUiServiceProxy(boxUiService));
         facade.setJavaService("inventoryTypeService", AngularProxyFactory.createInventoryTypeServiceProxy(inventoryTypeService));
         facade.setJavaService("inventoryUiService", AngularProxyFactory.createInventoryUiServiceProxy(inventoryUiService));
         facade.setJavaService("terrainUiService", AngularProxyFactory.createTerrainUiServiceProxy(terrainUiService));
