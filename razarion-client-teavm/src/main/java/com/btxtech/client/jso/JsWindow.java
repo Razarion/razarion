@@ -17,6 +17,9 @@ public final class JsWindow {
     @JSBody(script = "return window.location.search;")
     public static native String getLocationSearch();
 
+    @JSBody(script = "return window.location.pathname;")
+    public static native String getLocationPathname();
+
     /** Where the browser says it came from; empty string for a direct open. */
     @JSBody(script = "return document.referrer;")
     public static native String getDocumentReferrer();

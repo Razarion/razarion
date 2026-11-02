@@ -49,6 +49,8 @@ export class TipGuide implements ViewFieldListener {
   private static readonly ORDER_ARRIVAL_MILLIS = 15000;
   /** After a camera flight: long enough for the terrain tiles at the target to be built. */
   private static readonly GROUND_SETTLE_MILLIS = 400;
+  /** No camera flight before a build placer when the middle of the picture is this close to the spot. */
+  private static readonly BUILD_TARGET_TOLERANCE = 12;
   /** Order of the steps, to tell the stall tracker a step forward from a step back. */
   private static readonly STEP_RANK: Record<string, number> = {
     [TipTaskName.SELECT]: 0,
@@ -155,12 +157,17 @@ export class TipGuide implements ViewFieldListener {
 
   /**
    * Where the camera has to go before the build placer for this type opens: a point in the quest's
-   * region when the quest counts that building there and the region is out of view, else null.
+   * region when the quest counts that building there and the middle of the picture is not already
+   * on that point, else null.
    * <p>
    * The Dockyard of quest 386 has to stand in the water, the player stands inland, and the placer
    * opens in the middle of the picture - on land. On PROD every player who failed 386 in a week
    * never placed one (2026-09-30); the arrow to the coast asked them to scroll with an open placer,
    * which is the navigation they had not understood.
+   * <p>
+   * It used to stay put whenever any part of the region was in view. On the Noob Island band the
+   * harbour zone runs along the coast right in front of the base and is always in view, so the
+   * placer opened on land every time (local play test, 2026-10-28).
    */
   buildRegionTarget(itemTypeId: number): { x: number, y: number } | null {
     const quest = this.quest;
@@ -170,7 +177,7 @@ export class TipGuide implements ViewFieldListener {
       return null;
     }
     const viewField = this.deps.renderService.getCurrentViewField();
-    if (!viewField || this.region.inView(viewField)) {
+    if (!viewField) {
       return null;
     }
     // The part of the region nearest to the builder, which has to drive there - not to the middle of
@@ -180,7 +187,11 @@ export class TipGuide implements ViewFieldListener {
     const builders = this.lastItems.filter(item => item.own && item.itemTypeId === quest.actorTypeId);
     const builder = builders.find(item => selected.has(item.id)) ?? builders[0];
     const center = viewField.getScreenCenter();
-    return this.region.pointFor(builder ? {x: builder.x, y: builder.y} : {x: center.getX(), y: center.getY()});
+    const target = this.region.pointFor(builder ? {x: builder.x, y: builder.y} : {x: center.getX(), y: center.getY()});
+    if (!target || Math.hypot(target.x - center.getX(), target.y - center.getY()) <= TipGuide.BUILD_TARGET_TOLERANCE) {
+      return null;
+    }
+    return target;
   }
 
   /**

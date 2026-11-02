@@ -23,9 +23,21 @@ export class RemoteLogging {
     RemoteLogging.suspended = false;
   }
 
+  /**
+   * The director page (/game/director) is the social pipeline filming PROD from a headless Chrome
+   * several times a day, not a player. Its warnings - [SyncSnap], [SlowPath], [RenderTelemetry] -
+   * made up most of the large SyncSnap jumps (2026-10-26..28), so it forwards errors only.
+   */
+  static isDirectorPage(pathname: string = location.pathname): boolean {
+    return /\/director\/?$/.test(pathname);
+  }
+
   /** True if this log line may be sent to the server. */
-  static allow(): boolean {
+  static allow(level: string = 'error'): boolean {
     if (RemoteLogging.suspended) {
+      return false;
+    }
+    if (level === 'warn' && RemoteLogging.isDirectorPage()) {
       return false;
     }
     const now = Date.now();

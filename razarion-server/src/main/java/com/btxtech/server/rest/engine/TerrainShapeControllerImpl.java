@@ -91,7 +91,7 @@ public class TerrainShapeControllerImpl {
     @PreAuthorize("hasAuthority('ADMIN')")
     public void createTerrainShape(int planetId) {
         ServerGameEngineConfig serverGameEngineConfig = serverGameEngineCrudPersistence.read().get(0);
-        serverTerrainShapeService.createTerrainShape(serverGameEngineConfig.getBotConfigs(), planetId);
+        serverTerrainShapeService.createTerrainShape(serverGameEngineConfig, planetId);
     }
 
     private record PrefetchUrls(List<String> urls, long loadedAt) {

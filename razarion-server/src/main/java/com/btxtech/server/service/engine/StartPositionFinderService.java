@@ -18,6 +18,8 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 @Service
 public class StartPositionFinderService {
+    /** How many of the emptiest points, counted from the start of the path, a player may land on. */
+    static final int FILL_WINDOW = 4;
     private final Logger logger = LoggerFactory.getLogger(StartPositionFinderService.class);
     private final SyncItemContainerServiceImpl syncItemContainerService;
 
@@ -36,15 +38,16 @@ public class StartPositionFinderService {
      * empty - two buildings may already stand within the radius, which is how the placer came to
      * open on top of things: 48% of the rejected start placements said "blocked by another item".
      * <p>
-     * So the whole path is counted and the least crowded point wins, with the tie broken at random
-     * so that several players arriving within the same few seconds - before any of them has
-     * actually placed a base and changed the counts - do not all get sent to the same spot.
+     * So the whole path is counted and the least crowded point wins. Ties go to one of the first
+     * {@link #FILL_WINDOW} in path order, at random: the configured path lists the island cells one
+     * after the other, so the cells fill up in turn and a new player starts next to the others,
+     * while several players arriving within the same few seconds - before any of them has placed a
+     * base and changed the counts - are still not all sent to the same spot.
      * <p>
-     * {@code positionMaxItems} stays, now as the give-up condition rather than the choice: if even
-     * the emptiest point is more crowded than that, this returns null and the client falls back to
-     * a random point in the start region. That fallback checks nothing at all
-     * ({@code GeometricUtil.findFreeRandomPosition} passes a null predicate), so it is worth
-     * avoiding - which is the other reason the threshold is not tightened here.
+     * {@code positionMaxItems} only decides what is logged now. If even the emptiest point is more
+     * crowded than that, it is still returned: null used to send the client to a random point in
+     * the start region, and that fallback checks nothing at all
+     * ({@code GeometricUtil.findFreeRandomPosition} passes a null predicate).
      * <p>
      * Costs a full pass where the old one could stop early: thirty-three radius queries instead of
      * a median of seven. The old line reported that pass at 0 ms.
@@ -68,12 +71,21 @@ public class StartPositionFinderService {
             }
         }
 
-        if (emptiest.isEmpty() || lowestCount > slavePlanetConfig.getPositionMaxItems()) {
-            logger.warn("Free position not found, emptiest holds {} items, duration {}",
-                    emptiest.isEmpty() ? -1 : lowestCount, System.currentTimeMillis() - startTime);
+        if (emptiest.isEmpty()) {
+            logger.warn("Free position not found, no spawn points, duration {}", System.currentTimeMillis() - startTime);
             return null;
         }
-        DecimalPosition positionFound = emptiest.get(ThreadLocalRandom.current().nextInt(emptiest.size()));
+        // The path is in fill order, cell after cell, so the earliest of the emptiest points keep a
+        // new player next to the others. The window keeps the random spread for players who arrive
+        // within the same few seconds.
+        DecimalPosition positionFound = emptiest.get(ThreadLocalRandom.current().nextInt(Math.min(FILL_WINDOW, emptiest.size())));
+        if (lowestCount > slavePlanetConfig.getPositionMaxItems()) {
+            // Still the emptiest spawn point: the client's own fallback is a random point in the
+            // start region that checks nothing at all, which is worse than a crowded one.
+            logger.warn("Free position not found, emptiest holds {} items, using {} anyway, duration {}",
+                    lowestCount, positionFound, System.currentTimeMillis() - startTime);
+            return positionFound;
+        }
         // Same opening as before on purpose: the analysis that produced this change reads these
         // lines out of Cloud Logging, and a renamed prefix would silently end that series.
         logger.info("Free position found at {} items {} candidates {} of {} duration {}",

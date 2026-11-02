@@ -4,6 +4,8 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.system.Nullable;
 
+import java.util.List;
+
 /**
  * Created by Beat
  * on 28.07.2017.
@@ -17,6 +19,11 @@ public class StartRegionConfig {
     private boolean findFreePosition;
     private Double positionRadius;
     private Integer positionMaxItems;
+    /**
+     * The spawn points a player without a base is offered, in fill order. Empty means the old
+     * hardcoded path of the Noob Island (see ServerGameEngineConfigEntity).
+     */
+    private List<DecimalPosition> spawnPositions;
 
     public @Nullable Integer getId() {
         return id;
@@ -80,6 +87,19 @@ public class StartRegionConfig {
 
     public void setPositionMaxItems(@Nullable Integer positionMaxItems) {
         this.positionMaxItems = positionMaxItems;
+    }
+
+    public @Nullable List<DecimalPosition> getSpawnPositions() {
+        return spawnPositions;
+    }
+
+    public void setSpawnPositions(@Nullable List<DecimalPosition> spawnPositions) {
+        this.spawnPositions = spawnPositions;
+    }
+
+    public StartRegionConfig spawnPositions(List<DecimalPosition> spawnPositions) {
+        setSpawnPositions(spawnPositions);
+        return this;
     }
 
     public StartRegionConfig id(int id) {

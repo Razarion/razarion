@@ -80,6 +80,11 @@ export class TipRegion {
 /**
  * A point inside the polygon, nearest to `from`, or in its widest part without one. Also where the
  * quest line takes the camera for a region (QuestMarkerService.jumpPoint).
+ * <p>
+ * Along a cross section the point slides towards `from`, but keeps {@link EDGE_MARGIN} from its
+ * ends. For a long band along a coast - the harbour zone of the Noob Island band, 1245 m wide - the
+ * middle of the cross section is hundreds of metres away from the builder, while straight across
+ * from it is where it should build.
  */
 export function pointInPolygon(corners: Point[], from: Point | null): Point | null {
   if (corners.length < 3) {
@@ -92,8 +97,28 @@ export function pointInPolygon(corners: Point[], from: Point | null): Point | nu
   if (!from) {
     return candidates.reduce((a, b) => b.width > a.width ? b : a);
   }
-  return candidates.reduce((a, b) =>
-    squaredDistance(b, from) < squaredDistance(a, from) ? b : a);
+  const points = candidates.map(candidate => {
+    const reach = Math.max(0, candidate.width / 2 - EDGE_MARGIN);
+    return {x: Math.max(candidate.x - reach, Math.min(candidate.x + reach, from.x)), y: candidate.y};
+  });
+  // Cross sections run horizontally, so along a wavy coastal strip some of them only graze it. A point
+  // on such a one sits at the shore, where a dockyard does not fit - prefer points well inside.
+  const inside = points.filter(point => distanceToBoundary(point, corners) >= INNER_MARGIN);
+  return (inside.length > 0 ? inside : points)
+    .reduce((a, b) => squaredDistance(b, from) < squaredDistance(a, from) ? b : a);
+}
+
+/** How far {@link pointInPolygon} stays from the ends of a cross section. */
+const EDGE_MARGIN = 20;
+/** How far inside the region {@link pointInPolygon} prefers its point to be. */
+const INNER_MARGIN = 5;
+
+function distanceToBoundary(point: Point, corners: Point[]): number {
+  let best = Infinity;
+  for (let i = 0, j = corners.length - 1; i < corners.length; j = i++) {
+    best = Math.min(best, distanceToSegment(point, corners[j], corners[i]));
+  }
+  return best;
 }
 
 /**

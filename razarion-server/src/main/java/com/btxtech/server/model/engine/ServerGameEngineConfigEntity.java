@@ -143,8 +143,13 @@ public class ServerGameEngineConfigEntity extends BaseEntity {
             return null;
         }
         var positionPath = new ArrayList<DecimalPosition>();
-        insertHorizontalPositionPath(positionPath);
-        insertVerticalPositionPath(positionPath);
+        if (result.getSpawnPositions() != null && !result.getSpawnPositions().isEmpty()) {
+            positionPath.addAll(result.getSpawnPositions());
+        } else {
+            // Not configured: the L-shaped path of the old Noob Island.
+            insertHorizontalPositionPath(positionPath);
+            insertVerticalPositionPath(positionPath);
+        }
 
         return new SlavePlanetConfig()
                 .startRegion(result.getStartRegion())

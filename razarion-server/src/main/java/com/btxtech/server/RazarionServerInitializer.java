@@ -69,7 +69,7 @@ public class RazarionServerInitializer implements ApplicationRunner {
         }
         try {
             ServerGameEngineConfig serverGameEngineConfig = serverGameEngineService.serverGameEngineConfig();
-            serverTerrainShapeService.start(serverGameEngineConfig.getBotConfigs());
+            serverTerrainShapeService.start(serverGameEngineConfig);
         } catch (Exception e) {
             logger.error("start failed ", e);
         }

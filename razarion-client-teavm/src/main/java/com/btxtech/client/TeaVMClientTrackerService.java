@@ -21,6 +21,7 @@ import java.util.List;
 
 @Singleton
 public class TeaVMClientTrackerService implements StartupProgressListener {
+    public static final String DIRECTOR_UTM_SOURCE = "director";
     private final Provider<Boot> boot;
     private String rdtCid;
     private String twclid;
@@ -42,6 +43,12 @@ public class TeaVMClientTrackerService implements StartupProgressListener {
                 fbclid = params.get("fbclid");
                 utmCampaign = params.get("utm_campaign");
                 utmSource = params.get("utm_source");
+            }
+            // The director page is the social pipeline filming PROD, not a player: its startups
+            // carry utmSource "director", so the session counts can leave them out.
+            String pathname = JsWindow.getLocationPathname();
+            if (utmSource == null && pathname != null && (pathname.endsWith("/director") || pathname.endsWith("/director/"))) {
+                utmSource = DIRECTOR_UTM_SOURCE;
             }
             String documentReferrer = JsWindow.getDocumentReferrer();
             if (documentReferrer != null && !documentReferrer.isEmpty()) {

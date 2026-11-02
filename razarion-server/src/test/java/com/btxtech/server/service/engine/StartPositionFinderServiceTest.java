@@ -98,15 +98,37 @@ class StartPositionFinderServiceTest {
     }
 
     @Test
-    void givesUpWhenEvenTheEmptiestPointIsTooCrowded() {
-        // Null sends the client to a random point in the start region, which checks nothing. That
-        // is worse than a crowded spawn point, so the threshold has to stay a last resort and not
-        // become the choice.
+    void usesTheEmptiestPointEvenWhenItIsTooCrowded() {
+        // Null would send the client to a random point in the start region, which checks nothing.
+        // A crowded spawn point is the better of the two.
         Map<DecimalPosition, Integer> world = new HashMap<>();
         world.put(CROWDED, 5);
         world.put(BUSY, 3);
 
-        assertNull(serviceWith(world).findFreePosition(config(2, CROWDED, BUSY)));
+        assertEquals(BUSY, serviceWith(world).findFreePosition(config(2, CROWDED, BUSY)));
+    }
+
+    @Test
+    void returnsNullOnlyWithoutSpawnPoints() {
+        assertNull(serviceWith(new HashMap<>()).findFreePosition(config(2)));
+    }
+
+    @Test
+    void fillsThePathFromItsStart() {
+        // The path lists the island cells one after the other. Of ten empty points only the first
+        // few may be chosen, so the first cell fills before the next one is opened.
+        List<DecimalPosition> path = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            path.add(new DecimalPosition(30 + i * 30, 60));
+        }
+        StartPositionFinderService service = serviceWith(new HashMap<>());
+
+        Set<DecimalPosition> seen = new HashSet<>();
+        for (int i = 0; i < 200; i++) {
+            seen.add(service.findFreePosition(config(2, path.toArray(new DecimalPosition[0]))));
+        }
+
+        assertEquals(new HashSet<>(path.subList(0, StartPositionFinderService.FILL_WINDOW)), seen);
     }
 
     @Test

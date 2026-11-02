@@ -277,7 +277,7 @@ public class PlanetMgmtController {
             );
             ServerGameEngineConfig serverGameEngineConfig = serverGameEngineService.serverGameEngineConfig();
             serverTerrainShapeService.createTerrainShape(
-                    serverGameEngineConfig.getBotConfigs(),
+                    serverGameEngineConfig,
                     serverGameEngineConfig.getPlanetConfigId()
             );
             serverGameEngineControl.restartPlanet();

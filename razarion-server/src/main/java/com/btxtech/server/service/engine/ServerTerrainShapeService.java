@@ -2,10 +2,11 @@ package com.btxtech.server.service.engine;
 
 import com.btxtech.server.service.ContentDigest;
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.dto.ServerGameEngineConfig;
+import com.btxtech.shared.dto.StartRegionConfig;
 import com.btxtech.shared.gameengine.InitializeService;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
-import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.planet.bot.BotService;
 import com.btxtech.shared.gameengine.planet.terrain.BabylonDecal;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeManager;
@@ -32,6 +33,7 @@ import static com.btxtech.shared.utils.CollectionUtils.convertToUnsignedIntArray
 
 @Service
 public class ServerTerrainShapeService {
+    private static final double START_PAD_SIZE = 25;
     final private Logger logger = Logger.getLogger(ServerTerrainShapeService.class.getName());
     private final Map<Integer, NativeTerrainShape> terrainShapes = new HashMap<>();
     /** The shapes as served, see {@link #getSerializedTerrainShape}. Dropped whenever a shape is rebuilt. */
@@ -61,8 +63,21 @@ public class ServerTerrainShapeService {
         this.jsonMapper = jsonMapper;
     }
 
-    private static List<BabylonDecal> generateDecals() {
+    /**
+     * One start pad per configured spawn point, centred on it. Without any configured spawn point
+     * the twelve pads of the old Noob Island, which never lined up with its spawn path.
+     */
+    static List<BabylonDecal> generateDecals(List<StartRegionConfig> startRegionConfigs) {
         List<BabylonDecal> babylonDecals = new ArrayList<>();
+        if (startRegionConfigs != null) {
+            startRegionConfigs.stream()
+                    .filter(startRegionConfig -> startRegionConfig.getSpawnPositions() != null)
+                    .flatMap(startRegionConfig -> startRegionConfig.getSpawnPositions().stream())
+                    .forEach(spawn -> babylonDecals.add(createBaseBabylonDecal(spawn.sub(START_PAD_SIZE / 2, START_PAD_SIZE / 2))));
+        }
+        if (!babylonDecals.isEmpty()) {
+            return babylonDecals;
+        }
         for (int i = 0; i < 6; i++) {
             babylonDecals.add(createBaseBabylonDecal(new DecimalPosition(25 + i * 35, 2)));
         }
@@ -77,17 +92,17 @@ public class ServerTerrainShapeService {
         babylonDecal.babylonMaterialId = 1;
         babylonDecal.xPos = start.getX();
         babylonDecal.yPos = start.getY();
-        babylonDecal.xSize = 25;
-        babylonDecal.ySize = 25;
+        babylonDecal.xSize = START_PAD_SIZE;
+        babylonDecal.ySize = START_PAD_SIZE;
         return babylonDecal;
     }
 
-    public void start(List<BotConfig> botConfigs) {
+    public void start(ServerGameEngineConfig serverGameEngineConfig) {
         terrainShapes.clear();
         serializedTerrainShapes.clear();
         planetCrudPersistence.read().forEach(planetConfig -> {
             try {
-                createTerrainShape(botConfigs, planetConfig);
+                createTerrainShape(serverGameEngineConfig, planetConfig);
             } catch (Throwable t) {
                 alarmService.riseAlarm(TERRAIN_SHAPE_SETUP_FAILED, planetConfig.getId());
                 logger.log(Level.SEVERE, "createTerrainShape failed", t);
@@ -95,7 +110,7 @@ public class ServerTerrainShapeService {
         });
     }
 
-    private void createTerrainShape(List<BotConfig> botConfigs, PlanetConfig planetConfig) {
+    private void createTerrainShape(ServerGameEngineConfig serverGameEngineConfig, PlanetConfig planetConfig) {
         try {
             groundHeightMap = setupGroundHeightMap(planetCrudPersistence.getCompressedHeightMap(planetConfig.getId()));
         } catch (Throwable t) {
@@ -107,15 +122,15 @@ public class ServerTerrainShapeService {
                 terrainTypeService,
                 alarmService,
                 planetCrudPersistence.getTerrainObjectPositions(planetConfig.getId()),
-                ServerTerrainShapeService.generateDecals(),
-                BotService.generateBotGrounds(botConfigs));
+                ServerTerrainShapeService.generateDecals(serverGameEngineConfig.getStartRegionConfigs()),
+                BotService.generateBotGrounds(serverGameEngineConfig.getBotConfigs()));
         terrainShapes.put(planetConfig.getId(), terrainShapeManager.toNativeTerrainShape());
         serializedTerrainShapes.remove(planetConfig.getId());
     }
 
-    public void createTerrainShape(List<BotConfig> botConfigs, int planetConfigId) {
+    public void createTerrainShape(ServerGameEngineConfig serverGameEngineConfig, int planetConfigId) {
         initializeService.setStaticGameConfig(staticGameConfigService.loadStaticGameConfig());
-        createTerrainShape(botConfigs, planetCrudPersistence.read(planetConfigId));
+        createTerrainShape(serverGameEngineConfig, planetCrudPersistence.read(planetConfigId));
     }
 
     public NativeTerrainShape getNativeTerrainShape(int planetId) {

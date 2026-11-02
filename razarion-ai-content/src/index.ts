@@ -305,7 +305,7 @@ ResourceRegionConfig fields: id, internalName, count, minDistanceToItems, resour
 server.tool(
   "update_start_regions",
   `Update ALL start region configs for a server game engine. Replaces the entire list.
-StartRegionConfig fields: id, internalName, minimalLevelId, region (PlaceConfig), noBaseViewPosition, findFreePosition, positionRadius, positionMaxItems.`,
+StartRegionConfig fields: id, internalName, minimalLevelId, region (PlaceConfig), noBaseViewPosition, findFreePosition, positionRadius, positionMaxItems, spawnPositions (DecimalPosition[] in fill order; empty = old hardcoded Noob Island path). Id-preserving: send existing ids back.`,
   {
     serverGameEngineConfigId: z.number().describe("Server game engine config ID"),
     startRegions: z.array(z.record(z.unknown())).describe("Array of StartRegionConfig objects"),

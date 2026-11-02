@@ -65,6 +65,7 @@ export class ServerStartRegionComponent extends EditorPanel implements OnInit {
       findFreePosition: false,
       positionMaxItems: null,
       positionRadius: null,
+      spawnPositions: [],
     };
     this.serverGameEngineConfigEntity!.startRegionConfigs.push(this.selectedStartRegion);
   }

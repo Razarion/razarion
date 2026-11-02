@@ -34,7 +34,7 @@ export class AppComponent {
     const deviceMemory = nav.deviceMemory ?? null;
 
     const forward = (level: string, args: any[]) => {
-      if (!RemoteLogging.allow()) {
+      if (!RemoteLogging.allow(level)) {
         return;
       }
       try {
