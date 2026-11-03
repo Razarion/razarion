@@ -1,6 +1,7 @@
 package com.btxtech.server.gameengine;
 
 import com.btxtech.server.AuthHandshakeInterceptor;
+import com.btxtech.server.model.Roles;
 import com.btxtech.server.model.tracking.PageRequest;
 import com.btxtech.server.service.tracking.MetaConversionService;
 import com.btxtech.server.service.tracking.PageRequestService;
@@ -86,12 +87,17 @@ public class ClientGameConnectionService extends TextWebSocketHandler {
         var anonymousToken = (String) wsSession.getAttributes().get(AuthHandshakeInterceptor.ANONYMOUS_TOKEN);
         String userId = userService.getOrCreateUserId(auth, httpSessionId, anonymousToken);
 
-        clientGameConnection.init(wsSession, userId);
+        boolean recorder = isRecorder(auth);
+        clientGameConnection.init(wsSession, userId, recorder);
         wsSession.getAttributes().put(CLIENT_GAME_CONNECTION, clientGameConnection);
         synchronized (gameConnections) {
             gameConnections.computeIfAbsent(userId, id -> new ArrayList<>()).add(clientGameConnection);
         }
         clientGameConnection.sendInitialSlaveSyncInfo(clientGameConnection.getUserId());
+        if (recorder) {
+            // Not a visitor: nothing to report to the ad networks, whatever the HTTP session says.
+            return;
+        }
         String rdtCid = pageRequestService.findRdtCidByHttpSessionId(httpSessionId);
         if (rdtCid != null) {
             redditConversionService.registerUser(userId, rdtCid);
@@ -110,6 +116,11 @@ public class ClientGameConnectionService extends TextWebSocketHandler {
             metaConversionService.sendClientStartupEvent(metaVisit.getFbclid(), metaVisit.getUserAgent());
         }
         // TODO connectionTrackingPersistence.onGameConnectionOpened(clientSystemConnection.getSession().getHttpSessionId(), clientSystemConnection.getSession());
+    }
+
+    private static boolean isRecorder(Authentication auth) {
+        return auth != null && auth.getAuthorities().stream()
+                .anyMatch(authority -> Roles.RECORDER.equals(authority.getAuthority()));
     }
 
     @Override

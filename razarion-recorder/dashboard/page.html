@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Razarion Recorder</title>
+<link rel="icon" href="data:,">
+<style>
+  :root {
+    --bg: #f6f6f4; --panel: #ffffff; --text: #1d1d1b; --muted: #6b6b66; --line: #e3e3de;
+    --ok: #2f7d4a; --warn: #a76a00; --bad: #b3261e; --accent: #2c5e9e; --row: #f0f0ec;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #161615; --panel: #1f1f1d; --text: #e9e9e4; --muted: #9a9a93; --line: #33332f;
+      --ok: #6cc18a; --warn: #e0a640; --bad: #f08a80; --accent: #8fb5ea; --row: #262624;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  header { padding: 16px 20px 8px; display: flex; gap: 16px; align-items: baseline; flex-wrap: wrap; }
+  h1 { font-size: 18px; margin: 0; }
+  h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 0 0 10px; }
+  main { padding: 8px 20px 24px; display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); }
+  section { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; min-width: 0; }
+  section.wide { grid-column: 1 / -1; }
+  table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+  th, td { text-align: left; padding: 4px 8px 4px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--muted); font-weight: 500; font-size: 12px; }
+  td.n, th.n { text-align: right; }
+  tr.click { cursor: pointer; }
+  tr.click:hover td { background: var(--row); }
+  tr.bot td { color: var(--muted); }
+  .kv { display: grid; grid-template-columns: max-content 1fr; gap: 3px 14px; }
+  .kv div:nth-child(odd) { color: var(--muted); }
+  .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; background: var(--muted); }
+  .ok { color: var(--ok); } .ok .dot, .dot.ok { background: var(--ok); }
+  .warn { color: var(--warn); } .dot.warn { background: var(--warn); }
+  .bad { color: var(--bad); } .dot.bad { background: var(--bad); }
+  .muted { color: var(--muted); }
+  .scroll { max-height: 420px; overflow: auto; }
+  .types { color: var(--muted); font-size: 12px; }
+  label { color: var(--muted); font-size: 12px; }
+  @media (max-width: 520px) { main { grid-template-columns: 1fr; padding: 8px 16px; } header { padding: 16px; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>Razarion Recorder</h1>
+  <span id="server" class="muted"></span>
+  <span id="updated" class="muted"></span>
+  <a href="/player" style="color:var(--accent);text-decoration:none">Replay ▶</a>
+</header>
+<main>
+  <section>
+    <h2>Recording</h2>
+    <div class="kv" id="status"></div>
+  </section>
+  <section>
+    <h2>Volume by message</h2>
+    <div class="scroll"><table id="volume"></table></div>
+  </section>
+  <section class="wide">
+    <h2>Players</h2>
+    <div class="scroll"><table id="players"></table></div>
+  </section>
+  <section class="wide">
+    <h2>Funnel <span class="muted" id="funnelNote"></span></h2>
+    <div class="scroll"><table id="funnel"></table></div>
+  </section>
+  <section class="wide">
+    <h2>Moments <span class="muted">· shorts from rules.json, filmed from the tape, handed to the social engine</span></h2>
+    <div class="scroll"><table id="moments"></table></div>
+  </section>
+  <section class="wide">
+    <h2>Bases <label><input type="checkbox" id="showBots"> bots too</label></h2>
+    <div class="scroll"><table id="bases"></table></div>
+  </section>
+  <section class="wide" id="detailSection" hidden>
+    <h2 id="detailTitle"></h2>
+    <div class="scroll"><table id="detail"></table></div>
+  </section>
+  <section class="wide">
+    <h2>Events</h2>
+    <div class="scroll"><table id="events"></table></div>
+  </section>
+  <section class="wide">
+    <h2>Hours</h2>
+    <div class="scroll"><table id="hours"></table></div>
+  </section>
+</main>
+<script>
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const mb = (b) => (b / 1024 / 1024).toFixed(b < 10 * 1024 * 1024 ? 2 : 1) + ' MB';
+const kb = (b) => (b / 1024).toFixed(1) + ' kB';
+const time = (t) => (t ? new Date(t).toLocaleTimeString() : '–');
+const ago = (t) => {
+  if (!t) return '–';
+  const s = Math.round((Date.now() - t) / 1000);
+  return s < 90 ? s + ' s ago' : s < 5400 ? Math.round(s / 60) + ' min ago' : (s / 3600).toFixed(1) + ' h ago';
+};
+const span = (ms) => (ms == null ? '–' : ms < 3600e3 ? Math.round(ms / 60e3) + ' min' : (ms / 3600e3).toFixed(1) + ' h');
+let selected = null;
+try { $('showBots').checked = localStorage.getItem('showBots') === '1'; } catch {}
+$('showBots').onchange = () => { try { localStorage.setItem('showBots', $('showBots').checked ? '1' : '0'); } catch {} refresh(); };
+
+function stateClass(state) {
+  return state === 'connected' || state === 'ok' ? 'ok' : state === 'connecting' || state === 'idle' ? 'warn' : 'bad';
+}
+
+function renderStatus(s) {
+  $('server').textContent = s.server;
+  $('updated').textContent = 'updated ' + time(s.now);
+  const c = s.connection, f = s.feed, t = s.tape;
+  const rows = [
+    ['Game connection', `<span class="${stateClass(c.state)}"><span class="dot"></span>${esc(c.state)}</span> · segment ${c.segment}` +
+      (c.connectedSince ? ` · since ${time(c.connectedSince)}` : '') + (c.lastError && c.state !== 'connected' ? `<br><span class="bad">${esc(c.lastError.message)}</span>` : '')],
+    ['Account roles', esc(c.roles.join(' ') || '(none)') + (c.roles.includes('RECORDER') || c.roles.includes('ADMIN') ? '' : ' <span class="warn">- no RECORDER role</span>')],
+    ['Last message', ago(c.lastMessageAt)],
+    ['History feed', `<span class="${stateClass(f.state)}"><span class="dot"></span>${esc(f.state)}</span> · ${f.rows} rows` + (f.lastError && f.state !== 'ok' ? `<br><span class="bad">${esc(f.lastError.message)}</span>` : '')],
+    ['World', `${s.world.bases} bases · ${s.world.items} items · tick ${s.world.tickCount ?? '–'}` + (s.world.lastError ? `<br><span class="bad">${esc(s.world.lastError.packet)}: ${esc(s.world.lastError.message)}</span>` : '')],
+    ['Tape', `${mb(t.held.bytes)} of ${mb(t.budget.maxBytes)} · ${t.held.entries} messages · from ${time(t.held.oldest)}`],
+    ['Average', `${t.bytesPerHour == null ? 'after 10 min' : mb(t.bytesPerHour) + ' per hour'} · ${t.total.count} messages since ${time(t.startedAt)}`],
+    ['Keyframes', `${t.held.keyframes} held · every ${s.keyframes.everyMinutes} min · ${s.keyframes.failed} failed` +
+      (t.keyframeSizes.length ? ` · last ${kb(t.keyframeSizes[t.keyframeSizes.length - 1].bytes)}` : '')],
+    ['Dropped', `${t.dropped.entries} messages, ${mb(t.dropped.bytes)}`],
+    ['Process', `heap ${mb(s.memory.heapUsed)} · rss ${mb(s.memory.rss)}`],
+    ['Names', s.names.loadedAt ? `${s.names.baseItemTypes} unit types` : '<span class="warn">not loaded, ids shown</span>'],
+  ];
+  $('status').innerHTML = rows.map(([k, v]) => `<div>${k}</div><div>${v}</div>`).join('');
+
+  const byName = Object.entries(t.byName);
+  $('volume').innerHTML = '<tr><th>Message</th><th class="n">Count</th><th class="n">Total</th><th class="n">Largest</th><th class="n">Share</th></tr>' +
+    byName.map(([name, v]) => `<tr><td>${esc(name)}</td><td class="n">${v.count}</td><td class="n">${mb(v.bytes)}</td><td class="n">${kb(v.maxBytes)}</td>` +
+      `<td class="n">${t.total.bytes ? Math.round(100 * v.bytes / t.total.bytes) : 0} %</td></tr>`).join('');
+
+  $('hours').innerHTML = '<tr><th>Hour</th><th class="n">Messages</th><th class="n">Volume</th><th>Largest parts</th></tr>' +
+    t.hours.slice().reverse().map((h) => {
+      const parts = Object.entries(h.byName).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([n, b]) => `${esc(n)} ${mb(b)}`).join(' · ');
+      return `<tr><td>${new Date(h.hour).toLocaleString([], { weekday: 'short', hour: '2-digit', minute: '2-digit' })}</td><td class="n">${h.count}</td><td class="n">${mb(h.bytes)}</td><td class="types">${parts}</td></tr>`;
+    }).join('');
+}
+
+function renderBases(bases) {
+  const showBots = $('showBots').checked;
+  const list = bases.filter((b) => showBots || !b.bot)
+    .sort((a, b) => (a.bot - b.bot) || (!!a.deletedAt - !!b.deletedAt) || ((b.lastActivity || 0) - (a.lastActivity || 0)));
+  $('bases').innerHTML = '<tr><th>Base</th><th>Name</th><th class="n">Level</th><th class="n">Units</th><th>Holds</th><th class="n">Age</th><th class="n">Active</th><th>Where</th></tr>' +
+    list.map((b) => `<tr class="click${b.bot ? ' bot' : ''}" data-id="${b.baseId}"><td>${b.baseId}${b.deletedAt ? ' <span class="muted">(gone)</span>' : ''}</td>` +
+      `<td>${esc(b.name)}${b.bot ? ' <span class="muted">bot</span>' : ''}</td><td class="n">${b.level ?? '–'}</td><td class="n">${b.itemCount}</td>` +
+      `<td class="types">${esc(Object.entries(b.types).map(([n, c]) => `${c} ${n}`).join(', '))}</td>` +
+      `<td class="n">${span((b.deletedAt || Date.now()) - b.createdAt)}</td><td class="n">${ago(b.lastActivity)}</td>` +
+      `<td class="muted">${b.centre ? b.centre.x + ', ' + b.centre.y : '–'}</td></tr>`).join('');
+  for (const row of $('bases').querySelectorAll('tr.click')) row.onclick = () => { selected = Number(row.dataset.id); refreshDetail(); };
+}
+
+function describe(e) {
+  const parts = [];
+  if (e.what) parts.push(e.what);
+  if (e.type) parts.push(e.type);
+  if (e.killerType) parts.push(`by ${e.killerType} of base ${e.killerBaseId}`);
+  if (e.boxType) parts.push(`box ${e.boxType}`);
+  if (e.levelNumber != null) parts.push(`level ${e.levelNumber}`);
+  if (e.questId != null) parts.push(`quest ${e.questId}`);
+  if (e.itemTypeName) parts.push(e.itemTypeName);
+  if (e.lived != null) parts.push(`after ${span(e.lived)}`);
+  if (e.items != null) parts.push(`${e.items} items, ${e.bases} bases`);
+  if (e.at) parts.push(`at ${e.at.x}, ${e.at.y}`);
+  return esc(parts.join(' · '));
+}
+
+function eventRows(events) {
+  return '<tr><th>Time</th><th>Event</th><th>Base</th><th>Detail</th></tr>' +
+    events.map((e) => `<tr><td>${time(e.t)}</td><td>${esc(e.kind)}</td><td>${e.baseId ?? '–'}</td><td>${describe(e)}</td></tr>`).join('');
+}
+
+async function refreshDetail() {
+  if (selected == null) return;
+  const res = await fetch('/api/base/' + selected);
+  if (!res.ok) { $('detailSection').hidden = true; return; }
+  const base = await res.json();
+  $('detailSection').hidden = false;
+  const story = base.player ? base.player.story.map((s) => ({ t: s.t, kind: 'player', baseId: base.baseId, what: s.what, at: s.at })) : [];
+  const merged = [...base.timeline, ...story].sort((a, b) => b.t - a.t);
+  $('detailTitle').textContent = `Base ${base.baseId} · ${base.name || ''} · ${merged.length} events`;
+  $('detail').innerHTML = eventRows(merged);
+}
+
+function renderPlayers(players) {
+  $('players').innerHTML = '<tr><th>Player</th><th>Base</th><th>Status</th><th class="n">Level</th><th>Current quest</th><th class="n">Open</th>' +
+    '<th class="n">Passed</th><th class="n">Lost to bots</th><th class="n">Played</th><th class="n">Last action</th><th>Island</th><th></th></tr>' +
+    players.map((p) => `<tr class="click" data-base="${p.baseId ?? ''}"><td>${esc(p.userId.slice(0, 8))}${p.watchedFromStart ? '' : ' <span class="muted">joined earlier</span>'}</td>` +
+      `<td>${p.baseId ?? '–'}</td><td class="${p.status === 'active' ? 'ok' : p.status === 'idle' ? 'warn' : 'muted'}">${p.status}</td>` +
+      `<td class="n">${p.level ?? '–'}</td><td>${esc(p.currentQuest?.name ?? '–')}</td><td class="n">${p.currentQuest ? p.currentQuest.openMinutes + ' min' : ''}</td>` +
+      `<td class="n">${p.questsPassed}</td><td class="n">${p.lost.toBot}</td><td class="n">${p.minutesPlayed != null ? p.minutesPlayed + ' min' : '–'}</td>` +
+      `<td class="n">${p.lastActionMinutesAgo != null ? p.lastActionMinutesAgo + ' min ago' : '–'}</td><td>${p.leftNoobIsland ? 'left' : ''}</td><td><a href="/player?userId=${encodeURIComponent(p.userId)}" style="color:var(--accent)" onclick="event.stopPropagation()">replay</a></td></tr>`).join('');
+  for (const row of $('players').querySelectorAll('tr.click')) {
+    row.onclick = () => { if (row.dataset.base) { selected = Number(row.dataset.base); refreshDetail(); } };
+  }
+}
+
+function renderMoments(moments) {
+  $('moments').innerHTML = '<tr><th>Moment</th><th>Rule</th><th>Base</th><th>At</th><th>Status</th><th>Takes</th></tr>' +
+    (moments.length ? moments.map((m) => `<tr><td>${esc(m.id)}</td><td>${esc(m.title)}${m.by === 'hand' ? ' <span class="muted">by hand</span>' : ''}</td>` +
+      `<td>${m.baseId}</td><td>${time(m.at)}</td><td class="${m.status === 'handed-over' ? 'ok' : m.status === 'failed' || m.status === 'not-handed-over' ? 'bad' : 'warn'}">${esc(m.status)}` +
+      `${m.error ? '<br><span class="muted">' + esc(m.error) + '</span>' : ''}</td><td class="types">${esc(Object.keys(m.takes || {}).join(', '))}</td></tr>`).join('')
+      : '<tr><td colspan="6" class="muted">None yet.</td></tr>');
+}
+
+function renderFunnel(funnel) {
+  $('funnelNote').textContent = `· ${funnel.players} players watched from their start, ${funnel.joinedEarlier} joined earlier, ${funnel.leftNoobIsland} left the noob island`;
+  const top = funnel.steps[0]?.reached || 0;
+  $('funnel').innerHTML = '<tr><th>Step</th><th class="n">Reached</th><th class="n">Share</th><th class="n">Median</th><th>Stopped here</th></tr>' +
+    funnel.steps.map((s) => {
+      const stopped = s.stoppedHere ? Object.entries(s.stoppedHere).filter(([, n]) => n).map(([k, n]) => `${n} ${k}`).join(', ') : '';
+      return `<tr><td>${esc(s.step)}</td><td class="n">${s.reached}</td><td class="n">${top ? Math.round(100 * s.reached / top) + ' %' : ''}</td>` +
+        `<td class="n">${s.medianMinutes != null ? s.medianMinutes + ' min' : '–'}</td><td>${stopped}</td></tr>`;
+    }).join('');
+}
+
+async function refresh() {
+  try {
+    const [status, bases, events, players, funnel, moments] = await Promise.all([
+      fetch('/api/status').then((r) => r.json()),
+      fetch('/api/bases').then((r) => r.json()),
+      fetch('/api/events?limit=300').then((r) => r.json()),
+      fetch('/api/players').then((r) => r.json()),
+      fetch('/api/funnel').then((r) => r.json()),
+      fetch('/api/moments').then((r) => r.json()),
+    ]);
+    renderMoments(moments);
+    renderStatus(status);
+    renderPlayers(players);
+    renderFunnel(funnel);
+    renderBases(bases);
+    $('events').innerHTML = eventRows(events);
+    refreshDetail();
+  } catch (error) {
+    $('updated').innerHTML = `<span class="bad">recorder not reachable</span>`;
+  }
+}
+refresh();
+setInterval(refresh, 3000);
+</script>
+</body>
+</html>

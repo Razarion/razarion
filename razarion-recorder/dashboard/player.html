@@ -1,0 +1,459 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Recorder Replay</title>
+<link rel="icon" href="data:,">
+<style>
+  :root {
+    --bg: #f6f6f4; --panel: #ffffff; --text: #1d1d1b; --muted: #6b6b66; --line: #e3e3de; --accent: #2c5e9e;
+    --row: #f0f0ec; --map: #20262b;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #161615; --panel: #1f1f1d; --text: #e9e9e4; --muted: #9a9a93; --line: #33332f; --accent: #8fb5ea; --row: #262624; --map: #0f1316; }
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 14px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif;
+         display: grid; grid-template-rows: auto 1fr auto; grid-template-columns: 1fr 300px; grid-template-areas: "top top" "map side" "bar side"; }
+  header { grid-area: top; display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; padding: 10px 16px; border-bottom: 1px solid var(--line); background: var(--panel); }
+  header h1 { font-size: 16px; margin: 0 8px 0 0; }
+  header a { color: var(--accent); text-decoration: none; }
+  select, button, input[type=number] { font: inherit; color: var(--text); background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 4px 8px; }
+  button { cursor: pointer; }
+  button.primary { background: var(--accent); color: var(--panel); border-color: var(--accent); min-width: 44px; }
+  #mapWrap { grid-area: map; position: relative; background: var(--map); overflow: hidden; min-height: 300px; }
+  canvas { display: block; width: 100%; height: 100%; cursor: grab; }
+  canvas.dragging { cursor: grabbing; }
+  #tip { position: absolute; pointer-events: none; background: rgba(0,0,0,.75); color: #fff; padding: 3px 7px; border-radius: 4px; font-size: 12px; display: none; white-space: nowrap; }
+  #status { position: absolute; left: 12px; top: 10px; color: #fff; text-shadow: 0 1px 2px #000; font-size: 13px; }
+  footer { grid-area: bar; display: grid; grid-template-columns: auto auto 1fr auto; gap: 12px; align-items: center; padding: 10px 16px; background: var(--panel); border-top: 1px solid var(--line); }
+  #timeline { position: relative; height: 28px; }
+  #timeline input { position: absolute; inset: 8px 0 0 0; width: 100%; margin: 0; }
+  #ticks { position: absolute; left: 0; right: 0; top: 0; height: 8px; }
+  #ticks span { position: absolute; top: 0; width: 2px; height: 8px; border-radius: 1px; }
+  #clock { font-variant-numeric: tabular-nums; min-width: 150px; text-align: right; }
+  aside { grid-area: side; border-left: 1px solid var(--line); background: var(--panel); overflow: auto; }
+  aside h2 { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 12px 14px 6px; }
+  .ev { padding: 5px 14px; border-bottom: 1px solid var(--line); cursor: pointer; font-size: 13px; }
+  .ev:hover { background: var(--row); }
+  .ev.past { color: var(--muted); }
+  .ev b { font-weight: 500; font-variant-numeric: tabular-nums; margin-right: 6px; }
+  .legend { padding: 4px 14px 12px; font-size: 12px; color: var(--muted); line-height: 1.8; }
+  .sw { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px; vertical-align: -1px; }
+  .k-quest { background: #3fae5c; } .k-level { background: #3f86d6; } .k-base { background: #b07ad8; } .k-loss { background: #e0533d; }
+  @media (max-width: 760px) {
+    body { grid-template-columns: 1fr; grid-template-rows: auto 60vh auto auto; grid-template-areas: "top" "map" "bar" "side"; }
+    footer { grid-template-columns: auto auto 1fr; }
+    #clock { grid-column: 1 / -1; text-align: left; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>Replay</h1>
+  <label>Range
+    <select id="range">
+      <option value="10">last 10 min</option>
+      <option value="30" selected>last 30 min</option>
+      <option value="60">last 60 min</option>
+      <option value="90">last 90 min</option>
+    </select>
+  </label>
+  <label>or player <select id="player"><option value="">–</option></select></label>
+  <button id="load">Load</button>
+  <label>Follow <select id="follow"><option value="">nobody</option></select></label>
+  <button id="fit">Whole planet</button>
+  <button id="watch3d" title="The followed base in the real game client, from the moment on screen">3D from here</button>
+  <button id="short" title="A short of the followed base: 20 s before the moment on screen, 10 s after - filmed and handed to the social engine">Short from here</button>
+  <a href="/">Dashboard</a>
+</header>
+<div id="mapWrap">
+  <canvas id="map"></canvas>
+  <div id="status"></div>
+  <div id="tip"></div>
+</div>
+<footer>
+  <button id="play" class="primary" title="Space">▶</button>
+  <select id="speed" title="Speed">
+    <option value="1">1×</option><option value="2">2×</option><option value="4">4×</option>
+    <option value="8" selected>8×</option><option value="16">16×</option><option value="32">32×</option><option value="64">64×</option>
+  </select>
+  <div id="timeline"><div id="ticks"></div><input id="scrub" type="range" min="0" max="1" step="100" value="0"></div>
+  <div id="clock">–</div>
+</footer>
+<aside>
+  <h2>What happened</h2>
+  <div id="events"></div>
+  <h2>Legend</h2>
+  <div class="legend">
+    <span class="sw k-quest"></span>quest passed &nbsp; <span class="sw k-level"></span>level up<br>
+    <span class="sw k-base"></span>base created &nbsp; <span class="sw k-loss"></span>loss<br>
+    ● unit &nbsp; ■ building &nbsp; grey: bots<br>
+    Wheel zooms, drag moves, space plays.
+  </div>
+</aside>
+<script>
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const canvas = $('map');
+const ctx = canvas.getContext('2d');
+const KIND_COLOR = { quest: '#3fae5c', level: '#3f86d6', base: '#b07ad8', loss: '#e0533d' };
+const HUMAN_COLORS = ['#ffd23f', '#3fd0ff', '#ff6fb5', '#7dff6a', '#ff9a3c', '#b89bff', '#ffffff', '#4dffd2'];
+const BOT_COLOR = 'rgba(205,120,105,0.85)';
+const SHOT_MS = 250;
+const BLAST_MS = 1200;
+
+let track = null;
+let now = 0;
+let playing = false;
+let view = { cx: 0, cy: 0, scale: 1 };
+let follow = null; // base id
+let image = null;
+let baseColor = new Map();
+
+// ---------------------------------------------------------------- geometry
+
+const toScreen = (x, y) => [(x - view.cx) * view.scale + canvas.width / 2, canvas.height / 2 - (y - view.cy) * view.scale];
+const toWorld = (sx, sy) => [(sx - canvas.width / 2) / view.scale + view.cx, view.cy - (sy - canvas.height / 2) / view.scale];
+
+function lengthOf(poly) {
+  let len = 0;
+  for (let i = 2; i < poly.length; i += 2) len += Math.hypot(poly[i] - poly[i - 2], poly[i + 1] - poly[i - 1]);
+  return len;
+}
+
+function along(poly, dist) {
+  for (let i = 2; i < poly.length; i += 2) {
+    const seg = Math.hypot(poly[i] - poly[i - 2], poly[i + 1] - poly[i - 1]);
+    if (dist <= seg && seg > 0) {
+      const f = dist / seg;
+      return [poly[i - 2] + (poly[i] - poly[i - 2]) * f, poly[i - 1] + (poly[i + 1] - poly[i - 1]) * f];
+    }
+    dist -= seg;
+  }
+  return [poly[poly.length - 2], poly[poly.length - 1]];
+}
+
+/** The path up to where the unit was next seen: cut at the segment closest to that position. */
+function cutAt(poly, x, y) {
+  let best = 2, bestD = Infinity;
+  for (let i = 2; i < poly.length; i += 2) {
+    const ax = poly[i - 2], ay = poly[i - 1], bx = poly[i], by = poly[i + 1];
+    const dx = bx - ax, dy = by - ay, l2 = dx * dx + dy * dy;
+    const f = l2 ? Math.max(0, Math.min(1, ((x - ax) * dx + (y - ay) * dy) / l2)) : 0;
+    const d = Math.hypot(ax + dx * f - x, ay + dy * f - y);
+    if (d < bestD) { bestD = d; best = i; }
+  }
+  return poly.slice(0, best).concat([x, y]);
+}
+
+/** Last index with p[i][0] <= t, or -1. */
+function indexAt(p, t) {
+  let lo = 0, hi = p.length - 1, found = -1;
+  while (lo <= hi) {
+    const mid = (lo + hi) >> 1;
+    if (p[mid][0] <= t) { found = mid; lo = mid + 1; } else hi = mid - 1;
+  }
+  return found;
+}
+
+/** Where an item is at t: walked along its path between two known positions; null when it is not there. */
+function positionAt(item, t) {
+  if (item.born != null && t < item.born) return null;
+  if (item.died != null && t >= item.died) return null;
+  const i = indexAt(item.p, t);
+  if (i < 0) return null;
+  const [t0, x0, y0, way, hidden] = item.p[i];
+  if (hidden) return null;
+  if (!way) return [x0, y0];
+  const next = item.p[i + 1];
+  const speed = track.types[item.type]?.speed;
+  const poly = [x0, y0, ...way];
+  if (next) {
+    const path = cutAt(poly, next[1], next[2]);
+    const len = lengthOf(path);
+    const span = next[0] - t0;
+    // At least as fast as it was told, and in time for where it was seen next.
+    const dist = Math.min(len, Math.max(speed ? speed * (t - t0) / 1000 : 0, span > 0 ? len * (t - t0) / span : len));
+    return along(path, dist);
+  }
+  if (!speed) return [x0, y0];
+  return along(poly, Math.min(lengthOf(poly), speed * (t - t0) / 1000));
+}
+
+function lastPosition(item) {
+  const p = item.p[item.p.length - 1];
+  return positionAt(item, Math.min(item.died ?? Infinity, track.to) - 1) || [p[1], p[2]];
+}
+
+// ---------------------------------------------------------------- drawing
+
+function resize() {
+  const r = canvas.getBoundingClientRect();
+  canvas.width = Math.max(1, Math.round(r.width * devicePixelRatio));
+  canvas.height = Math.max(1, Math.round(r.height * devicePixelRatio));
+}
+
+function fitPlanet() {
+  if (!track?.planet) return;
+  const { width, height } = track.planet;
+  view = { cx: width / 2, cy: height / 2, scale: Math.min(canvas.width / width, canvas.height / height) * 0.95 };
+}
+
+function colorOf(baseId) {
+  const base = track.bases[baseId];
+  if (!base || !base.human) return BOT_COLOR;
+  return baseColor.get(baseId) || '#ffffff';
+}
+
+function draw() {
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  if (!track) return;
+  if (image && track.planet) {
+    const [x0, y0] = toScreen(0, track.planet.height);
+    const [x1, y1] = toScreen(track.planet.width, 0);
+    ctx.globalAlpha = 0.9;
+    ctx.drawImage(image, x0, y0, x1 - x0, y1 - y0);
+    ctx.globalAlpha = 1;
+  }
+  const positions = new Map();
+  let fx = 0, fy = 0, fn = 0;
+  for (const item of track.items) {
+    const pos = positionAt(item, now);
+    if (!pos) continue;
+    positions.set(item.id, pos);
+    const type = track.types[item.type];
+    const [sx, sy] = toScreen(pos[0], pos[1]);
+    // A unit is one to three metres on a planet of kilometres: drawn true to size it is not there
+    // until zoomed far in, so it never gets smaller than a few pixels.
+    const r = Math.max((type?.speed ? 3 : 4) * devicePixelRatio, (type?.radius ?? 1) * view.scale);
+    ctx.fillStyle = colorOf(item.base);
+    ctx.strokeStyle = 'rgba(0,0,0,.65)';
+    ctx.lineWidth = devicePixelRatio;
+    if (follow === item.base) { fx += pos[0]; fy += pos[1]; fn++; }
+    if (type?.speed) {
+      ctx.beginPath(); ctx.arc(sx, sy, r, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    } else {
+      ctx.fillRect(sx - r, sy - r, 2 * r, 2 * r); ctx.strokeRect(sx - r, sy - r, 2 * r, 2 * r);
+    }
+    if (follow === item.base) {
+      ctx.strokeStyle = 'rgba(255,255,255,.9)'; ctx.lineWidth = devicePixelRatio;
+      ctx.beginPath(); ctx.arc(sx, sy, r + 3 * devicePixelRatio, 0, Math.PI * 2); ctx.stroke();
+    }
+  }
+  // Shots: a short line from the shooter to where it aimed
+  ctx.lineWidth = 1.5 * devicePixelRatio;
+  for (const [t, actor, x, y] of track.shots) {
+    if (t > now || now - t > SHOT_MS) continue;
+    const from = positions.get(actor);
+    if (!from) continue;
+    const [ax, ay] = toScreen(from[0], from[1]);
+    const [bx, by] = toScreen(x, y);
+    ctx.strokeStyle = `rgba(255,230,120,${1 - (now - t) / SHOT_MS})`;
+    ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(bx, by); ctx.stroke();
+  }
+  // Explosions: a ring where something blew up
+  for (const item of track.items) {
+    if (!item.explode || item.died == null || now < item.died || now - item.died > BLAST_MS) continue;
+    const pos = lastPosition(item);
+    const [sx, sy] = toScreen(pos[0], pos[1]);
+    const f = (now - item.died) / BLAST_MS;
+    ctx.strokeStyle = `rgba(255,120,60,${1 - f})`;
+    ctx.lineWidth = 2 * devicePixelRatio;
+    ctx.beginPath(); ctx.arc(sx, sy, (4 + 18 * f) * devicePixelRatio, 0, Math.PI * 2); ctx.stroke();
+  }
+  if (follow != null && fn) {
+    // Ease toward the followed base rather than jump with every unit that moves
+    view.cx += (fx / fn - view.cx) * 0.08;
+    view.cy += (fy / fn - view.cy) * 0.08;
+  }
+  lastPositions = positions;
+}
+let lastPositions = new Map();
+
+// ---------------------------------------------------------------- time
+
+const clock = (t) => new Date(t).toLocaleTimeString();
+const offset = (t) => {
+  const s = Math.max(0, Math.round((t - track.from) / 1000));
+  return `+${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+};
+
+function seek(t) {
+  now = Math.max(track.from, Math.min(track.to, t));
+  $('scrub').value = now - track.from;
+  $('clock').textContent = `${clock(now)}  ${offset(now)}`;
+  for (const el of $('events').children) el.classList.toggle('past', Number(el.dataset.t) <= now);
+}
+
+function setPlaying(on) {
+  playing = on && track != null;
+  $('play').textContent = playing ? '❚❚' : '▶';
+}
+
+let last = performance.now();
+function frame(time) {
+  const dt = time - last;
+  last = time;
+  if (playing && track) {
+    seek(now + dt * Number($('speed').value));
+    if (now >= track.to) setPlaying(false);
+  }
+  draw();
+  requestAnimationFrame(frame);
+}
+
+// ---------------------------------------------------------------- loading
+
+async function load(query) {
+  setPlaying(false);
+  $('status').textContent = 'loading…';
+  const res = await fetch('/api/replay?' + query);
+  const data = await res.json();
+  if (!res.ok || data.error) { $('status').textContent = data.error || 'could not load'; return; }
+  track = data;
+  baseColor = new Map();
+  let n = 0;
+  const humans = Object.entries(track.bases).filter(([, b]) => b.human);
+  for (const [id] of humans) baseColor.set(Number(id), HUMAN_COLORS[n++ % HUMAN_COLORS.length]);
+  $('follow').innerHTML = '<option value="">nobody</option>' + humans.map(([id, b]) =>
+    `<option value="${id}">${esc(b.name || 'base ' + id)} (${id})</option>`).join('');
+  $('scrub').max = track.to - track.from;
+  $('ticks').innerHTML = track.markers.map((m) =>
+    `<span title="${esc(m.what)}" style="left:${(100 * (m.t - track.from) / (track.to - track.from)).toFixed(2)}%;background:${KIND_COLOR[m.kind]}"></span>`).join('');
+  $('events').innerHTML = track.markers.map((m) =>
+    `<div class="ev" data-t="${m.t}"><span class="sw k-${m.kind}"></span><b>${clock(m.t)}</b>${esc(m.what)}${m.base != null ? ` <span style="color:var(--muted)">· base ${m.base}</span>` : ''}</div>`).join('')
+    || '<div class="ev past">Nothing recorded in this stretch.</div>';
+  for (const el of $('events').querySelectorAll('.ev[data-t]')) el.onclick = () => seek(Number(el.dataset.t) - 10_000);
+  $('status').textContent = `${track.items.length} items · ${track.shots.length} shots · ${Math.round((track.to - track.from) / 60000)} min`;
+  if (track.planet && !image) {
+    const img = new Image();
+    img.onload = () => (image = img);
+    img.src = '/api/minimap';
+  }
+  const params = new URLSearchParams(query);
+  follow = null;
+  if (params.get('userId')) {
+    const own = humans.find(([, b]) => b.userId === params.get('userId'));
+    if (own) follow = Number(own[0]);
+  }
+  $('follow').value = follow ?? '';
+  fitPlanet();
+  if (follow != null) view.scale *= 4;
+  seek(track.from);
+  setPlaying(true);
+}
+
+async function loadPlayers() {
+  try {
+    const players = await (await fetch('/api/players')).json();
+    $('player').innerHTML = '<option value="">–</option>' + players.map((p) =>
+      `<option value="${p.userId}">${p.userId.slice(0, 8)} · base ${p.baseId ?? '–'} · ${p.status}</option>`).join('');
+  } catch {}
+}
+
+function currentQuery() {
+  return $('player').value ? 'userId=' + encodeURIComponent($('player').value) : 'minutes=' + $('range').value;
+}
+
+// ---------------------------------------------------------------- input
+
+$('load').onclick = () => load(currentQuery());
+$('play').onclick = () => setPlaying(!playing);
+$('fit').onclick = () => { follow = null; $('follow').value = ''; fitPlanet(); };
+
+// The same moment in the real game client (lib/replay-server.mjs): a new replay for the followed
+// base, or a jump if that base is already playing in 3D - same base, same tab, no reload.
+let window3d = null;
+
+// A short of this moment (lib/moments.mjs): filmed in the background once the tape holds it, then
+// handed to the social engine, where it waits on the review page.
+$('short').onclick = async () => {
+  if (follow == null) { $('status').textContent = 'choose a base to follow first - a short follows one player'; return; }
+  const answer = await fetch('/api/moments', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ baseId: follow, at: Math.round(now) }) }).then((r) => r.json());
+  $('status').textContent = answer.error ? answer.error : `short ${answer.id} - see the dashboard`;
+};
+$('watch3d').onclick = async () => {
+  if (follow == null) { $('status').textContent = 'choose a base to follow first - 3D plays one player\'s view'; return; }
+  const post = (path, body) => fetch(path, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }).then((r) => r.json());
+  const current = await (await fetch('/api/replay3d')).json();
+  if (current && current.baseId === follow && current.connected) {
+    await post('/api/replay3d/seek', { at: now });
+    window3d?.focus();
+    return;
+  }
+  const answer = await post('/api/replay3d', { baseId: follow, at: now });
+  if (answer.error) { $('status').textContent = answer.error; return; }
+  window3d = window.open(answer.url, 'razarion-replay-3d');
+};
+$('follow').onchange = () => {
+  follow = $('follow').value === '' ? null : Number($('follow').value);
+  if (follow != null && view.scale < 1.5) view.scale *= 4;
+};
+$('scrub').oninput = () => seek(track.from + Number($('scrub').value));
+document.addEventListener('keydown', (e) => {
+  if (e.code === 'Space' && e.target.tagName !== 'SELECT') { e.preventDefault(); setPlaying(!playing); }
+});
+canvas.addEventListener('wheel', (e) => {
+  e.preventDefault();
+  const r = canvas.getBoundingClientRect();
+  const sx = (e.clientX - r.left) * devicePixelRatio, sy = (e.clientY - r.top) * devicePixelRatio;
+  const [wx, wy] = toWorld(sx, sy);
+  view.scale *= Math.exp(-e.deltaY * 0.0015);
+  const [nx, ny] = toWorld(sx, sy);
+  view.cx += wx - nx; view.cy += wy - ny;
+}, { passive: false });
+let drag = null;
+canvas.addEventListener('pointerdown', (e) => { drag = { x: e.clientX, y: e.clientY }; canvas.classList.add('dragging'); canvas.setPointerCapture(e.pointerId); });
+canvas.addEventListener('pointerup', () => { drag = null; canvas.classList.remove('dragging'); });
+canvas.addEventListener('pointermove', (e) => {
+  if (drag) {
+    view.cx -= (e.clientX - drag.x) * devicePixelRatio / view.scale;
+    view.cy += (e.clientY - drag.y) * devicePixelRatio / view.scale;
+    drag = { x: e.clientX, y: e.clientY };
+    if (follow != null) { follow = null; $('follow').value = ''; }
+    return;
+  }
+  // Tooltip: the nearest item under the pointer
+  if (!track) return;
+  const r = canvas.getBoundingClientRect();
+  const sx = (e.clientX - r.left) * devicePixelRatio, sy = (e.clientY - r.top) * devicePixelRatio;
+  let best = null, bestD = 10 * devicePixelRatio;
+  for (const item of track.items) {
+    const pos = lastPositions.get(item.id);
+    if (!pos) continue;
+    const [px, py] = toScreen(pos[0], pos[1]);
+    const d = Math.hypot(px - sx, py - sy);
+    if (d < bestD) { bestD = d; best = item; }
+  }
+  const tip = $('tip');
+  if (!best) { tip.style.display = 'none'; return; }
+  const base = track.bases[best.base];
+  tip.textContent = `${track.types[best.type]?.name ?? best.type} · ${base?.human ? (base.name || 'player') : 'bot'} · base ${best.base}`;
+  tip.style.left = (e.clientX - r.left + 12) + 'px';
+  tip.style.top = (e.clientY - r.top + 12) + 'px';
+  tip.style.display = 'block';
+});
+canvas.addEventListener('pointerleave', () => ($('tip').style.display = 'none'));
+new ResizeObserver(() => { const had = track && canvas.width > 1; resize(); if (!had) fitPlanet(); }).observe($('mapWrap'));
+
+resize();
+requestAnimationFrame(frame);
+loadPlayers().then(() => {
+  const params = new URLSearchParams(location.search);
+  if (params.get('userId')) $('player').value = params.get('userId');
+  const minutes = params.get('minutes');
+  if (minutes) {
+    if (![...$('range').options].some((o) => o.value === minutes)) {
+      $('range').add(new Option(`last ${minutes} min`, minutes), 0);
+    }
+    $('range').value = minutes;
+  }
+  load(params.toString() || currentQuery());
+});
+</script>
+</body>
+</html>

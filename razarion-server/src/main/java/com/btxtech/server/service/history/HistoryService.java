@@ -80,6 +80,7 @@ public class HistoryService {
     private static final Duration LONG_RETENTION = Duration.ofDays(90);
     private final MongoTemplate mongoTemplate;
     private final CommunityTickerService communityTickerService;
+    private final RecorderFeedService recorderFeedService;
     private final Logger logger = LoggerFactory.getLogger(HistoryService.class);
     private final AtomicLong droppedCount = new AtomicLong();
     private final ExecutorService writeExecutor = new ThreadPoolExecutor(
@@ -97,9 +98,10 @@ public class HistoryService {
                 }
             });
 
-    public HistoryService(MongoTemplate mongoTemplate, CommunityTickerService communityTickerService) {
+    public HistoryService(MongoTemplate mongoTemplate, CommunityTickerService communityTickerService, RecorderFeedService recorderFeedService) {
         this.mongoTemplate = mongoTemplate;
         this.communityTickerService = communityTickerService;
+        this.recorderFeedService = recorderFeedService;
     }
 
     /**
@@ -464,6 +466,7 @@ public class HistoryService {
         Duration retention = retention(gameHistory.getType());
         gameHistory.expireAt(retention != null ? new Date(now.getTime() + retention.toMillis()) : null);
         communityTickerService.onHistory(gameHistory);
+        recorderFeedService.onHistory(gameHistory);
         try {
             writeExecutor.execute(() -> {
                 try {

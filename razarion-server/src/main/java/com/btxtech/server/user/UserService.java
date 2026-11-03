@@ -35,6 +35,7 @@ import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
@@ -142,6 +143,13 @@ public class UserService implements UserDetailsService {
     /** For committing a new anonymous player on its own, see {@link #createAnonymousUser}. */
     @Autowired(required = false)
     private PlatformTransactionManager transactionManager;
+    /** The one account that gets {@link Roles#RECORDER}; empty means there is none. */
+    @Value("${razarion.recorder.email:}")
+    private String recorderEmail;
+
+    private boolean isRecorderEmail(String email) {
+        return recorderEmail != null && !recorderEmail.isBlank() && recorderEmail.trim().equalsIgnoreCase(email);
+    }
 
     void setTransactionManager(PlatformTransactionManager transactionManager) {
         this.transactionManager = transactionManager;
@@ -232,6 +240,8 @@ public class UserService implements UserDetailsService {
             public Collection<? extends GrantedAuthority> getAuthorities() {
                 if (userEntity.isAdmin()) {
                     return List.of(new SimpleGrantedAuthority(Roles.ADMIN));
+                } else if (isRecorderEmail(userEntity.getEmail())) {
+                    return List.of(new SimpleGrantedAuthority(Roles.RECORDER));
                 } else {
                     return List.of();
                 }
@@ -624,6 +634,15 @@ public class UserService implements UserDetailsService {
             }
         });
         return result;
+    }
+
+    /** The id of the user's active quest, or null. For the recorder, which needs no more of it. */
+    @Transactional
+    public Integer findActiveQuestId(String userId) {
+        return userRepository.findByUserId(userId)
+                .map(UserEntity::getActiveQuest)
+                .map(QuestConfigEntity::getId)
+                .orElse(null);
     }
 
     @Transactional

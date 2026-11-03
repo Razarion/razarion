@@ -27,10 +27,12 @@ describe('GameComponent chat visibility', () => {
     cockpitDisplay = new CockpitDisplayService();
     compactLayout = new CompactLayoutService();
     const unused: any = {};
+    // A route without director or replay data: the plain game
+    const route: any = {snapshot: {data: {}}};
     TestBed.configureTestingModule({});
     component = TestBed.runInInjectionContext(() => new GameComponent(
       unused, cockpitDisplay, compactLayout, unused, unused, unused, unused, unused, unused,
-      unused, unused, uiSettings, unused, unused, unused, TestBed.inject(NgZone)));
+      unused, unused, unused, uiSettings, route, unused, unused, TestBed.inject(NgZone)));
     // The game has signed the player in and put its cockpit up.
     cockpitDisplay.showChatCockpit = true;
   });

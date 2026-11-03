@@ -93,13 +93,13 @@
   .label { font-size: 12px; color: var(--muted); }
   .nets-health { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
   .health { border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; display: grid; gap: 6px; align-content: start; min-width: 0; }
-  .health.auth { border-color: var(--bad); background: var(--bad-bg); }
+  .health.auth, .health.billing { border-color: var(--bad); background: var(--bad-bg); }
   .health.error { border-color: var(--warn); }
   .health .msg { font-size: 12px; color: var(--muted); overflow-wrap: anywhere; }
   .health a.button { display: inline-block; text-decoration: none; background: var(--bad); color: #fff; border-radius: 6px; padding: 5px 12px; font-weight: 600; justify-self: start; }
   .health input { width: 100%; }
   .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; background: var(--skip); }
-  .dot.ok { background: var(--ok); } .dot.auth { background: var(--bad); } .dot.error { background: var(--warn); }
+  .dot.ok { background: var(--ok); } .dot.auth, .dot.billing { background: var(--bad); } .dot.error { background: var(--warn); }
   table.q { width: 100%; border-collapse: collapse; font-size: 13px; }
   table.q td, table.q th { text-align: left; padding: 5px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
   table.q th { font-size: 12px; color: var(--muted); font-weight: 600; }
@@ -509,9 +509,13 @@ function renderHealth() {
     const on = engine.settings.networks[net];
     const r = engine.reconnect[net];
     const statusText = !on ? 'switched off'
-      : { ok: 'working', auth: 'login needed', error: 'last post failed', unknown: 'not checked yet' }[h.status] || h.status;
+      : { ok: 'working', auth: 'login needed', billing: 'no API credits', error: 'last post failed', unknown: 'not checked yet' }[h.status] || h.status;
     let fix = '';
-    if (on && (h.status === 'auth' || h.status === 'error')) {
+    const b = engine.billing?.[net];
+    if (on && h.status === 'billing' && b) {
+      // Not a login problem: no reconnect button, it would only invite a useless round trip.
+      fix = `<div class="msg">${esc(b.hint)}</div><a class="button" href="${b.href}" target="_blank" rel="noopener">Buy ${label} credits</a>`;
+    } else if (on && (h.status === 'auth' || h.status === 'error')) {
       fix = r.kind === 'oauth'
         ? `<a class="button" href="${r.href}" target="_blank" rel="noopener">Reconnect ${label}</a>`
         : `<div class="msg">${esc(r.hint)} <a href="${r.href}" target="_blank" rel="noopener">Open Meta</a></div>
@@ -525,7 +529,7 @@ function renderHealth() {
       ${expires}${fix}
       <div class="actions">
         ${on ? `<button data-publish="${net}" title="Posts the next approved post on ${label} now, outside the schedule">Post next now</button>` : ''}
-        ${on && (h.status === 'auth' || h.status === 'error') ? `<button data-reset="${net}" title="Mark it as working again; the next slot shows whether it is">Try again</button>` : ''}
+        ${on && ['auth', 'billing', 'error'].includes(h.status) ? `<button data-reset="${net}" title="Mark it as working again; the next slot shows whether it is">Try again</button>` : ''}
       </div>
     </div>`;
   }).join('');
@@ -549,7 +553,8 @@ function renderQueue() {
   const whenCell = (r) => r.at ? esc(when(r.at))
     : r.held ? '<span class="flag">held</span>'
     : r.state === 'review' ? '<span class="state review">in review</span>'
-    : engine.health[r.net].status === 'auth' ? '<span class="flag">login needed</span>' : '–';
+    : engine.health[r.net].status === 'auth' ? '<span class="flag">login needed</span>'
+    : engine.health[r.net].status === 'billing' ? '<span class="flag">no API credits</span>' : '–';
   $('#eng-queue').innerHTML = `<table class="q"><tr><th>When</th><th>Network</th><th>Post</th><th>Text</th></tr>${rows.map((r) => `<tr>
     <td class="when">${whenCell(r)}</td>
     <td>${esc(r.label)}</td>

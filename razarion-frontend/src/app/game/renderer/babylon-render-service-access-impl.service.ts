@@ -107,6 +107,7 @@ import {PlaceConfigComponent} from '../../editor/common/place-config/place-confi
 import {buildQuestPlaceVisualizationMaterial} from './quest-place-visualization-material';
 import {CommandTargetKind, CommandTargetMarker} from './command-target-marker';
 import {StartupPayloadProbe} from '../tracking/startup-payload';
+import {GroundClumps} from './ground-clumps';
 
 
 export interface RazarionMetadata {
@@ -278,6 +279,8 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   // Terrain objects (trees/rocks) cost ~1500 draw calls in the shadow pass but are core to
   // the visual feel — kept on by default. F11 toggles them off for perf comparisons.
   private loadedTerrainTiles: Set<BabylonTerrainTileImpl> = new Set();
+  /** 3D grass clumps and dry ones on bare ground around the camera, rebuilt as it moves. */
+  readonly groundClumps = new GroundClumps(this, () => this.loadedTerrainTiles);
   private terrainShadowsEnabled = true;
   public static readonly SCROLL_SPEED = 0.2;
   public static readonly SCROLL_SPEED_CAMERA_HEIGHT_FACTOR = 0.03;
@@ -843,6 +846,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
         0,
         groundTarget.z
       );
+      this.groundClumps.update(date);
     });
 
     // Outside Angular: inside, every frame ended in a change detection run over the whole cockpit -
@@ -2537,7 +2541,8 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
       renderWidth: this.engine.getRenderWidth(),
       renderHeight: this.engine.getRenderHeight(),
       hardwareScaling: this.engine.getHardwareScalingLevel(),
-      gpu: glInfo?.renderer ?? null
+      gpu: glInfo?.renderer ?? null,
+      ...this.groundClumps.takeStats()
     };
   }
 
@@ -2643,6 +2648,11 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
         count = mesh.getTotalIndices();
       } catch (ignored) {
         continue;
+      }
+      // Thin instances (the grass clumps) draw the mesh's triangles once per instance
+      const thinInstances = (mesh as Mesh).thinInstanceCount;
+      if (thinInstances > 0) {
+        count *= thinInstances;
       }
       if (!count) {
         continue;
@@ -2769,9 +2779,13 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
       return null;
     }
     const positions = items.map(item => item.getContainer().position);
+    // A unit whose ground has not streamed in yet stands at the stand-in height, 200 m under the
+    // map. Where it is counts; how high does not: framed on that height the camera looked at the
+    // base from below the terrain, and the ground there never streamed in (replay, 2026-11-03).
+    const grounded = positions.filter(p => p.y > BabylonTerrainTileImpl.HEIGHT_MIN + 1);
     const centre = new Vector3(
       median(positions.map(p => p.x)),
-      median(positions.map(p => p.y)),
+      grounded.length ? median(grounded.map(p => p.y)) : 0,
       median(positions.map(p => p.z)),
     );
     const distances = positions.map(p => Math.hypot(p.x - centre.x, p.z - centre.z));

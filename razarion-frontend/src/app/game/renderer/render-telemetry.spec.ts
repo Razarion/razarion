@@ -8,7 +8,8 @@ describe('RenderTelemetry', () => {
     heapUsedMb: 128.5, heapLimitMb: 512, textureCount: 40, textureMb: 96.25, geometries: 210,
     meshTop: 'Rock:200,Palm:120,ground:20',
     parkedMeshes: 205, parkingFilter: true, indexTop: 'ground:900k,palm:430k',
-    renderWidth: 1280, renderHeight: 720, hardwareScaling: 1, gpu: 'Test "GPU"'
+    renderWidth: 1280, renderHeight: 720, hardwareScaling: 1, gpu: 'Test "GPU"',
+    clumps: 0, clumpBuilds: 0, clumpBuildMaxMs: 0
   };
 
   let lines: string[];

@@ -47,8 +47,9 @@ const SHAPES = {
 const SERIES = {
   terrain: ['light', 'clouds', 'relief', 'wind', 'paths', 'growth'],
   bot: ['botMarkings', 'botAsphalt', 'botClouds', 'botGravel'],
-  rock: ['rockMaterial'],
+  rock: ['rockMaterial', 'rockGrass'],
   beach: ['shoreSand', 'seaFloor'],
+  clumps: ['clumps'],
 };
 
 /**
@@ -100,6 +101,11 @@ const SHOTS = {
     about: 'bot: a large Phase 3 plate (Occupy 5m), high and wide',
     series: 'bot', target: [1608, 248], height: 4, shadows: 'off',
     keys: [{ alpha: Math.PI - 0.3, beta: 0.9, radius: 95 }, { alpha: Math.PI + 0.2, beta: 0.8, radius: 85 }],
+  },
+  lawn: {
+    about: 'clumps: low over the lawn, close enough for the 3D grass clumps',
+    series: 'clumps', target: [200, 150], height: 1,
+    keys: [{ alpha: Math.PI - 0.25, beta: 0.85, radius: 20 }, { alpha: Math.PI + 0.1, beta: 0.8, radius: 16 }],
   },
   pond: {
     about: 'rock: boulders and a low cliff at a pond, slow turn',

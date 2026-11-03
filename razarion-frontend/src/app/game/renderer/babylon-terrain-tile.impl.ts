@@ -1411,9 +1411,10 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
   /**
    * The sprite sheet for a spot: the ground the shader draws there (ground-material.ts).
    * Cheap decisions first - water, plants, sand - so the noise and the height lookups below run
-   * only for land.
+   * only for land. chance decides between earth and lawn where both show; the grass clumps
+   * (grass-clumps.ts) pass their own, so a rebuild puts them on the same spots again.
    */
-  private getTerrainZone(worldX: number, worldZ: number, height: number, growth: number): TerrainZone {
+  private getTerrainZone(worldX: number, worldZ: number, height: number, growth: number, chance = Math.random()): TerrainZone {
     if (height <= BabylonTerrainTileImpl.WATER_LEVEL - 0.5) {
       return TerrainZone.UNDERWATER;
     }
@@ -1441,7 +1442,7 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     const dx = (east - west) / 2, dz = (north - south) / 2;
     const slope = 1 - 1 / Math.sqrt(1 + dx * dx + dz * dz);
     // Earth and stones where the shader draws them (ground-rules.ts); in between, as often as they show
-    return Math.random() < bareShare(worldX, worldZ, slope) ? TerrainZone.UNDER : TerrainZone.UPPER;
+    return chance < bareShare(worldX, worldZ, slope) ? TerrainZone.UNDER : TerrainZone.UPPER;
   }
 
   /** ground-rules.ts shoreLand at the nearest node; 1 (beyond the beach) if the tile has no shore data */

@@ -6,6 +6,7 @@ import {FirstInteractionTrackerService} from './tracking/first-interaction-track
 import {ActivatedRoute} from '@angular/router';
 import {environment} from 'src/environments/environment';
 import {DirectorService} from './director/director.service';
+import {ReplayService} from './replay/replay.service';
 
 import {ScreenCoverComponent} from "./screen-cover/screen-cover.component";
 import {GwtAngularService} from "../gwtangular/GwtAngularService";
@@ -106,6 +107,7 @@ export class GameComponent implements OnInit {
               public touchSelectionMode: TouchSelectionModeService,
               private userService: UserService,
               private directorService: DirectorService,
+              private replayService: ReplayService,
               protected uiSettingsService: UiSettingsService,
               private route: ActivatedRoute,
               private firstInteractionTrackerService: FirstInteractionTrackerService,
@@ -196,6 +198,24 @@ export class GameComponent implements OnInit {
     if (this.route.snapshot.data['director']) {
       this.directorService.activate(this.babylonRenderServiceAccessImpl);
     }
+    if (this.replayMode) {
+      this.replayService.activate(this.babylonRenderServiceAccessImpl);
+    }
+  }
+
+  /** Replay mode (/replay route): watching a recording, not playing - see ReplayService. */
+  protected get replayMode(): boolean {
+    return !!this.route.snapshot.data['replay'];
+  }
+
+  /** The badge in replay mode: what is played, and the moment of it. */
+  protected get replayLabel(): string {
+    const playhead = this.replayService.playhead();
+    const baseId = this.replayService.baseId();
+    if (playhead == null) {
+      return 'REPLAY';
+    }
+    return `REPLAY · base ${baseId} · ${new Date(playhead).toLocaleTimeString()}`;
   }
 
   /**
@@ -231,6 +251,10 @@ export class GameComponent implements OnInit {
    * Also read by the template, which must not offer an icon for a panel that cannot open.
    */
   protected isPanelAvailable(panel: CompactPanel): boolean {
+    // The cockpit, the quest and the chat would be the watcher's, who is nobody here
+    if (this.replayMode) {
+      return false;
+    }
     switch (panel) {
       case 'main':
         return this.cockpitDisplayService.showMainCockpit;

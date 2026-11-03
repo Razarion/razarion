@@ -24,6 +24,7 @@ describe('Rock textures', () => {
 
     expect(second.diffuse).not.toBe(first.diffuse);
     expect(second.normal).not.toBe(first.normal);
+    expect(second.grass).not.toBe(first.grass);
   });
 
   it('keeps another material\'s rock maps alive when one material disposes its textures', () => {
@@ -32,8 +33,10 @@ describe('Rock textures', () => {
 
     evicted.diffuse.dispose();
     evicted.normal.dispose();
+    evicted.grass.dispose();
 
     expect(shown.diffuse.getInternalTexture()).not.toBeNull();
     expect(shown.normal.getInternalTexture()).not.toBeNull();
+    expect(shown.grass.getInternalTexture()).not.toBeNull();
   });
 });

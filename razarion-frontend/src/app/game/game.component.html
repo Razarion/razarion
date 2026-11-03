@@ -13,6 +13,11 @@
     <div class="director-indicator" [class.ok]="directorChannelOk">{{ directorChannel }}</div>
   }
 
+  <!-- Replay mode: says what is on screen is a recording, and of when. -->
+  @if (replayMode) {
+    <div class="director-indicator ok">{{ replayLabel }}</div>
+  }
+
   <!-- Level 9 starts by leaving the noob island: a card in the middle offers to sell all that is still
        there, because the button in the quest line alone is easily missed (ClearRegionService). -->
   @if (questCockpitContainer.clearRegion.offer(); as offer) {
@@ -109,7 +114,7 @@
          The phone has its own column of these on the left edge - see .compact-nav below. -->
     @if (!compactLayout.compact()) {
       <div class="hud-shortcuts hud-frame"
-           [style.visibility]="cockpitDisplayService.showMainCockpit ? 'visible' : 'hidden'">
+           [style.visibility]="cockpitDisplayService.showMainCockpit && !replayMode ? 'visible' : 'hidden'">
         <div class="hud-frame-inner hud-shortcuts-inner">
           @for (cat of selectionShortcuts.categories; track cat.id) {
             <button type="button" class="hud-btn"
@@ -175,9 +180,11 @@
   </div>
 
   <!-- What other players just did, over the field (CommunityTickerComponent). -->
-  <community-ticker class="community-ticker-pos"></community-ticker>
+  @if (!replayMode) {
+    <community-ticker class="community-ticker-pos"></community-ticker>
+  }
 
-  @if (compactLayout.compact()) {
+  @if (compactLayout.compact() && !replayMode) {
     <!-- Status strip: the numbers a player needs while looking at the field. Read straight
          off the main cockpit component so there is one source for them, not a second copy that
          can drift. Numbers only - the menu button that used to sit here has moved down to the icon
