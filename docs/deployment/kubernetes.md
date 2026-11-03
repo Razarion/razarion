@@ -187,6 +187,10 @@ kubectl create secret generic grafana-loki-secrets \
   --from-literal=loki-url=https://logs.example.com \
   --from-literal=loki-username=user \
   --from-literal=loki-password=pass
+
+# The account razarion-recorder logs in with (RAZARION_RECORDER_EMAIL, the RECORDER role)
+kubectl create secret generic recorder-secrets \
+  --from-literal=email=recorder@example.com
 ```
 
 ### Update Secrets

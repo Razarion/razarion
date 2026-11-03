@@ -126,9 +126,10 @@ export class DirectorService {
   /**
    * Where the replay says the followed base is (ReplayService). The renderer only holds the units
    * in its view field, so on its own the camera cannot find a strike force just outside the
-   * picture; the recording knows every unit. fight: the base has been shooting just now.
+   * picture; the recording knows every unit. fight: the base has been shooting just now. lock: the
+   * hint is the subject (a moment's transporter) and wins over any fighting the renderer sees.
    */
-  private followHint: { target: Vector3, radius: number, fight: boolean } | null = null;
+  private followHint: { target: Vector3, radius: number, fight: boolean, lock: boolean } | null = null;
   /** Cue indices already fired this play-through (reset on load/stop/seek). */
   private readonly firedCues = new Set<number>();
   private lastSeq = 0;
@@ -209,13 +210,13 @@ export class DirectorService {
   }
 
   /** See followHint. Game coordinates: x east, y north; the scene's z is the game's y. */
-  setFollowHint(focus: { x: number, y: number, radius: number, fight: boolean } | null): void {
+  setFollowHint(focus: { x: number, y: number, radius: number, fight: boolean, lock?: boolean } | null): void {
     if (!focus) {
       this.followHint = null;
       return;
     }
     // The height is the base's own, as soon as the renderer holds any of it (resolveFollow)
-    this.followHint = {target: new Vector3(focus.x, this.followHint?.target.y ?? 0, focus.y), radius: focus.radius, fight: focus.fight};
+    this.followHint = {target: new Vector3(focus.x, this.followHint?.target.y ?? 0, focus.y), radius: focus.radius, fight: focus.fight, lock: !!focus.lock};
   }
 
   private async poll(): Promise<void> {
@@ -603,11 +604,13 @@ export class DirectorService {
     }
     // A base with nothing in it is a base that has just been destroyed. Hold the last framing
     // rather than snapping to the origin, so the shot ends on the wreckage.
-    const wanted =(hint?.fight ? hint.target : null) ?? combat ?? this.heldCombat(key) ?? hint?.target ?? extent?.centre ?? this.followTarget;
+    const wanted = hint?.lock
+      ? hint.target
+      : (hint?.fight ? hint.target : null) ?? combat ?? this.heldCombat(key) ?? hint?.target ?? extent?.centre ?? this.followTarget;
     if (!wanted) {
       return null;
     }
-    const spread = hint && !combat ? hint.radius : extent?.radius;
+    const spread = hint && (hint.lock || !combat) ? hint.radius : extent?.radius;
     const wantedRadius = key.autoRadius && spread != null
       // Twice the spread plus a margin puts the far edge inside the frame rather than on it. The
       // ceiling is not politeness: past a few hundred units a base is a smudge on a map, and the

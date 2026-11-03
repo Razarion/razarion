@@ -300,6 +300,14 @@ spec:
             # staging removes when the take is in. Both halves need an ADMIN token either way.
             - name: RAZARION_DIRECTOR_STAGING_ENABLED
               value: "true"
+            # The account razarion-recorder logs in with gets the RECORDER role: a read-only game
+            # connection, the history feed, and no tracking or conversion events of its own.
+            - name: RAZARION_RECORDER_EMAIL
+              valueFrom:
+                secretKeyRef:
+                  name: recorder-secrets
+                  key: email
+                  optional: true
       volumes:
       - name: keystore
         secret:

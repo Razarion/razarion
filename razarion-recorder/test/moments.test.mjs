@@ -5,6 +5,8 @@ import { mkdtempSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { Moments, followedBase, matches } from '../lib/moments.mjs';
+import { Players } from '../lib/players.mjs';
+import { World } from '../lib/world.mjs';
 
 const T0 = Date.parse('2026-11-03T12:00:00Z');
 const leftIsland = { type: 'QUEST_PASSED', source: 'HUMAN', userId: 'u1', baseId: 5, questId: 392, serverTime: new Date(T0).toISOString() };
@@ -31,7 +33,8 @@ function setup(oldest) {
     { id: 'off', enabled: false, title: 'Off', when: { type: 'QUEST_PASSED' }, before: 5, after: 5 },
   ] }));
   const tape = { oldest, entries: [] };
-  return new Moments({ dir, rulesFile, tape, players: { byUser: new Map() }, sessions: new Map(), settings: {}, log: () => {} });
+  const world = new World();
+  return new Moments({ dir, rulesFile, tape, world, players: new Players(world), sessions: new Map(), settings: {}, log: () => {} });
 }
 
 test('a matching row marks a moment around it; cooldown, once per base and the tape gate it', () => {
@@ -49,6 +52,15 @@ test('a matching row marks a moment around it; cooldown, once per base and the t
   assert.equal(moments.items.length, 2);
   // A list for the dashboard carries no user id
   assert.equal('userId' in moments.list()[0], false);
+});
+
+test('a quest row without a base follows the base the players know of', () => {
+  const moments = setup(T0 - 10 * 60_000);
+  // The shape lib/players.mjs keeps: the bases a player has had, the standing one from the world
+  moments.players.byUser.set('u1', { userId: 'u1', baseIds: [4, 5] });
+  const { baseId, ...row } = leftIsland;
+  moments.onHistory(row, T0);
+  assert.deepEqual(moments.items.map((m) => [m.baseId, m.userId]), [[5, 'u1']]);
 });
 
 test('a moment whose start the tape does not hold is not marked', () => {

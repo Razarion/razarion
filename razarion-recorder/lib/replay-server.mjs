@@ -9,6 +9,11 @@ const TICK_MS = 100;
 const STREAM_EVERY_MS = 50;
 // How long after the followed base's last shot the camera stays on its fight.
 const FIGHT_MS = 6_000;
+// A subject spread further than this (two builders, one still on the island) is framed on its
+// middle at this size rather than zoomed out over both.
+const SUBJECT_MAX_RADIUS = 25;
+// How far inside the planet's edge the picture's edge stays, beyond the framed radius.
+const EDGE_MARGIN = 40;
 
 const median = (values) => {
   const sorted = [...values].sort((a, b) => a - b);
@@ -117,10 +122,16 @@ function snapshotText(world, t, actualBaseId) {
  * .initialSlaveSyncItemInfo) - for the same base only: another base reloads the page.
  */
 export class ReplaySession {
-  constructor({ tape, baseId, at, log }) {
+  /**
+   * subject: { types: Set of item type ids, maxRadius? } - the units a moment is about (focus).
+   * bounds: { width, height } of the planet, which the camera keeps inside of.
+   */
+  constructor({ tape, baseId, at, log, subject = null, bounds = null }) {
     this.tape = tape;
     this.baseId = baseId;
     this.log = log;
+    this.subject = subject;
+    this.bounds = bounds;
     this.socket = null;
     this.timer = null;
     this.startAt(at);
@@ -139,28 +150,60 @@ export class ReplaySession {
    * Where the camera should look, in game coordinates: where the followed base is fighting, or the
    * middle of its units. The client's renderer only knows the units in its view field, so it cannot
    * find a strike force forty metres outside the picture; the tape knows every one.
+   *
+   * With a subject (a moment's rule, camera.follow) the camera stays on those units whatever else
+   * the base does: lock tells the client to ignore the fighting it sees itself. fight is set as well
+   * for a client from before lock, which then at least looks at the subject.
    */
   focus() {
+    const subject = this.subjectFocus();
+    if (subject) return subject;
     const now = this.cursor;
     const shots = (this.shots || []).filter((shot) => now - shot.t < FIGHT_MS);
     if (shots.length) {
-      return { x: median(shots.map((s) => s.x)), y: median(shots.map((s) => s.y)), radius: 40, fight: true };
+      return this.inBounds({ x: median(shots.map((s) => s.x)), y: median(shots.map((s) => s.y)), radius: 40, fight: true });
     }
     const units = [...(this.units?.values() || [])];
     if (!units.length) return null;
     const x = median(units.map((u) => u.x));
     const y = median(units.map((u) => u.y));
     const spread = units.map((u) => Math.hypot(u.x - x, u.y - y)).sort((a, b) => a - b);
-    return { x, y, radius: spread[Math.floor(spread.length * 0.8)] ?? 0, fight: false };
+    return this.inBounds({ x, y, radius: spread[Math.floor(spread.length * 0.8)] ?? 0, fight: false });
+  }
+
+  /** The subject's units that are out in the open - a builder in a transporter rides along unseen. */
+  subjectFocus() {
+    if (!this.subject?.types?.size) return null;
+    const units = [...(this.units?.values() || [])].filter((u) => this.subject.types.has(u.type) && u.containedIn == null);
+    if (!units.length) return null;
+    const x = median(units.map((u) => u.x));
+    const y = median(units.map((u) => u.y));
+    const spread = Math.max(...units.map((u) => Math.hypot(u.x - x, u.y - y)));
+    return this.inBounds({ x, y, radius: Math.min(spread, this.subject.maxRadius ?? SUBJECT_MAX_RADIUS), fight: true, lock: true });
+  }
+
+  /**
+   * Keeps the camera's target this far inside the planet: closer to the edge, the picture shows
+   * the void beyond it (the noob island lies along the south edge).
+   */
+  inBounds(focus) {
+    if (!this.bounds) return focus;
+    const margin = EDGE_MARGIN + focus.radius;
+    const clampTo = (v, max) => (max > 2 * margin ? Math.min(Math.max(v, margin), max - margin) : max / 2);
+    return { ...focus, x: clampTo(focus.x, this.bounds.width), y: clampTo(focus.y, this.bounds.height) };
+  }
+
+  track(info) {
+    const position = info.syncPhysicalAreaInfo?.position;
+    if (info.baseId === this.baseId && position) {
+      this.units.set(info.id, { x: position.x, y: position.y, type: info.itemTypeId, containedIn: info.containedIn ?? null });
+    }
   }
 
   /** Keeps the followed base's units and shots up to date as the tape goes out. */
   watch(name, payload, t) {
     if (name === 'TICK_INFO') {
-      for (const info of payload.syncBaseItemInfos || []) {
-        const position = info.syncPhysicalAreaInfo?.position;
-        if (info.baseId === this.baseId && position) this.units.set(info.id, { x: position.x, y: position.y });
-      }
+      for (const info of payload.syncBaseItemInfos || []) this.track(info);
     } else if (name === 'SYNC_ITEM_DELETED') {
       this.units.delete(payload.id);
     } else if (name === 'PROJECTILE_FIRED' && this.units.has(payload.actorSyncBaseItemId) && payload.targetPosition) {
@@ -214,10 +257,7 @@ export class ReplaySession {
     this.lastTick = { tick: tickAt(world, this.anchorT), at: Date.now() };
     this.units = new Map();
     this.shots = [];
-    for (const info of world.items.values()) {
-      const position = info.syncPhysicalAreaInfo?.position;
-      if (info.baseId === this.baseId && position) this.units.set(info.id, { x: position.x, y: position.y });
-    }
+    for (const info of world.items.values()) this.track(info);
     this.socket.send(snapshotText(world, this.anchorT, this.baseId));
     this.cursor = this.anchorT;
     this.timer = setInterval(() => this.stream(), STREAM_EVERY_MS);

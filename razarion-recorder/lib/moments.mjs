@@ -75,8 +75,9 @@ export function followedBase(when, row) {
  * One at a time: a take is filmed in real time, on the GPU of this machine.
  */
 export class Moments {
-  constructor({ dir, rulesFile, tape, players, sessions, settings, log }) {
+  constructor({ dir, rulesFile, tape, world, players, sessions, settings, log }) {
     this.dir = dir;
+    this.world = world;
     this.rulesFile = rulesFile;
     this.tape = tape;
     this.players = players;
@@ -107,7 +108,11 @@ export class Moments {
   onHistory(row, now) {
     for (const rule of this.rules()) {
       if (!rule.enabled || !matches(rule.when, row)) continue;
-      const { baseId, userId } = followedBase(rule.when, row);
+      const { userId, ...side } = followedBase(rule.when, row);
+      // A quest or level row names the user only (HistoryService.onQuestPassed): the base is the
+      // one the players know of, who have seen the row already.
+      const player = userId ? this.players.byUser.get(userId) : null;
+      const baseId = side.baseId ?? (player ? this.players.baseOf(player)?.baseId ?? player.baseIds.at(-1) : null) ?? null;
       if (baseId == null) continue;
       const t = at(row, now);
       // The feed hands over two hours of rows on start; a moment from before the tape is lost.
@@ -145,6 +150,22 @@ export class Moments {
     this.save();
     this.log(`moment ${moment.id}: ${rule.title} (${by})`);
     return moment;
+  }
+
+  /**
+   * What the camera stays on: the unit types the rule names (camera.follow), as the planet's type
+   * ids. Without, the camera follows the base the usual way - its fight, else its middle.
+   */
+  subjectOf(moment) {
+    const camera = this.rules().find((r) => r.id === moment.rule)?.camera;
+    if (!camera?.follow?.length || !this.world) return null;
+    const wanted = new Set(camera.follow.map((name) => name.toLowerCase()));
+    const types = new Set([...this.world.names.baseItemTypes].filter(([, name]) => wanted.has(String(name).toLowerCase())).map(([id]) => id));
+    if (!types.size) {
+      this.log(`moment ${moment.id}: none of ${camera.follow.join(', ')} is a unit type here; the camera follows the base`);
+      return null;
+    }
+    return { types, maxRadius: camera.maxRadius };
   }
 
   /** Called every few seconds: films what the tape is ready for, retries a handover. */
@@ -196,7 +217,10 @@ export class Moments {
     const [width, height] = SHAPES[shape];
     const key = `moment-${moment.id}-${shape}`;
     // Started a little early: the client loads and the camera finds the base before the take
-    const session = new ReplaySession({ tape: this.tape, baseId: moment.baseId, at: moment.from - 15_000, log: this.log });
+    const session = new ReplaySession({
+      tape: this.tape, baseId: moment.baseId, at: moment.from - 15_000, log: this.log,
+      subject: this.subjectOf(moment), bounds: this.world?.planet ?? null,
+    });
     this.sessions.set(key, session);
     // The window in the shape of the take: a portrait take drawn in a landscape window came out at
     // 8 fps and a third of its length (local test, 2026-11-03), the same as record_director found.

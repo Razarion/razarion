@@ -62,3 +62,23 @@ test('a session sends the world as the followed player sees it, then the tape as
   assert.ok(sent.every((text) => !text.startsWith('HISTORY#')));
   session.close();
 });
+
+test('a subject keeps the camera on its units, the planet edge keeps it inside', () => {
+  const session = new ReplaySession({ tape: tape(), baseId: 5, at: T0 + 2_500, log: () => {}, subject: { types: new Set([7, 8]) }, bounds: { width: 1000, height: 1000 } });
+  session.units = new Map();
+  session.shots = [{ t: session.cursor, x: 300, y: 300 }];
+  const at = (id, type, x, y, containedIn = null) => session.track({ id, itemTypeId: type, baseId: 5, containedIn, syncPhysicalAreaInfo: { position: { x, y } } });
+  at(1, 3, 600, 600); // a factory: not the subject
+  at(2, 7, 500, 200); // the transporter
+  at(3, 8, 500, 200, 2); // the builder inside it: not looked for
+  // The fight is somewhere else; the camera stays on the transporter, locked
+  assert.deepEqual(session.focus(), { x: 500, y: 200, radius: 0, fight: true, lock: true });
+  // On the beach at the south edge: the target is moved inside
+  at(2, 7, 500, 10);
+  assert.equal(session.focus().y, 40);
+  // Without its units on the planet the subject gives way to the base's fight
+  session.units.delete(2);
+  session.units.delete(3);
+  assert.equal(session.focus().lock, undefined);
+  assert.equal(session.focus().x, 300);
+});

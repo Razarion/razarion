@@ -181,7 +181,7 @@ async function minimapImage() {
 const sessions = new Map();
 let replaySession = null;
 // Shorts from players' moments (rules.json), filmed from the tape and handed to the social engine.
-const moments = new Moments({ dir: join(STATE_DIR, 'moments'), rulesFile: join(ROOT, 'rules.json'), tape, players, sessions, settings, log });
+const moments = new Moments({ dir: join(STATE_DIR, 'moments'), rulesFile: join(ROOT, 'rules.json'), tape, world, players, sessions, settings, log });
 
 async function readJson(req) {
   let body = '';
@@ -207,7 +207,7 @@ async function replay3d(req, res, url) {
     if (baseId == null && body.userId) baseId = players.baseOf(players.byUser.get(body.userId) ?? { baseIds: [] })?.baseId ?? null;
     if (baseId == null) return send(res, 400, { error: 'which base? give baseId or userId' });
     replaySession?.close();
-    replaySession = new ReplaySession({ tape, baseId, at: Number(body.at || Date.now() - 60_000), log });
+    replaySession = new ReplaySession({ tape, baseId, at: Number(body.at || Date.now() - 60_000), log, bounds: world.planet });
     sessions.set('default', replaySession);
     return send(res, 200, { url: `http://127.0.0.1:${settings.replayPort}/game/replay`, ...replaySession.status() });
   } catch (error) {

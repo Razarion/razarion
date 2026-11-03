@@ -5,7 +5,8 @@
     "The base followed is the human one: the actor's, or the target's when only the target is human.",
     "before / after: seconds of the moment filmed before and after the row. The take is the whole of it.",
     "text: the template the writer works from; shows: what the clip shows, for the writer. Never a name - the player is 'a player'.",
-    "cooldownMinutes: at most one short of this rule in that time. oncePerBase: never two of the same base."
+    "cooldownMinutes: at most one short of this rule in that time. oncePerBase: never two of the same base.",
+    "camera.follow: the unit types the camera stays on, whatever else the base does (a unit inside a transporter is not looked for); maxRadius: how far apart they may be framed, default 25. Without camera the base's fight, else its middle."
   ],
   "rules": [
     {
@@ -18,6 +19,7 @@
       "shapes": ["portrait", "landscape"],
       "cooldownMinutes": 60,
       "oncePerBase": true,
+      "camera": { "follow": ["Transporter", "Builder"] },
       "text": "A new player just left the noob island: the builder loaded onto a transporter, the channel crossed, the builder set down on the mainland. Open-source RTS in a browser tab, no download and no account.",
       "shows": "a real player's transporter crossing the channel from the noob island and the builder landing on the mainland",
       "event": "a player left the noob island - their first crossing to the mainland"

@@ -8,7 +8,7 @@ interface ReplayStatus {
   playhead: number;
   connected: boolean;
   /** Where the followed base is, or fights - see DirectorService.setFollowHint. */
-  focus: { x: number, y: number, radius: number, fight: boolean } | null;
+  focus: { x: number, y: number, radius: number, fight: boolean, lock?: boolean } | null;
 }
 
 /**
