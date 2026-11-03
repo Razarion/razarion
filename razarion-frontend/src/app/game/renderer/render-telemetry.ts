@@ -87,6 +87,14 @@ export interface RenderTelemetrySceneStats {
   hardwareScaling: number;
   /** Unmasked GL renderer string where the browser exposes it. */
   gpu: string | null;
+  /**
+   * The 3D grass and bare ground clumps (ground-clumps.ts): how many stand now, how often they were
+   * built anew in the period and the longest build (ms) - a build blocks the main thread, so it is
+   * a long frame of its own, and this says whether the period's long frames are the clumps'.
+   */
+  clumps: number;
+  clumpBuilds: number;
+  clumpBuildMaxMs: number;
 }
 
 export class RenderTelemetry {
@@ -271,6 +279,7 @@ export class RenderTelemetry {
       `heapMb=${stats.heapUsedMb} heapLimitMb=${stats.heapLimitMb} textures=${stats.textureCount} textureMb=${stats.textureMb} geometries=${stats.geometries} ` +
       `backbuffer=${stats.renderWidth}x${stats.renderHeight} scaling=${stats.hardwareScaling.toFixed(2)} dpr=${window.devicePixelRatio} ` +
       `zoomMin=${zoom.min.toFixed(1)} zoomP05=${zoom.p05.toFixed(1)} zoomP50=${zoom.p50.toFixed(1)} zoomP95=${zoom.p95.toFixed(1)} ` +
+      `clumps=${stats.clumps} clumpBuilds=${stats.clumpBuilds} clumpBuildMax=${stats.clumpBuildMaxMs.toFixed(0)} ` +
       `touch=${navigator.maxTouchPoints > 0} gpu="${this.shortGpu(stats.gpu)}"`
     );
     this.reset();
@@ -346,7 +355,8 @@ export class RenderTelemetry {
         shadowMapSize: -1, meshTop: "unknown", indexTop: "unknown",
         heapUsedMb: -1, heapLimitMb: -1, textureCount: -1, textureMb: -1, geometries: -1,
         parkedMeshes: -1, parkingFilter: false,
-        renderWidth: -1, renderHeight: -1, hardwareScaling: -1, gpu: null
+        renderWidth: -1, renderHeight: -1, hardwareScaling: -1, gpu: null,
+        clumps: -1, clumpBuilds: -1, clumpBuildMaxMs: -1
       };
     }
   }

@@ -46,6 +46,8 @@ public class ClientGameConnection {
     /** Taken once at the handshake; see ClientSystemConnection, this is the same header. */
     private String userAgent;
     private String gameSessionUuid; // TODO
+    /** The recorder's connection: it is sent the world like everybody, and what it sends is ignored. */
+    private boolean readOnly;
 
     public ClientGameConnection(BaseItemService baseItemService,
                                 PlanetService planetService,
@@ -61,9 +63,10 @@ public class ClientGameConnection {
         this.serverInventoryService = serverInventoryService;
     }
 
-    public void init(WebSocketSession wsSession, String userId) {
+    public void init(WebSocketSession wsSession, String userId, boolean readOnly) {
         this.wsSession = wsSession;
         this.userId = userId;
+        this.readOnly = readOnly;
         time = new Date();
         userAgent = wsSession.getHandshakeHeaders().getFirst(HttpHeaders.USER_AGENT);
     }
@@ -103,6 +106,10 @@ public class ClientGameConnection {
     }
 
     private void onPackageReceived(GameConnectionPacket packet, Object param) {
+        if (readOnly && packet != GameConnectionPacket.TICK_COUNT_REQUEST) {
+            logger.warn("Read-only connection of {} sent {}, ignored", userId, packet);
+            return;
+        }
         switch (packet) {
             case CREATE_BASE:
                 UserContext userContext = userService.getUserContextTransactional(userId);
@@ -170,6 +177,10 @@ public class ClientGameConnection {
 
     public String getUserId() {
         return userId;
+    }
+
+    public boolean isReadOnly() {
+        return readOnly;
     }
 
     private PlayerBase getPlayerBase() {

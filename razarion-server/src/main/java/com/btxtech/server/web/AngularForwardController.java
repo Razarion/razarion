@@ -30,6 +30,12 @@ public class AngularForwardController {
         return "forward:/game/index.html";
     }
 
+    // Replay mode (razarion-recorder plays a recording to the client through its own proxy).
+    @GetMapping(value = {"/game/replay", "/game/replay/"}, produces = "text/html")
+    public String forwardGameReplay(HttpServletRequest request) {
+        return "forward:/game/index.html";
+    }
+
     @GetMapping(value = {"/studio/", "/studio"}, produces = "text/html")
     public String forwardStudio(HttpServletRequest request) {
         return "forward:/studio/index.html";

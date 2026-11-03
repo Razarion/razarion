@@ -123,6 +123,12 @@ export class DirectorService {
    * key's battle, which is exactly what `followWhat: 'base'` promises not to do.
    */
   private lastCombat: { centre: Vector3, baseId: number, at: number } | null = null;
+  /**
+   * Where the replay says the followed base is (ReplayService). The renderer only holds the units
+   * in its view field, so on its own the camera cannot find a strike force just outside the
+   * picture; the recording knows every unit. fight: the base has been shooting just now.
+   */
+  private followHint: { target: Vector3, radius: number, fight: boolean } | null = null;
   /** Cue indices already fired this play-through (reset on load/stop/seek). */
   private readonly firedCues = new Set<number>();
   private lastSeq = 0;
@@ -174,6 +180,42 @@ export class DirectorService {
       this.pollHandle = setInterval(() => this.poll(), 250);
     }
     console.log('[Director] activated — polling /rest/director/command (250ms)');
+  }
+
+  /**
+   * The replay (/replay route, razarion-recorder): the follow camera on one base, without the
+   * studio's command channel. One key that never ends, following where that base fights and its
+   * middle when it does not - the same framing a clip of it gets.
+   */
+  followBase(renderer: BabylonRenderServiceAccessImpl, baseId: number): void {
+    this.renderer = renderer;
+    this.uiSettings.unitNamesVisible = false;
+    this.uiSettings.tipsVisible = false;
+    this.uiSettings.questVisualizationVisible = false;
+    renderer.directorCameraTick = (dt) => this.tick(dt);
+    this.plan = {
+      version: 1,
+      durationMs: Number.MAX_SAFE_INTEGER,
+      // Behind the base, looking north across it the way the game's own camera does
+      cameraKeys: [{time: 0, mode: 'follow', target: [0, 0, 0], followBaseId: baseId, followWhat: 'combat', autoRadius: true, alpha: Math.PI, beta: 0.9}],
+    };
+    this.clockMs = 0;
+    this.lastCombat = null;
+    this.followTarget = null;
+    renderer.directorActive = true;
+    this.playing = true;
+    this.applyPose(0);
+    this.notifyViewField(true);
+  }
+
+  /** See followHint. Game coordinates: x east, y north; the scene's z is the game's y. */
+  setFollowHint(focus: { x: number, y: number, radius: number, fight: boolean } | null): void {
+    if (!focus) {
+      this.followHint = null;
+      return;
+    }
+    // The height is the base's own, as soon as the renderer holds any of it (resolveFollow)
+    this.followHint = {target: new Vector3(focus.x, this.followHint?.target.y ?? 0, focus.y), radius: focus.radius, fight: focus.fight};
   }
 
   private async poll(): Promise<void> {
@@ -553,17 +595,24 @@ export class DirectorService {
     if (combat) {
       this.lastCombat = {centre: combat, baseId: key.followBaseId, at: Date.now()};
     }
+    // A replay knows where the base and its fight are even outside the view field (followHint);
+    // a fight it reports goes first, the rest of it after what the renderer itself sees.
+    const hint = this.followHint;
+    if (hint && extent) {
+      hint.target.y = extent.centre.y;
+    }
     // A base with nothing in it is a base that has just been destroyed. Hold the last framing
     // rather than snapping to the origin, so the shot ends on the wreckage.
-    const wanted = combat ?? this.heldCombat(key) ?? extent?.centre ?? this.followTarget;
+    const wanted =(hint?.fight ? hint.target : null) ?? combat ?? this.heldCombat(key) ?? hint?.target ?? extent?.centre ?? this.followTarget;
     if (!wanted) {
       return null;
     }
-    const wantedRadius = key.autoRadius && extent
+    const spread = hint && !combat ? hint.radius : extent?.radius;
+    const wantedRadius = key.autoRadius && spread != null
       // Twice the spread plus a margin puts the far edge inside the frame rather than on it. The
       // ceiling is not politeness: past a few hundred units a base is a smudge on a map, and the
       // one thing a clip cannot survive is not being able to tell what it is of.
-      ? clamp(extent.radius * 2.5 + 50, DirectorService.FOLLOW_MIN_RADIUS, DirectorService.FOLLOW_MAX_RADIUS)
+      ? clamp(spread * 2.5 + 50, DirectorService.FOLLOW_MIN_RADIUS, DirectorService.FOLLOW_MAX_RADIUS)
       // A distance the plan names is a framing choice, not a base being sized: following a fight
       // from 40 m is what makes the units readable on a phone, so only the ceiling applies.
       : clamp(key.radius ?? 200, DirectorService.FOLLOW_EXPLICIT_MIN_RADIUS, DirectorService.FOLLOW_MAX_RADIUS);

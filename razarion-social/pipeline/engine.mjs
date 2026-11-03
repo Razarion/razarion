@@ -12,6 +12,8 @@
 //   - the buffer is low    -> plan.mjs --auto makes the next post, lib/approve.mjs approves it
 //   - twice a day          -> the Instagram token is renewed (refresh_token.mjs)
 //   - every six hours      -> the Google login is tried, so an expired one shows before a slot
+//   - a moment came in     -> produce.mjs --format moment makes a post of it (POST /api/moments,
+//                             from razarion-recorder: a player's moment, already filmed)
 //
 // One job runs at a time, each as the same scripts a person would type, so what the engine does can
 // always be done by hand as well. Their output goes to state/engine.log, what came of each job to
@@ -44,6 +46,9 @@ const HOST = '127.0.0.1';
 const ADDRESS = `http://${HOST}:${PORT}`;
 
 const ENGINE_FILE = join(STATE_DIR, 'engine.json');
+// Moments razarion-recorder has filmed and handed over, waiting for their turn (POST /api/moments).
+const MOMENT_INBOX = join(STATE_DIR, 'moment-inbox.json');
+const MOMENT_DIR = join(STATE_DIR, 'moments');
 const LOG_FILE = join(STATE_DIR, 'engine.log');
 const LOG_MAX_BYTES = 5_000_000;
 
@@ -68,6 +73,18 @@ const AUTH_FAILURE = {
   x: /api\.x\.com\/2\/oauth2\/token|Not authorised for "x"|invalid_request|unauthorized_client/,
   ig: /Access token invalid or expired|OAuthException/,
   fb: /Access token invalid or expired|OAuthException/,
+};
+
+// What a failed publish says when the account has run out of paid API credits. A new login does not
+// help there: X answered 402 "credits depleted" for days while the X login was renewed again and again
+// (2026-10-30 to 11-01).
+const BILLING_FAILURE = {
+  x: /HTTP 402|credits depleted|credits-depleted/,
+};
+
+// Where the credits are topped up - the same steps lib/x.mjs prints for a 402.
+const BILLING = {
+  x: { href: 'https://developer.x.com/en/portal/dashboard', hint: 'No API credits left. Developer portal → Billing → Credits: add a payment method and buy a pack. A reconnect does not help; the next slot posts again once there are credits.' },
 };
 
 // Where the login is renewed. Google and X go through the dashboard's own flow; Meta's tokens are
@@ -95,6 +112,11 @@ function loadState() {
 }
 
 const state = loadState();
+// A failure stored before 'billing' existed shows as one from the start, not only after the next slot.
+for (const net of NETS) {
+  const h = state.health[net];
+  if (h.status === 'error' && BILLING_FAILURE[net]?.test(h.message ?? '')) h.status = 'billing';
+}
 const saveState = () => writeJson(ENGINE_FILE, state);
 
 function log(line) {
@@ -120,6 +142,11 @@ function setHealth(net, status, message = null) {
     log(`!!! ${REVIEW_TARGETS[net].label}: login needed - ${message}`);
     notify(`Razarion Social: ${REVIEW_TARGETS[net].label} needs a new login`,
       'Posting there is paused until you reconnect. Click to open the dashboard.', `${ADDRESS}/#engine`);
+  }
+  if (status === 'billing' && before !== 'billing') {
+    log(`!!! ${REVIEW_TARGETS[net].label}: no API credits - ${message}`);
+    notify(`Razarion Social: ${REVIEW_TARGETS[net].label} has no API credits`,
+      'Nothing goes out there until credits are bought. A reconnect does not help. Click to open the dashboard.', `${ADDRESS}/#engine`);
   }
 }
 
@@ -183,6 +210,11 @@ async function publishOne(net) {
   const r = await runNode(PUBLISHER[net], ['--live', '--limit', '1']);
   const preview = previewOf(r.output);
   if (r.code !== 0) {
+    // Before the login test: tried again every slot, so it posts by itself once credits are bought.
+    if (BILLING_FAILURE[net]?.test(r.output)) {
+      setHealth(net, 'billing', failureOf(r.output));
+      return { net, outcome: 'billing', preview, message: failureOf(r.output) };
+    }
     if (AUTH_FAILURE[net].test(r.output)) {
       setHealth(net, 'auth', failureOf(r.output));
       return { net, outcome: 'login', preview, message: failureOf(r.output) };
@@ -212,6 +244,25 @@ async function publishSlot(slot, only = null) {
   // How far the last posts got. Asks only about posts younger than seven days.
   await runNode('metrics.mjs');
   remember({ kind: only ? 'publish-now' : 'publish', slot: slot?.toISOString() ?? null, results });
+}
+
+/**
+ * One moment from the inbox becomes a post, approved like the planner's posts while the settings
+ * say so (moments.autoApprove, on by default); off, it waits on "review".
+ */
+async function produceMoment() {
+  const inbox = readJson(MOMENT_INBOX, { items: [] });
+  const moment = inbox.items.shift();
+  writeJson(MOMENT_INBOX, inbox);
+  if (!moment) return;
+  ensureDir(MOMENT_DIR);
+  const file = join(MOMENT_DIR, `${moment.id}.json`);
+  writeJson(file, moment);
+  const settings = loadSchedule();
+  const r = await runNode('produce.mjs', ['--format', 'moment', '--input', file, ...(settings.moments?.autoApprove ? ['--auto'] : [])]);
+  const approval = autoApprove(settings);
+  logApproval(approval);
+  remember({ kind: 'moment', made: r.code === 0 ? { id: moment.id, format: 'moment', subject: moment.rule } : null, note: r.code ? failureOf(r.output) : null });
 }
 
 /** The planner makes one post if the buffer wants one; the approval runs right after. */
@@ -284,6 +335,10 @@ async function tick() {
 
   if (settings.networks.yt && since(state.lastAuthCheck) > AUTH_CHECK_EVERY) return void runJob('check Google login', checkGoogle);
 
+  // A moment the recorder sent is made at once: it is filmed already, and the planner's hours and
+  // buffer are about making posts from nothing.
+  if (readJson(MOMENT_INBOX, { items: [] }).items.length) return void runJob('moment', produceMoment);
+
   const next = nextSlots(settings, 1, now)[0];
   if (next && next - now < QUIET_BEFORE_SLOT) return;
   if (!mayProduce(settings, now) || since(state.lastProduce) < PRODUCE_EVERY) return;
@@ -314,7 +369,7 @@ function upcoming(settings) {
     let i = 0;
     out[net] = list.map((p) => {
       const e = p.entries[net];
-      const scheduled = e.state === 'ok' && settings.networks[net] && state.health[net].status !== 'auth';
+      const scheduled = e.state === 'ok' && settings.networks[net] && !['auth', 'billing'].includes(state.health[net].status);
       return {
         id: p.id,
         state: e.state,
@@ -340,9 +395,11 @@ function engineView() {
     job,
     health: state.health,
     reconnect: RECONNECT,
+    billing: BILLING,
     instagramTokenExpires: stored?.expires_at ?? null,
     lastSlot: state.lastSlot,
     lastProduce: state.lastProduce,
+    moments: readJson(MOMENT_INBOX, { items: [] }).items.map((m) => ({ id: m.id, rule: m.rule, title: m.title })),
     upcoming: upcoming(settings),
     runs: state.runs.slice(0, 60),
   };
@@ -425,6 +482,23 @@ async function handleEngine(req, res, url) {
       throw httpError(409, `Busy: ${job?.kind}. Try again when it is done.`);
     }
     return sendJson(res, 200, engineView());
+  }
+
+  // From razarion-recorder: a player's moment, filmed, to be made into a post (see produceMoment).
+  if (write && url.pathname === '/api/moments') {
+    const moment = await readBody(req);
+    if (!moment?.id || !moment.rule || !moment.text || !(moment.takes?.portrait || moment.takes?.landscape)) {
+      throw httpError(400, 'A moment needs id, rule, text and at least one take.');
+    }
+    for (const take of Object.values(moment.takes)) {
+      if (take && !existsSync(take)) throw httpError(400, `No take at ${take}.`);
+    }
+    const inbox = readJson(MOMENT_INBOX, { items: [] });
+    if (inbox.items.some((m) => m.id === moment.id)) throw httpError(409, `Moment ${moment.id} is already waiting.`);
+    inbox.items.push({ ...moment, receivedAt: new Date().toISOString() });
+    writeJson(MOMENT_INBOX, inbox);
+    log(`moment ${moment.id} from the recorder: ${moment.rule}`);
+    return sendJson(res, 202, { id: moment.id, waiting: inbox.items.length });
   }
 
   if (write && url.pathname === '/api/health/reset') {

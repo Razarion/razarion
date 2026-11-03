@@ -16,6 +16,7 @@ import {PerturbNormalBlock} from "@babylonjs/core/Materials/Node/Blocks/Fragment
 import {TextureBlock} from "@babylonjs/core/Materials/Node/Blocks/Dual/textureBlock";
 import {TriPlanarBlock} from "@babylonjs/core/Materials/Node/Blocks/triPlanarBlock";
 import {AddBlock} from "@babylonjs/core/Materials/Node/Blocks/addBlock";
+import {MultiplyBlock} from "@babylonjs/core/Materials/Node/Blocks/multiplyBlock";
 import {ScaleBlock} from "@babylonjs/core/Materials/Node/Blocks/scaleBlock";
 import {LerpBlock} from "@babylonjs/core/Materials/Node/Blocks/lerpBlock";
 import {PowBlock} from "@babylonjs/core/Materials/Node/Blocks/powBlock";
@@ -36,13 +37,26 @@ export const ROCK = {
   SCALE: 1 / 5,
   /** Triplanar blend: 1 smears the three projections over every curve, 4 keeps them apart. */
   SHARPNESS: 4,
-  MOSS: 1,
+  MOSS: 0.85,
   MOSS_EDGE0: 0.72,
   MOSS_EDGE1: 0.95,
-  /** Moss patches of ~25 m: the rock texture's height read at a large scale. */
-  MOSS_PATCH_SCALE: 1 / 25,
-  /** Moss colour, darkened in the rock's cracks by its height. */
-  MOSS_COLOR: [0.22, 0.28, 0.11],
+  /** Moss patches of ~8 m: the rock texture's height read at a large scale. */
+  MOSS_PATCH_SCALE: 1 / 8,
+  /**
+   * Moss tint: the rock under it stays visible, its cracks and grain greened and darkened. A flat moss
+   * colour over the rock looked like paint poured over it.
+   */
+  MOSS_TINT: [0.55, 0.78, 0.3],
+  /** The lawn's grass on the rock where it looks up: ledges, tops, the hollows first (0 = none). */
+  GRASS: 1,
+  GRASS_TEXTURE: "renderer/textures/ground-grass-diffuse.webp",
+  /** As the ground's grass: 16 m per repeat, seen from above. */
+  GRASS_SCALE: 1 / 16,
+  /** Grass from about 45 degrees, full from about 30: ledges and tops, the faces stay rock. */
+  GRASS_EDGE0: 0.66,
+  GRASS_EDGE1: 0.82,
+  /** On rock the grass lacks the lawn's tints and catches the rock's sheen: a little greener. */
+  GRASS_TINT: [0.95, 1.08, 0.72],
   /** Sun highlights on rock - the cliffs' values since before the rock models shared them. */
   GLOSSINESS: 0.36,
   SPECULAR: [0.20, 0.16, 0.16],
@@ -75,26 +89,27 @@ function weighted(name: string, terms: [NodeMaterialConnectionPoint, number][], 
   return sum;
 }
 
-const textures = new WeakMap<Scene, { diffuse: Texture, normal: Texture }>();
+const textures = new WeakMap<Scene, { diffuse: Texture, normal: Texture, grass: Texture }>();
 
-function rockTextures(scene: Scene): { diffuse: Texture, normal: Texture } {
+function rockTextures(scene: Scene): { diffuse: Texture, normal: Texture, grass: Texture } {
   let t = textures.get(scene);
   if (!t) {
-    t = {diffuse: new Texture(ROCK.DIFFUSE, scene), normal: new Texture(ROCK.NORMAL, scene)};
+    t = {diffuse: new Texture(ROCK.DIFFUSE, scene), normal: new Texture(ROCK.NORMAL, scene), grass: new Texture(ROCK.GRASS_TEXTURE, scene)};
     textures.set(scene, t);
   }
   return t;
 }
 
 /**
- * The rock's colour and normal map, laid on in world space (triplanar), with moss where it looks up.
+ * The rock's colour and normal map, laid on in world space (triplanar), with moss where it looks up and
+ * the lawn's grass where it looks up enough to hold soil.
  * One graph for cliffs and rock models alike - the Showcase switches its blocks by these names.
  *
  * worldPosition and worldNormal are Vector4 world-space outputs; worldXZ is the position's x and z.
  */
 export function rockSurface(scene: Scene, worldPosition: NodeMaterialConnectionPoint, worldNormal: NodeMaterialConnectionPoint,
                             worldXZ: NodeMaterialConnectionPoint): { color: NodeMaterialConnectionPoint, normalMap: NodeMaterialConnectionPoint } {
-  const {diffuse, normal} = rockTextures(scene);
+  const {diffuse, normal, grass} = rockTextures(scene);
   const position = new ScaleBlock("Scale triplanar pos");
   worldPosition.connectTo(position.input);
   floatInput("triplanar scale", ROCK.SCALE).output.connectTo(position.factor);
@@ -131,16 +146,40 @@ export function rockSurface(scene: Scene, worldPosition: NodeMaterialConnectionP
   const share = new ScaleBlock("rock moss share");
   step.output.connectTo(share.input);
   floatInput("rock moss strength", ROCK.MOSS).output.connectTo(share.factor);
-  const shade = weighted("rock moss shade", [[color.a, 0.6]], 0.7);
-  const moss = new ScaleBlock("rock moss");
-  color3Input("rock moss color", ROCK.MOSS_COLOR[0], ROCK.MOSS_COLOR[1], ROCK.MOSS_COLOR[2]).output.connectTo(moss.input);
-  shade.connectTo(moss.factor);
+  const moss = new MultiplyBlock("rock moss");
+  color.rgb.connectTo(moss.left);
+  color3Input("rock moss tint", ROCK.MOSS_TINT[0], ROCK.MOSS_TINT[1], ROCK.MOSS_TINT[2]).output.connectTo(moss.right);
   const withMoss = new LerpBlock("rock with moss");
   color.rgb.connectTo(withMoss.left);
   moss.output.connectTo(withMoss.right);
   share.output.connectTo(withMoss.gradient);
 
-  return {color: withMoss.output, normalMap: normalMap.rgb};
+  // The lawn grows over the rock as on the headland cliffs: on everything that looks up enough to hold
+  // soil - ledges, tops, gentle faces - and the rock's hollows and cracks first, its bumps last, so the
+  // edge is ragged along the stone instead of a line. The ground's grass texture, from above.
+  const grassUv = new ScaleBlock("rock grass uv");
+  worldXZ.connectTo(grassUv.input);
+  floatInput("rock grass scale", ROCK.GRASS_SCALE).output.connectTo(grassUv.factor);
+  const grassColor = new TextureBlock("rock grass");
+  grassUv.output.connectTo(grassColor.uv);
+  grassColor.texture = grass;
+  const grassValue = weighted("rock grass value", [[up.y, 1], [color.a, -0.7], [grassColor.a, 0.25], [patch.a, 0.3]], 0.05);
+  const grassStep = new SmoothStepBlock("rock grass step");
+  grassValue.connectTo(grassStep.value);
+  floatInput("rock grass edge0", ROCK.GRASS_EDGE0).output.connectTo(grassStep.edge0);
+  floatInput("rock grass edge1", ROCK.GRASS_EDGE1).output.connectTo(grassStep.edge1);
+  const grassShare = new ScaleBlock("rock grass share");
+  grassStep.output.connectTo(grassShare.input);
+  floatInput("rock grass strength", ROCK.GRASS).output.connectTo(grassShare.factor);
+  const grassTinted = new MultiplyBlock("rock grass tinted");
+  grassColor.rgb.connectTo(grassTinted.left);
+  color3Input("rock grass tint", ROCK.GRASS_TINT[0], ROCK.GRASS_TINT[1], ROCK.GRASS_TINT[2]).output.connectTo(grassTinted.right);
+  const withGrass = new LerpBlock("rock with grass");
+  withMoss.output.connectTo(withGrass.left);
+  grassTinted.output.connectTo(withGrass.right);
+  grassShare.output.connectTo(withGrass.gradient);
+
+  return {color: withGrass.output, normalMap: normalMap.rgb};
 }
 
 /**

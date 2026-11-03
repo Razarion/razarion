@@ -189,6 +189,11 @@ export class TerrainLoaderService {
     }
   }
 
+  /** The tiles built for the current terrain. */
+  tiles(): BabylonTerrainTileImpl[] {
+    return this.currentTiles as BabylonTerrainTileImpl[];
+  }
+
   disposeTerrain(): void {
     for (const tile of this.currentTiles) {
       try { tile.removeFromScene(); } catch { /* defensive */ }

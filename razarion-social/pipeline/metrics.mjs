@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // How far the posts got, and which formats and tones carry.
 //
-//   node metrics.mjs              # fetch what is not settled yet, then the report
+//   node metrics.mjs              # fetch what is due (X: at 2 and 7 days only), then the report
 //   node metrics.mjs --report     # the report from what is stored, no fetching
 //   node metrics.mjs --refresh    # fetch every post again, settled or not (costs on X)
 //   node metrics.mjs --only x     # one network: x, ig or fb
@@ -33,6 +33,17 @@ function median(values) {
   return s.length % 2 ? s[mid] : Math.round((s[mid - 1] + s[mid]) / 2);
 }
 
+// X bills every post read, so an X post is read only once it has passed the next of these ages
+// since its last snapshot: twice in its life, at 2 days (the first age the report uses) and at
+// SETTLED_DAYS. Read after every slot instead, the week's 19 posts cost $0.095 each time - about
+// $0.25 a day, five times what the posting itself cost (engine log, 25.-30.10.2026).
+const X_CHECKPOINT_DAYS = [MIN_AGE_DAYS, SETTLED_DAYS];
+
+function dueOnX(snapshot, publishedAt, now) {
+  const next = X_CHECKPOINT_DAYS.find((days) => !snapshot || snapshot.age_days < days);
+  return next !== undefined && (now - Date.parse(publishedAt)) / 86_400_000 >= next;
+}
+
 async function fetchAll(args) {
   const metrics = loadMetrics();
   const posts = publishedPosts();
@@ -41,9 +52,10 @@ async function fetchAll(args) {
 
   for (const [net, fetcher] of Object.entries(FETCHERS)) {
     if (only && only !== net) continue;
-    const due = posts[net].filter((p) => args.refresh || !isSettled(metrics.items[p.id]?.[net]));
+    const due = posts[net].filter((p) => args.refresh || (!isSettled(metrics.items[p.id]?.[net])
+      && (net !== 'x' || dueOnX(metrics.items[p.id]?.x, p.publishedAt, now))));
     if (!due.length) {
-      step(`${NETWORK_LABELS[net]}: all ${posts[net].length} posts settled, nothing to fetch`);
+      step(`${NETWORK_LABELS[net]}: none of ${posts[net].length} posts due, nothing to fetch`);
       continue;
     }
     step(`${NETWORK_LABELS[net]}: fetching ${due.length} of ${posts[net].length} posts`);

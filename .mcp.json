@@ -9,6 +9,14 @@
         "RAZARION_ADMIN_EMAIL": "${RAZARION_ADMIN_EMAIL:-admin@admin.com}",
         "RAZARION_ADMIN_PASSWORD": "${RAZARION_ADMIN_PASSWORD:-1234}"
       }
+    },
+    "razarion-recorder": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["razarion-recorder/mcp.mjs"],
+      "env": {
+        "RECORDER_URL": "${RECORDER_URL:-http://127.0.0.1:4712}"
+      }
     }
   }
 }

@@ -31,6 +31,9 @@ export const DEFAULTS = {
   produceFrom: '00:00',
   produceTo: '24:00',
   // Days a format waits after its last post; the formats' own rules apply on top.
+  // Moments from razarion-recorder: a real player on screen, no names (2026-11-03: approved like the
+  // planner's posts). Off: they wait on "review" for a person.
+  moments: { autoApprove: true },
   formats: {
     battle: { enabled: true, gapDays: 1 },
     'week-in-numbers': { enabled: true, gapDays: 6 },
@@ -50,6 +53,7 @@ export function loadSchedule() {
     ...DEFAULTS,
     ...stored,
     networks: { ...DEFAULTS.networks, ...(stored.networks || {}) },
+    moments: { ...DEFAULTS.moments, ...(stored.moments || {}) },
     formats: Object.fromEntries(Object.entries(DEFAULTS.formats).map(([name, d]) => [name, { ...d, ...(stored.formats?.[name] || {}) }])),
   };
 }

@@ -83,3 +83,8 @@ extract-zh.js
 
 # Per-checkout ports for a second local stack (see razarion-server/docker/README.md)
 /razarion-server/docker/.env
+
+# Game recorder: credentials, log and volume measurement, installed packages
+/razarion-recorder/.env
+/razarion-recorder/state/
+/razarion-recorder/node_modules/

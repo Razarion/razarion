@@ -1,0 +1,54 @@
+{
+  "_comment": [
+    "Which moments become a short (lib/moments.mjs). Read anew for every history row, so a change here counts at once.",
+    "when: the game_history row that fires it. type, questId, levelNumber, itemTypeName must equal the row's; actor and target are 'human' or 'bot'.",
+    "The base followed is the human one: the actor's, or the target's when only the target is human.",
+    "before / after: seconds of the moment filmed before and after the row. The take is the whole of it.",
+    "text: the template the writer works from; shows: what the clip shows, for the writer. Never a name - the player is 'a player'.",
+    "cooldownMinutes: at most one short of this rule in that time. oncePerBase: never two of the same base."
+  ],
+  "rules": [
+    {
+      "id": "left-noob-island",
+      "enabled": true,
+      "title": "Leaves the noob island",
+      "when": { "type": "QUEST_PASSED", "questId": 392 },
+      "before": 40,
+      "after": 8,
+      "shapes": ["portrait", "landscape"],
+      "cooldownMinutes": 60,
+      "oncePerBase": true,
+      "text": "A new player just left the noob island: the builder loaded onto a transporter, the channel crossed, the builder set down on the mainland. Open-source RTS in a browser tab, no download and no account.",
+      "shows": "a real player's transporter crossing the channel from the noob island and the builder landing on the mainland",
+      "event": "a player left the noob island - their first crossing to the mainland"
+    },
+    {
+      "id": "bot-base-destroyed",
+      "enabled": false,
+      "title": "Destroys a bot base",
+      "when": { "type": "BASE_DEFEATED", "actor": "human", "target": "bot" },
+      "before": 25,
+      "after": 5,
+      "shapes": ["portrait", "landscape"],
+      "cooldownMinutes": 120,
+      "oncePerBase": false,
+      "text": "A player takes down a whole bot base on the live server. Open-source RTS in a browser tab, no download and no account.",
+      "shows": "a real player's units destroying the last of a computer-controlled base",
+      "event": "a player destroyed a bot base"
+    },
+    {
+      "id": "lost-to-bot",
+      "enabled": false,
+      "title": "Loses a unit to a bot",
+      "when": { "type": "ITEM_DESTROYED", "actor": "bot", "target": "human" },
+      "before": 20,
+      "after": 4,
+      "shapes": ["portrait"],
+      "cooldownMinutes": 240,
+      "oncePerBase": true,
+      "text": "Not every attack works out: a player's unit falls to a bot on the live server. Open-source RTS in a browser tab, no download and no account.",
+      "shows": "a real player's unit being destroyed by a computer-controlled base",
+      "event": "a player lost a unit to a bot"
+    }
+  ]
+}

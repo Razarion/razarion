@@ -14,6 +14,12 @@ export const routes: Routes = [
     loadComponent: () => import('./game/game.component').then(m => m.GameComponent),
     data: {director: true}
   },
+  {
+    // A recorded stretch of the planet, played by razarion-recorder's replay proxy (ReplayService)
+    path: 'replay',
+    loadComponent: () => import('./game/game.component').then(m => m.GameComponent),
+    data: {replay: true}
+  },
   {path: 'invalid-token', component: InvalidTokenComponent},
   {path: 'verify-email/:id', component: VerifyEmailComponent},
   {path: 'backend', loadComponent: () => import('./backend/backend.component').then(m => m.BackendComponent)},

@@ -7,6 +7,8 @@ import {BabylonModelService} from '../../../../../src/app/game/renderer/babylon-
 import {SHOWCASE_FEATURES, Showcase, ShowcaseFeature} from '../../../../../src/app/game/renderer/showcase';
 import {TerrainLoaderService} from './terrain-loader.service';
 import {LabTuning, TuningValue} from './lab-tuning';
+import {GrassSettings} from '../../../../../src/app/game/renderer/grass-clumps';
+import {EarthSettings} from '../../../../../src/app/game/renderer/earth-clumps';
 
 /** A spot to look at: game coordinates (x, y = the map's y, Babylon's z). */
 interface LabView {
@@ -66,6 +68,37 @@ interface LabView {
             <input type="range" min="5" max="85" step="1" [ngModel]="sunElevation()" (ngModelChange)="setSun(sunAzimuth(), $event)">
             <span class="val">{{ sunElevation() }}°</span>
           </div>
+        </section>
+
+        <section>
+          <h4>Grass</h4>
+          <label class="check"><input type="checkbox" [ngModel]="grassOn()" (ngModelChange)="setGrass('on', $event)"> 3D grass clumps</label>
+          @for (slider of grassSliders; track slider.key) {
+            <div class="row slider">
+              <span>{{ slider.label }}</span>
+              <input type="range" [min]="slider.min" [max]="slider.max" [step]="slider.step" [ngModel]="grassValue(slider.key)" (ngModelChange)="setGrass(slider.key, $event)">
+              <span class="val">{{ grassValue(slider.key) | number:'1.0-2' }}</span>
+            </div>
+          }
+          <label class="check"><input type="checkbox" [ngModel]="grassShadows()" (ngModelChange)="setGrassShadows($event)"> Clumps cast shadows</label>
+          <div class="row">
+            <button (click)="buildGrass()">Grass here</button>
+            <span>{{ grassCount() | number:'1.0-0' }} clumps</span>
+          </div>
+        </section>
+
+        <section>
+          <h4>Bare ground</h4>
+          <label class="check"><input type="checkbox" [ngModel]="earthOn()" (ngModelChange)="setEarth('on', $event)"> Stubble, dry grass, weeds</label>
+          @for (slider of earthSliders; track slider.key) {
+            <div class="row slider">
+              <span>{{ slider.label }}</span>
+              <input type="range" [min]="slider.min" [max]="slider.max" [step]="slider.step" [ngModel]="earthValue(slider.key)" (ngModelChange)="setEarth(slider.key, $event)">
+              <span class="val">{{ earthValue(slider.key) | number:'1.0-2' }}</span>
+            </div>
+          }
+          <label class="check"><input type="checkbox" [ngModel]="earthShadows()" (ngModelChange)="setEarthShadows($event)"> Clumps cast shadows</label>
+          <div class="row"><span>{{ earthCount() | number:'1.0-0' }} clumps</span></div>
         </section>
 
         <section>
@@ -189,6 +222,37 @@ export class TerrainLabTaskComponent implements AfterViewInit, OnDestroy {
   readonly vertices = signal(0);
   private readonly featureState = signal<Set<ShowcaseFeature>>(new Set(SHOWCASE_FEATURES));
   private readonly tuning = new LabTuning(this.babylonRender);
+  // The game's own clumps (the renderer rebuilds them as the camera moves): the sliders change what the game shows
+  private readonly grass = this.babylonRender.groundClumps.grass;
+  readonly grassSliders: { key: keyof GrassSettings, label: string, min: number, max: number, step: number }[] = [
+    {key: 'density', label: 'Clumps/m²', min: 0, max: 30, step: 0.5},
+    {key: 'height', label: 'Blade height', min: 0.05, max: 2, step: 0.01},
+    {key: 'width', label: 'Clump width', min: 0.1, max: 2, step: 0.01},
+    {key: 'radius', label: 'Radius', min: 10, max: 200, step: 5},
+    {key: 'tone', label: 'Brightness', min: 0.5, max: 2, step: 0.05},
+    {key: 'dry', label: 'Olive', min: 0, max: 1.5, step: 0.05},
+    {key: 'patches', label: 'Patches', min: 0, max: 1, step: 0.05},
+    {key: 'splay', label: 'Lean out', min: 0, max: 1.5, step: 0.05},
+    {key: 'fadeNear', label: 'Fade from (m)', min: 0, max: 150, step: 5},
+    {key: 'fadeFar', label: 'Fade to (m)', min: 0, max: 300, step: 5},
+  ];
+  readonly grassOn = signal(this.grass.settings.on);
+  readonly grassShadows = signal(this.grass.settings.castShadows);
+  readonly grassCount = signal(0);
+  private readonly grassVersion = signal(0);
+  private grassTimer: ReturnType<typeof setTimeout> | null = null;
+  private readonly earth = this.babylonRender.groundClumps.earth;
+  readonly earthSliders: { key: keyof EarthSettings, label: string, min: number, max: number, step: number }[] = [
+    {key: 'density', label: 'Clumps/m²', min: 0, max: 15, step: 0.5},
+    {key: 'height', label: 'Height', min: 0.05, max: 0.6, step: 0.01},
+    {key: 'width', label: 'Width', min: 0.1, max: 1.2, step: 0.01},
+    {key: 'splay', label: 'Lean out', min: 0, max: 1.5, step: 0.05},
+    {key: 'tone', label: 'Brightness', min: 0.5, max: 3, step: 0.05},
+  ];
+  readonly earthOn = signal(this.earth.settings.on);
+  readonly earthCount = signal(0);
+  readonly earthShadows = signal(this.earth.settings.castShadows);
+  private readonly earthVersion = signal(0);
   readonly materialNames = signal<{ name: string, count: number }[]>([]);
   readonly material = signal('');
   readonly materialInputs = signal<TuningValue[]>([]);
@@ -222,6 +286,10 @@ export class TerrainLabTaskComponent implements AfterViewInit, OnDestroy {
     if (this.statsTimer) {
       clearInterval(this.statsTimer);
     }
+    if (this.grassTimer) {
+      clearTimeout(this.grassTimer);
+    }
+    this.babylonRender.groundClumps.dispose();
     this.terrainLoader.disposeTerrain();
     delete (window as any).razLab;
   }
@@ -248,6 +316,7 @@ export class TerrainLabTaskComponent implements AfterViewInit, OnDestroy {
       this.tuning.reapply();
       this.readMaterials();
       this.lightValues.set(this.tuning.lightValues());
+      await this.buildGrass();
     } finally {
       this.busy.set(false);
     }
@@ -255,6 +324,69 @@ export class TerrainLabTaskComponent implements AfterViewInit, OnDestroy {
 
   goTo(view: LabView): void {
     this.babylonRender.setViewFieldCenter(view.x, view.y);
+    this.buildGrass(view.x, view.y);
+  }
+
+  /** Grass and the bare ground's detail around (x, y), the camera's ground point by default. */
+  async buildGrass(x?: number, y?: number): Promise<number> {
+    if (x === undefined || y === undefined) {
+      const target = this.babylonRender.setupCenterGroundPosition();
+      x = target.x;
+      y = target.z;
+    }
+    const count = await this.grass.build(this.terrainLoader.tiles(), x, y);
+    this.grassCount.set(count);
+    this.earthCount.set(await this.earth.build(this.terrainLoader.tiles(), x, y));
+    return count;
+  }
+
+  setEarthShadows(on: boolean): void {
+    this.earthShadows.set(on);
+    this.earth.setCastShadows(on);
+  }
+
+  earthValue(key: keyof EarthSettings): number {
+    this.earthVersion();
+    return this.earth.settings[key] as number;
+  }
+
+  setEarth(key: keyof EarthSettings, value: number | boolean): void {
+    (this.earth.settings as any)[key] = typeof value === 'boolean' ? value : +value;
+    this.earthOn.set(this.earth.settings.on);
+    this.earthVersion.update(v => v + 1);
+    if (key === 'tone') {
+      this.earth.applyTint();
+      return;
+    }
+    if (this.grassTimer) {
+      clearTimeout(this.grassTimer);
+    }
+    this.grassTimer = setTimeout(() => this.buildGrass(), 150);
+  }
+
+  grassValue(key: keyof GrassSettings): number {
+    this.grassVersion();
+    return this.grass.settings[key] as number;
+  }
+
+  setGrass(key: keyof GrassSettings, value: number | boolean): void {
+    (this.grass.settings as any)[key] = typeof value === 'boolean' ? value : +value;
+    this.grassOn.set(this.grass.settings.on);
+    this.grassVersion.update(v => v + 1);
+    if (key === 'tone' || key === 'dry') {
+      this.grass.applyTint();
+      return;
+    }
+    // Sliders fire on every step: build once they rest
+    if (this.grassTimer) {
+      clearTimeout(this.grassTimer);
+    }
+    this.grassTimer = setTimeout(() => this.buildGrass(), 150);
+  }
+
+  setGrassShadows(on: boolean): void {
+    this.grassShadows.set(on);
+    this.grass.setCastShadows(on);
   }
 
   setWireframe(on: boolean): void {
@@ -372,6 +504,26 @@ export class TerrainLabTaskComponent implements AfterViewInit, OnDestroy {
       input: (material: string, input: string, value: number) => this.tuning.setInput(material, input, value),
       light: (name: string, value: number) => this.tuning.setLight(name, value),
       export: () => this.tuning.export(),
+      /** Grass settings (on, density, height, width, radius, tone, dry, patches, splay, fadeNear, fadeFar, castShadows), then grass around (x, y) or the camera. */
+      grass: (settings: Partial<GrassSettings> = {}, x?: number, y?: number) => {
+        Object.assign(this.grass.settings, settings);
+        this.grassOn.set(this.grass.settings.on);
+        this.setGrassShadows(this.grass.settings.castShadows);
+        this.grass.applyTint();
+        this.grassVersion.update(v => v + 1);
+        return this.buildGrass(x, y);
+      },
+      /** Bare ground settings (on, density, height, width, radius, splay, tone, castShadows), then grass and detail around (x, y) or the camera. */
+      earth: (settings: Partial<EarthSettings> = {}, x?: number, y?: number) => {
+        Object.assign(this.earth.settings, settings);
+        this.earth.applyTint();
+        this.earthShadows.set(this.earth.settings.castShadows);
+        this.earthOn.set(this.earth.settings.on);
+        this.earthVersion.update(v => v + 1);
+        return this.buildGrass(x, y).then(() => this.earth.count);
+      },
+      /** Spots of all bare ground (earth, stones) near (x, y), nearest first. */
+      bareSpots: (x: number, y: number, radius = 40) => this.earth.bareSpots(this.terrainLoader.tiles(), x, y, radius),
       reload: () => this.reload(),
       ready: () => this.terrainLoader.whenTerrainReady(),
     };

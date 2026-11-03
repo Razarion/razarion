@@ -21,12 +21,13 @@ import {WindPlugin} from "./wind-plugin";
  * the height map and cannot be switched here. The bot features switch the bot-ground plates back to
  * the dashed border per 8 m box (botMarkings), to the raw asphalt photo (botAsphalt) and to no cloud
  * shadows on the plates (botClouds) and to no gravel bed around them (botGravel). rockMaterial switches the
- * cliffs back to the brown Rock1 copy without moss and the rock models back to their own glb colours.
+ * cliffs back to the brown Rock1 copy without moss and the rock models back to their own glb colours;
+ * rockGrass takes the lawn's grass off the rock again, clumps the 3D grass clumps and the dry ones on bare ground (ground-clumps.ts).
  * shoreSand drops the sand strip along the waterline (sand by height only, surf over grass), seaFloor the
  * textured sea floor, its ripples and the caustics.
  */
-export type ShowcaseFeature = "light" | "clouds" | "relief" | "wind" | "paths" | "growth" | "botMarkings" | "botAsphalt" | "botClouds" | "botGravel" | "rockMaterial" | "shoreSand" | "seaFloor";
-export const SHOWCASE_FEATURES: ShowcaseFeature[] = ["light", "clouds", "relief", "wind", "paths", "growth", "botMarkings", "botAsphalt", "botClouds", "botGravel", "rockMaterial", "shoreSand", "seaFloor"];
+export type ShowcaseFeature = "light" | "clouds" | "relief" | "wind" | "paths" | "growth" | "botMarkings" | "botAsphalt" | "botClouds" | "botGravel" | "rockMaterial" | "rockGrass" | "clumps" | "shoreSand" | "seaFloor";
+export const SHOWCASE_FEATURES: ShowcaseFeature[] = ["light", "clouds", "relief", "wind", "paths", "growth", "botMarkings", "botAsphalt", "botClouds", "botGravel", "rockMaterial", "rockGrass", "clumps", "shoreSand", "seaFloor"];
 
 /** What the showcase needs of BabylonRenderServiceAccessImpl. */
 export interface ShowcaseRenderer {
@@ -48,7 +49,9 @@ const GROUND_OFF: Record<ShowcaseFeature, Record<string, BlockValue>> = {
   botAsphalt: {"grain strength": 0},
   botClouds: {"bot cloud shadow strength": 0},
   botGravel: {},   // the gravel meshes, see applyScene
-  rockMaterial: {"rock moss strength": 0, "triplanar scale": 0.2, "triplanar sharpness": 1},   // and TEXTURE_OFF; the models read isOn
+  rockMaterial: {"rock moss strength": 0, "rock grass strength": 0, "triplanar scale": 0.2, "triplanar sharpness": 1},   // and TEXTURE_OFF; the models read isOn
+  rockGrass: {"rock grass strength": 0},
+  clumps: {},   // meshes, ground-clumps.ts reads isOn
   shoreSand: {"shore sand strength": 0, "wet shore strength": 0, "wet sand darken": 0.9, "wet diffuse e0": 0.15, "foam land mask strength": 0, "sand brighten": 0},   // the sprites read isOn
   seaFloor: {"sea floor strength": 0, "strength underwater": 0.05, "caustic strength": 0, "lagoon strength": 0, "shallow sand edge0": -1, "shallow sand edge1": -0.1},
 };
