@@ -75,15 +75,15 @@ function weighted(name: string, terms: [NodeMaterialConnectionPoint, number][], 
   return sum;
 }
 
-const textures = new WeakMap<Scene, { diffuse: Texture, normal: Texture }>();
-
-function rockTextures(scene: Scene): { diffuse: Texture, normal: Texture } {
-  let t = textures.get(scene);
-  if (!t) {
-    t = {diffuse: new Texture(ROCK.DIFFUSE, scene), normal: new Texture(ROCK.NORMAL, scene)};
-    textures.set(scene, t);
-  }
-  return t;
+/**
+ * Fresh Texture objects for every material. Babylon shares the GPU texture behind the same url and
+ * counts its users, so this costs one small wrapper, not a second download. One wrapper shared by
+ * every material (a per-scene cache until 2026-11-03) was destroyed by the first terrain tile
+ * evicted from the cache, whose ground material is disposed with its textures: every other ground
+ * material lost its rock maps, was never ready again, and Babylon stopped drawing the ground.
+ */
+export function rockTextures(scene: Scene): { diffuse: Texture, normal: Texture } {
+  return {diffuse: new Texture(ROCK.DIFFUSE, scene), normal: new Texture(ROCK.NORMAL, scene)};
 }
 
 /**

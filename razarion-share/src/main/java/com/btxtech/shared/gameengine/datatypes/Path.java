@@ -256,7 +256,16 @@ public class Path {
         currentWayPointIndex = UNSET_INDEX;
     }
 
+    /**
+     * Only the part of the path still ahead, from the current way point on. The slave re-derives its
+     * way point by distance ({@link #nearestWayPointIndex}); on a path that comes back past itself a
+     * unit pushed a little aside is nearer to the way out than to the way back, and with the whole
+     * list the slave took a way point on the way out, turned and drove the old part again until the
+     * next sync put it back (local play test 2026-11-03, a hydra sent next to its harbour).
+     */
     public void fillSyncPhysicalAreaInfo(SyncPhysicalAreaInfo syncPhysicalAreaInfo) {
-        syncPhysicalAreaInfo.setWayPositions(wayPositions);
+        syncPhysicalAreaInfo.setWayPositions(currentWayPointIndex > 0
+                ? new ArrayList<>(wayPositions.subList(currentWayPointIndex, wayPositions.size()))
+                : wayPositions);
     }
 }

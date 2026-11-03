@@ -87,6 +87,9 @@ for (let c = 0; c < CELLS; c++) {
   const cell = cellLayout(c);
   const g = transform(clone(T_GARRISON), realmCenter(T_GARRISON), cell.garrison);
   g.id = reuse(garrisons, c); g.internalName = `(Bot1) Garrison ${c + 1}`;
+  // The camping state is written below from the normal one; a second run finds it in the template already.
+  const badgerTemplate = g.botEnragementStateConfigs.flatMap((state) => state.botItems).find((item) => item.baseItemTypeId === 20);
+  g.botEnragementStateConfigs = [g.botEnragementStateConfigs[0]];
   // Players always come from the north (the base row). Three refineries in a row in the middle of the bot ground, and
   // a Tesla in each north corner of it: quest 379 has the player's three vipers destroy a Tesla - the first target
   // that fights back. Three vipers win, together or one by one, with one or two of them hit. The two Teslas stand
@@ -112,6 +115,21 @@ for (let c = 0; c < CELLS; c++) {
     if (slot) item.createDirectly = true;
     if (item.baseItemTypeId === 13) item.place = { polygon2D: null, position: { x: cell.garrison.x, y: cell.garrison.y - 16 }, radius: 2 };
   }
+  // Camping: two vipers parked in front of the garrison shot every Tesla the moment it came back, and quest 379 was
+  // blocked for the cell (local play test, 2026-11-03). Five kills by one base switch the bot to "Camping": the same
+  // items plus four badgers on the plates. A kill only counts while the killer's base has a unit inside the realm,
+  // and the realm used to be the plates alone - a viper (range 10) shoots a Tesla from up to ~13 m north of them, so
+  // the count was wiped every time and the bot never switched. The realm now reaches to y 70: everyone in range of a
+  // Tesla is inside, the razarion field (from y 77) and the base row are not. The badgers stand on the plates, from
+  // where their range (15) ends short of the field. The Teslas stay in "Camping", so quest 379 goes on for everyone.
+  const gx = cell.garrison.x, R_BADGER = 1.2;
+  g.realm = place(rect(gx - 30, 8, gx + 30, 70));
+  const normal = g.botEnragementStateConfigs[0];
+  normal.name = "Normal";
+  normal.enrageUpKills = 5;
+  g.botEnragementStateConfigs.push({ name: "Camping", enrageUpKills: null, botItems: [...clone(normal.botItems),
+    { ...clone(badgerTemplate), count: 4, createDirectly: true, rePopTime: 20000, spreadPlace: null,
+      place: place(rect(gx - 20 + R_BADGER, 16 + R_BADGER, gx + 20 - R_BADGER, 56 - R_BADGER)) }] });
   bots.push(g);
 
   // The water bot on its U of plates in the open channel (noob-band-layout.mjs). Its items are written here, not
@@ -128,9 +146,15 @@ for (let c = 0; c < CELLS; c++) {
   // hydra 15) and a badger on each side of the U, so a camper west, east or south of it is in reach too. During
   // "Camping" a transporter is in reach after a detour of 3-4 m (the badgers on the legs), in normal after 6 m. With the realm empty again the bot falls back to normal. A switch removes all
   // items and builds the new state from scratch (BotEnragementState), so both states hold the whole bot.
-  // The realm reaches ~20 m beyond every item a camper shoots at - a kill only counts while the killer's base has a
-  // unit inside it - and stays clear of the transporters' ways north (x0+107-115, x0+208-212) and of the harbour
-  // zone (at most 188), else a passing transporter or a dockyard on the coast would keep the bot in "Camping".
+  // The realm covers the inside of the U, the inner layer of plates and 14 m in front of the opening: every spot from
+  // which a camper reaches the dockyard or a hydra - a kill only counts while the killer's base has a unit inside it.
+  // The bot attacks intruders (autoAttack, 2026-11-03): attacked from out of the hydras' own reach - at the dockyard,
+  // from the opening - it did not fight back at all (local play test). One unit per intruder, the nearest
+  // (ShortestWaySorter), so the single hydra of quest 388 meets one hydra, as it did before when it came within reach.
+  // A hunter stops where the intruder leaves the realm and stays there, firing at whatever passes within its range
+  // (GuardingItemService). So the realm keeps away from the transporters' ways north (x0+107-115, x0+208-212) and from
+  // the harbour zone (at most 188) by more than a hydra's reach: 25 m to the side, 18 m to the south. The doubled
+  // realm of 2026-11-03 morning (x +-30, from y 190) had a hunter 15 m from the east way and 2 m from the harbours.
   const wc = cell.water;
   const at = (dx, y, radius = 1) => ({ polygon2D: null, position: { x: wc.x + dx, y }, radius });
   const botItem = (baseItemTypeId, o) => ({ angle: 0, baseItemTypeId, count: 1, createDirectly: false, idleTtl: null, moveRealmIfIdle: false,
@@ -144,7 +168,8 @@ for (let c = 0; c < CELLS; c++) {
   // Badgers, one per part of the U, each spawned anywhere on its part: west leg with the south-west corner, south row
   // between the legs (where the builder stands the spot is taken, the engine tries another), east leg with the
   // south-east corner. Inset by the badger's radius, so every spot is on the plates. One item of three on the whole U
-  // could put all three on one side.
+  // could put all three on one side. They stay on the inner layer of plates: on the outer one they would reach the
+  // transporters' ways north after a shorter detour.
   const R = 1.2, U_W = wc.x - 20, U_E = wc.x + 20, LEG = 8, U_S = 206, U_N = 238, ROW_N = 214;
   const badgers = [
     rect(U_W + R, U_S + R, U_W + LEG - R, U_N - R),
@@ -153,8 +178,8 @@ for (let c = 0; c < CELLS; c++) {
   ].map((corners) => botItem(20, { createDirectly: true, place: place(corners), rePopTime: 20000 }));
   const w = clone(T_WATER);
   w.id = reuse(waters, c); w.internalName = `(Bot1) Water ${c + 1}`;
-  w.realm = place(rect(wc.x - 22, 190, wc.x + 22, 252));
-  w.autoAttack = false;
+  w.realm = place(rect(wc.x - 20, 206, wc.x + 20, 252));
+  w.autoAttack = true;
   w.groundBoxPositions = WATER_U_PLATES.map(([dx, y]) => ({ x: wc.x + dx, y }));
   w.botGroundSlopeBoxes = [];
   w.botEnragementStateConfigs = [

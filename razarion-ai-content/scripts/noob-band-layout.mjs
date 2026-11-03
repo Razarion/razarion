@@ -35,11 +35,16 @@ export const r1CoastY = (x) => 300 + 11 * Math.sin(x / 71 + 2) + 5 * Math.sin(x 
 // hydras in the water inside. The islet it stood on until 2026-11-02 is gone: the hydras' spread area lay on its land
 // and they piled up in front of the dockyard, and the plates that stuck out over its square were walls.
 export const waterBotCenter = (cell) => ({ x: cell * CELL_W + 163, y: 222 });   // on the U's axis
-/** Middles of the water bot's plates (8 x 8 m, BotConfig.groundBoxPositions), relative x, absolute y. */
+/**
+ * Middles of the water bot's plates (8 x 8 m, BotConfig.groundBoxPositions), relative x, absolute y. Two plates thick,
+ * the second layer outside: with one layer the hydras inside fired over the plates at whatever lay just beyond them
+ * (local play test, 2026-11-03).
+ */
 export const WATER_U_PLATES = [
-  [-16, 210], [-8, 210], [0, 210], [8, 210], [16, 210],   // south row, y 206-214
-  [-16, 218], [-16, 226], [-16, 234],                     // west leg, x 143-151 (cell 1)
-  [16, 218], [16, 226], [16, 234],                        // east leg, x 175-183
+  [-24, 202], [-16, 202], [-8, 202], [0, 202], [8, 202], [16, 202], [24, 202],   // outer south row, y 198-206
+  [-24, 210], [-16, 210], [-8, 210], [0, 210], [8, 210], [16, 210], [24, 210],   // inner south row, y 206-214
+  [-24, 218], [-24, 226], [-24, 234], [-16, 218], [-16, 226], [-16, 234],       // west leg, x 135-151 (cell 1)
+  [16, 218], [16, 226], [16, 234], [24, 218], [24, 226], [24, 234],             // east leg, x 175-191
 ];
 
 export const cellX = (cell) => cell * CELL_W;

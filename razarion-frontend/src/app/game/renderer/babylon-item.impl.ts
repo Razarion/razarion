@@ -364,30 +364,46 @@ export class BabylonItemImpl implements BabylonItem {
     this.renderObject.stopAllAnimations();
   }
 
+  /**
+   * The model goes whatever happens before it. BaseItemUiService forgets the item first and then
+   * asks it to leave the view; a step here that threw left the model standing in the scene, still
+   * answering the cursor, and when the unit came back into view a second model was put on top of
+   * it. Driven away, the unit left an unselectable twin behind (local play test 2026-11-03, a
+   * builder at L3).
+   */
   private disposeInternal(permanent: boolean): void {
     this.disposed = true;
-    // A unit can die - or be scrolled out of view - while its model is still downloading. Without
-    // this the callback would fire into a disposed item and clone a model nobody can see.
-    if (this.cancelModelRequest) {
-      this.cancelModelRequest();
-      this.cancelModelRequest = null;
+    try {
+      // A unit can die - or be scrolled out of view - while its model is still downloading. Without
+      // this the callback would fire into a disposed item and clone a model nobody can see.
+      if (this.cancelModelRequest) {
+        this.cancelModelRequest();
+        this.cancelModelRequest = null;
+      }
+      if (this.disposeCallback) {
+        this.disposeCallback(permanent);
+      }
+      // The prompt lives in a fullscreen GUI texture of its own, linked to this item's node. Losing
+      // the item does not take the texture with it: the panel stayed on screen, stuck at the border
+      // where the link last put it, long after the thing it pointed at was gone.
+      this.hideSelectPromptVisualization();
+      this.actionService.removeCursorHandler(this.itemCursorTypeHandler);
+      if (this.buildStateObserver) {
+        this.renderObject.onBuildAnimationActiveChanged.remove(this.buildStateObserver);
+        this.buildStateObserver = null;
+      }
+      this.removeHighlight();
+    } catch (e) {
+      BabylonItemImpl.reportDisposeFailure(this.itemType.getInternalName(), this.id, e);
     }
-    if (this.disposeCallback) {
-      this.disposeCallback(permanent);
-    }
-    // The prompt lives in a fullscreen GUI texture of its own, linked to this item's node. Losing
-    // the item does not take the texture with it: the panel stayed on screen, stuck at the border
-    // where the link last put it, long after the thing it pointed at was gone.
-    this.hideSelectPromptVisualization();
-    this.actionService.removeCursorHandler(this.itemCursorTypeHandler);
-    if (this.buildStateObserver) {
-      this.renderObject.onBuildAnimationActiveChanged.remove(this.buildStateObserver);
-      this.buildStateObserver = null;
-    }
-    this.removeHighlight();
     this.renderObject.removeAllShadowCasters(this.rendererService)
     this.rendererService.getScene().removeTransformNode(this.renderObject.getModel3D());
     this.renderObject.dispose();
+  }
+
+  /** A warning, so it reaches the server log - the step that failed is what is not known yet. */
+  protected static reportDisposeFailure(name: string, id: number, e: unknown): void {
+    console.warn(`[ItemDispose] ${name} '${id}': ${e instanceof Error ? e.stack ?? e.message : e} - the model is disposed anyway`);
   }
 
   setPosition(position: Vertex): void {

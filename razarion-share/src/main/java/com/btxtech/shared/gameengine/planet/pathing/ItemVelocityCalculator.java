@@ -85,7 +85,10 @@ public class ItemVelocityCalculator {
     }
 
     private void addObstaclesOrcaLines(Orca orca) {
-        double lookAheadTerrainDistance = orca.getSyncPhysicalMovable().getRadius() + DecimalPosition.zeroIfNull(orca.getSyncPhysicalMovable().getPreferredVelocity()).magnitude();
+        // An obstacle farther than the unit gets within the time horizon cannot bind its velocity. The
+        // speed alone, a second's drive, gave a Viper 17 m - in a wood dozens of trees per unit and tick.
+        double lookAheadTerrainDistance = orca.getSyncPhysicalMovable().getRadius()
+                + DecimalPosition.zeroIfNull(orca.getSyncPhysicalMovable().getPreferredVelocity()).magnitude() * Orca.TIME_HORIZON_ITEMS;
         DecimalPosition position = orca.getSyncPhysicalMovable().getPosition();
         List<ObstacleSlope> sortedObstacleSlope = new ArrayList<>();
         List<ObstacleTerrainObject> sortedObstacleTerrainObject = new ArrayList<>();

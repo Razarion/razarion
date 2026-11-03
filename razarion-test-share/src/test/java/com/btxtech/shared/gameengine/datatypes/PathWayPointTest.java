@@ -126,6 +126,47 @@ public class PathWayPointTest {
     }
 
     /**
+     * The slave re-derives its way point from the list the server sends, by distance. On a path that
+     * comes back past itself, a unit pushed a little aside is nearer to the way out than to the way
+     * back: the slave took a way point on the way out, turned and drove the old part of the path
+     * again, until the next sync two seconds later put it back (local play test 2026-11-03, a hydra
+     * sent next to its harbour: [SyncSnap] jump=13.8 localSpeed=0.0 pref=0.0 serverVel=10.0, same
+     * path on both sides). The server sends only the part still ahead.
+     */
+    @Test
+    public void aSyncedPathKeepsTheWayPointOfTheServerOnAHairpin() {
+        List<DecimalPosition> wayPositions = new ArrayList<>();
+        for (int x = 1; x <= 100; x++) {
+            wayPositions.add(new DecimalPosition(x, 0));
+        }
+        for (int x = 100; x >= 1; x--) {
+            wayPositions.add(new DecimalPosition(x, 3));
+        }
+        Path master = createPath(wayPositions);
+        TestPhysical unit = new TestPhysical(new DecimalPosition(0, 0));
+        for (DecimalPosition wayPosition : wayPositions) {
+            unit.moveTo(wayPosition);
+            master.setupCurrentWayPoint(unit);
+            if (wayPosition.equals(new DecimalPosition(50, 3))) {
+                break;
+            }
+        }
+        // on the way back, pushed towards the way out
+        unit.moveTo(new DecimalPosition(50, 1.4));
+        master.setupCurrentWayPoint(unit);
+        Assert.assertTrue("the server heads back west: " + master.getCurrentWayPoint(), master.getCurrentWayPoint().getX() < 50);
+
+        SyncPhysicalAreaInfo syncPhysicalAreaInfo = new SyncPhysicalAreaInfo();
+        master.fillSyncPhysicalAreaInfo(syncPhysicalAreaInfo);
+        Path slave = createPath(straightLine(5));
+        slave.synchronize(syncPhysicalAreaInfo);
+        slave.setupCurrentWayPoint(unit);
+
+        Assert.assertEquals(master.getCurrentWayPoint(), slave.getCurrentWayPoint());
+        Assert.assertEquals(wayPositions.get(wayPositions.size() - 1), syncPhysicalAreaInfo.getWayPositions().get(syncPhysicalAreaInfo.getWayPositions().size() - 1));
+    }
+
+    /**
      * A unit pushed aside by ORCA can end up with its way point behind an obstacle. Without the walk
      * back it would drive into that obstacle instead of following its path.
      */

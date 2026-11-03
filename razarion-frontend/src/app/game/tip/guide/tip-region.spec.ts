@@ -4,13 +4,24 @@ describe('pointInPolygon', () => {
   // The harbour zone of the Noob Island band: a long rectangle along the coast.
   const BAND = [{x: 0, y: 140}, {x: 1245, y: 140}, {x: 1245, y: 225}, {x: 0, y: 225}];
 
+  // Phase 2 region 1: 850 m deep, the builder lands on its northern edge.
+  const DEEP = [{x: 0, y: 300}, {x: 1260, y: 300}, {x: 1260, y: 1150}, {x: 0, y: 1150}];
+
   it('takes the point of a long band straight across from the builder', () => {
-    expect(pointInPolygon(BAND, {x: 400, y: 120})).toEqual({x: 400, y: 182.5});
+    expect(pointInPolygon(BAND, {x: 400, y: 120})).toEqual({x: 400, y: 170});
   });
 
   it('keeps a margin from the ends of the band', () => {
-    expect(pointInPolygon(BAND, {x: -50, y: 120})).toEqual({x: 20, y: 182.5});
-    expect(pointInPolygon(BAND, {x: 2000, y: 120})).toEqual({x: 1225, y: 182.5});
+    expect(pointInPolygon(BAND, {x: -50, y: 120})).toEqual({x: 20, y: 170});
+    expect(pointInPolygon(BAND, {x: 2000, y: 120})).toEqual({x: 1225, y: 170});
+  });
+
+  it('takes the point of a deep region just behind where the builder landed, not on its middle line', () => {
+    expect(pointInPolygon(DEEP, {x: 300, y: 290})).toEqual({x: 300, y: 330});
+  });
+
+  it('takes the builder\'s own place when it already stands well inside', () => {
+    expect(pointInPolygon(DEEP, {x: 300, y: 450})).toEqual({x: 300, y: 450});
   });
 
   it('takes the middle of the widest part without a builder', () => {
@@ -34,6 +45,6 @@ describe('pointInPolygon', () => {
     const L = [{x: 0, y: 0}, {x: 100, y: 0}, {x: 100, y: 10}, {x: 10, y: 10}, {x: 10, y: 100}, {x: 0, y: 100}];
     const point = pointInPolygon(L, {x: 5, y: 200})!;
     expect(point.x).toBe(5);
-    expect(point.y).toBe(55);
+    expect(point.y).toBe(70);
   });
 });

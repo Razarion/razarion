@@ -2,6 +2,7 @@ package com.btxtech.shared.mock;
 
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Uint16ArrayEmu;
+import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
@@ -32,6 +33,8 @@ public class TestNativeTerrainShapeAccess implements NativeTerrainShapeAccess {
     private PlanetConfig planetConfig;
     private int[] groundHeightMap;
     private List<BotConfig> botConfigs = new ArrayList<>();
+    /** Empty unless a test asks for terrain objects - the recorded scenarios were made without them. */
+    private List<TerrainObjectPosition> terrainObjectPositions = Collections.emptyList();
 
     @Inject
     public TestNativeTerrainShapeAccess(TerrainTypeService terrainTypeService,
@@ -46,7 +49,7 @@ public class TestNativeTerrainShapeAccess implements NativeTerrainShapeAccess {
                 planetConfig,
                 terrainTypeService,
                 alarmService,
-                Collections.emptyList(),
+                terrainObjectPositions,
                 Collections.emptyList(),
                 botConfigs != null ? BotService.generateBotGrounds(botConfigs) : Collections.emptyList()
         );
@@ -72,6 +75,10 @@ public class TestNativeTerrainShapeAccess implements NativeTerrainShapeAccess {
 
     public void setPlanetConfig(PlanetConfig planetConfig) {
         this.planetConfig = planetConfig;
+    }
+
+    public void setTerrainObjectPositions(List<TerrainObjectPosition> terrainObjectPositions) {
+        this.terrainObjectPositions = terrainObjectPositions;
     }
 
     public void setBotConfigs(List<BotConfig> botConfigs) {

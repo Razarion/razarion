@@ -85,6 +85,11 @@ export class TipRegion {
  * ends. For a long band along a coast - the harbour zone of the Noob Island band, 1245 m wide - the
  * middle of the cross section is hundreds of metres away from the builder, while straight across
  * from it is where it should build.
+ * <p>
+ * Across the cross sections it does the same: one more is taken at the height of `from`, kept
+ * {@link CROSS_MARGIN} inside the region. The cross sections between the corner heights alone put
+ * a rectangle's point on its middle line - for "Phase 2 region 1", 850 m deep, the build tip sent
+ * the builder 425 m inland from where it landed, far from the bots it fights next.
  */
 export function pointInPolygon(corners: Point[], from: Point | null): Point | null {
   if (corners.length < 3) {
@@ -96,6 +101,11 @@ export function pointInPolygon(corners: Point[], from: Point | null): Point | nu
   }
   if (!from) {
     return candidates.reduce((a, b) => b.width > a.width ? b : a);
+  }
+  const top = Math.min(...corners.map(corner => corner.y)) + CROSS_MARGIN;
+  const bottom = Math.max(...corners.map(corner => corner.y)) - CROSS_MARGIN;
+  if (top <= bottom) {
+    candidates.push(...crossSection(corners, Math.max(top, Math.min(bottom, from.y))));
   }
   const points = candidates.map(candidate => {
     const reach = Math.max(0, candidate.width / 2 - EDGE_MARGIN);
@@ -112,6 +122,8 @@ export function pointInPolygon(corners: Point[], from: Point | null): Point | nu
 const EDGE_MARGIN = 20;
 /** How far inside the region {@link pointInPolygon} prefers its point to be. */
 const INNER_MARGIN = 5;
+/** How far from the top and bottom of the region the cross section at the builder's height stays. */
+const CROSS_MARGIN = 30;
 
 function distanceToBoundary(point: Point, corners: Point[]): number {
   let best = Infinity;
@@ -129,21 +141,27 @@ function interiorCandidates(corners: Point[]): (Point & { width: number })[] {
   const heights = [...new Set(corners.map(corner => corner.y))].sort((one, other) => one - other);
   const candidates: (Point & { width: number })[] = [];
   for (let i = 0; i + 1 < heights.length; i++) {
-    const y = (heights[i] + heights[i + 1]) / 2;
-    const crossings: number[] = [];
-    for (let current = 0, previous = corners.length - 1; current < corners.length; previous = current++) {
-      const a = corners[current];
-      const b = corners[previous];
-      if ((a.y > y) !== (b.y > y)) {
-        crossings.push((b.x - a.x) * (y - a.y) / (b.y - a.y) + a.x);
-      }
-    }
-    crossings.sort((one, other) => one - other);
-    for (let k = 0; k + 1 < crossings.length; k += 2) {
-      candidates.push({x: (crossings[k] + crossings[k + 1]) / 2, y, width: crossings[k + 1] - crossings[k]});
-    }
+    candidates.push(...crossSection(corners, (heights[i] + heights[i + 1]) / 2));
   }
   return candidates;
+}
+
+/** Midpoints of the parts of the horizontal line at `y` that lie inside the region. */
+function crossSection(corners: Point[], y: number): (Point & { width: number })[] {
+  const crossings: number[] = [];
+  for (let current = 0, previous = corners.length - 1; current < corners.length; previous = current++) {
+    const a = corners[current];
+    const b = corners[previous];
+    if ((a.y > y) !== (b.y > y)) {
+      crossings.push((b.x - a.x) * (y - a.y) / (b.y - a.y) + a.x);
+    }
+  }
+  crossings.sort((one, other) => one - other);
+  const sections: (Point & { width: number })[] = [];
+  for (let k = 0; k + 1 < crossings.length; k += 2) {
+    sections.push({x: (crossings[k] + crossings[k + 1]) / 2, y, width: crossings[k + 1] - crossings[k]});
+  }
+  return sections;
 }
 
 function insidePolygon(point: Point, corners: Point[]): boolean {

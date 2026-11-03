@@ -8,6 +8,7 @@ import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeUtil;
 import com.btxtech.shared.gameengine.planet.pathing.Obstacle;
+import com.btxtech.shared.gameengine.planet.pathing.ObstacleTerrainObject;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeBotGround;
 import com.btxtech.shared.gameengine.planet.terrain.container.json.NativeBotGroundSlopeBox;
@@ -17,9 +18,11 @@ import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.shared.utils.GeometricUtil;
 import com.btxtech.shared.utils.MathHelper;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -29,6 +32,8 @@ import static com.btxtech.shared.gameengine.planet.terrain.TerrainUtil.*;
 public class TerrainAnalyzer {
     // private final Logger log = Logger.getLogger(TerrainAnalyzer.class.getName());
     private static final byte[] NO_BLOCKED_NODES = new byte[0];
+    /** Edge length of the cells the terrain object circles are filed under for {@link #getObstacles}. */
+    private static final int OBSTACLE_CELL_SIZE = 8;
     private final HeightMapAccess heightMapAccess;
     private final TerrainShapeManager terrainShapeManager;
     private static final TerrainType[] TERRAIN_TYPES = TerrainType.values();
@@ -49,6 +54,15 @@ public class TerrainAnalyzer {
     private int lastMaskTileX = Integer.MIN_VALUE;
     private int lastMaskTileY = Integer.MIN_VALUE;
     private byte[] lastMask;
+    /**
+     * The blocking terrain object circles, each filed under every cell of {@link #OBSTACLE_CELL_SIZE}
+     * its circle touches, row-major, null = no circle. Built on the first {@link #getObstacles} call
+     * for the whole planet: ORCA asks for every moving unit in every tick, a scan over the objects of
+     * a tile would be paid each time.
+     */
+    private List<List<ObstacleTerrainObject>> obstacleCells;
+    private int obstacleCellXCount;
+    private int obstacleCellYCount;
 
     public TerrainAnalyzer(HeightMapAccess heightMapAccess, TerrainShapeManager terrainShape) {
         this.heightMapAccess = heightMapAccess;
@@ -358,8 +372,97 @@ public class TerrainAnalyzer {
         }
     }
 
+    /**
+     * The blocking terrain objects whose circle comes closer to position than radius, for ORCA.
+     * <p>
+     * This returned nothing for years (TODO), so ORCA kept units apart from each other only: a group
+     * pushing through a wood shoved its units right into trees and rocks. The way point choice in
+     * Path does see the trees - their nodes are blocked - and its yes/no answers flip for a unit
+     * standing in one: server and client, never a millimetre apart in a crowd, took different way
+     * points, and the sync put the client's units back 15-35 m every two seconds (local play test
+     * 2026-11-03, six Vipers sent through the wood next to a Spire, [SyncSnap] crowded=true dest=0.0).
+     * <p>
+     * The radius of the object is the configured one, unscaled, like the blocked nodes. Unlike those,
+     * a circle reaching over a tile border counts on the other side too.
+     */
     public Set<Obstacle> getObstacles(DecimalPosition position, double radius) {
-        return Collections.emptySet(); // TODO
+        List<List<ObstacleTerrainObject>> cells = getObstacleCells();
+        if (cells.isEmpty()) {
+            return Collections.emptySet();
+        }
+        int minX = clampObstacleCell((int) Math.floor((position.getX() - radius) / OBSTACLE_CELL_SIZE), obstacleCellXCount);
+        int maxX = clampObstacleCell((int) Math.floor((position.getX() + radius) / OBSTACLE_CELL_SIZE), obstacleCellXCount);
+        int minY = clampObstacleCell((int) Math.floor((position.getY() - radius) / OBSTACLE_CELL_SIZE), obstacleCellYCount);
+        int maxY = clampObstacleCell((int) Math.floor((position.getY() + radius) / OBSTACLE_CELL_SIZE), obstacleCellYCount);
+        // Ordered, not hashed: the same obstacles in the same order on the server (JVM) and in the worker (WASM)
+        Set<Obstacle> obstacles = new LinkedHashSet<>();
+        for (int y = minY; y <= maxY; y++) {
+            for (int x = minX; x <= maxX; x++) {
+                List<ObstacleTerrainObject> cell = cells.get(y * obstacleCellXCount + x);
+                if (cell == null) {
+                    continue;
+                }
+                for (ObstacleTerrainObject obstacle : cell) {
+                    if (obstacle.getCircle().getDistance(position) < radius) {
+                        obstacles.add(obstacle);
+                    }
+                }
+            }
+        }
+        return obstacles;
+    }
+
+    private static int clampObstacleCell(int cell, int count) {
+        return Math.max(0, Math.min(count - 1, cell));
+    }
+
+    private List<List<ObstacleTerrainObject>> getObstacleCells() {
+        if (obstacleCells != null) {
+            return obstacleCells;
+        }
+        if (terrainShapeManager == null || terrainShapeManager.getTileXCount() <= 0 || terrainShapeManager.getTileYCount() <= 0) {
+            // Not loaded yet: nothing cached, asked again next time
+            return Collections.emptyList();
+        }
+        int tileXCount = terrainShapeManager.getTileXCount();
+        int tileYCount = terrainShapeManager.getTileYCount();
+        obstacleCellXCount = (int) Math.ceil(tileXCount * NODE_X_COUNT * NODE_SIZE / OBSTACLE_CELL_SIZE);
+        obstacleCellYCount = (int) Math.ceil(tileYCount * NODE_Y_COUNT * NODE_SIZE / OBSTACLE_CELL_SIZE);
+        List<List<ObstacleTerrainObject>> cells = new ArrayList<>(Collections.nCopies(obstacleCellXCount * obstacleCellYCount, null));
+        for (int tileX = 0; tileX < tileXCount; tileX++) {
+            for (int tileY = 0; tileY < tileYCount; tileY++) {
+                TerrainShapeTile terrainShapeTile = terrainShapeManager.getTerrainShapeTile(new Index(tileX, tileY));
+                if (terrainShapeTile == null || terrainShapeTile.getNativeTerrainShapeObjectLists() == null) {
+                    continue;
+                }
+                for (NativeTerrainShapeObjectList nativeTerrainShapeObjectList : terrainShapeTile.getNativeTerrainShapeObjectLists()) {
+                    double objectRadius = terrainShapeManager.getTerrainTypeService().getTerrainObjectConfig(nativeTerrainShapeObjectList.terrainObjectConfigId).getRadius();
+                    if (objectRadius <= 0.0) {
+                        continue;
+                    }
+                    for (NativeTerrainShapeObjectPosition objectPosition : nativeTerrainShapeObjectList.terrainShapeObjectPositions) {
+                        ObstacleTerrainObject obstacle = new ObstacleTerrainObject(new Circle2D(new DecimalPosition(objectPosition.x, objectPosition.y), objectRadius));
+                        int minX = clampObstacleCell((int) Math.floor((objectPosition.x - objectRadius) / OBSTACLE_CELL_SIZE), obstacleCellXCount);
+                        int maxX = clampObstacleCell((int) Math.floor((objectPosition.x + objectRadius) / OBSTACLE_CELL_SIZE), obstacleCellXCount);
+                        int minY = clampObstacleCell((int) Math.floor((objectPosition.y - objectRadius) / OBSTACLE_CELL_SIZE), obstacleCellYCount);
+                        int maxY = clampObstacleCell((int) Math.floor((objectPosition.y + objectRadius) / OBSTACLE_CELL_SIZE), obstacleCellYCount);
+                        for (int y = minY; y <= maxY; y++) {
+                            for (int x = minX; x <= maxX; x++) {
+                                int index = y * obstacleCellXCount + x;
+                                List<ObstacleTerrainObject> cell = cells.get(index);
+                                if (cell == null) {
+                                    cell = new ArrayList<>();
+                                    cells.set(index, cell);
+                                }
+                                cell.add(obstacle);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        obstacleCells = cells;
+        return cells;
     }
 
     public boolean isInSight(DecimalPosition start, double radius, DecimalPosition target, TerrainType terrainType) {

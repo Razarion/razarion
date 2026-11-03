@@ -250,7 +250,7 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
     if (this.isExploding) {
       return;
     }
-    this.cleanupBaseItem();
+    this.cleanupBaseItemSafely();
     super.dispose();
   }
 
@@ -278,8 +278,17 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
     if (this.isExploding) {
       return;
     }
-    this.cleanupBaseItem();
+    this.cleanupBaseItemSafely();
     super.removeFromView();
+  }
+
+  /** The effects may fail; the model still has to go (see BabylonItemImpl.disposeInternal). */
+  private cleanupBaseItemSafely() {
+    try {
+      this.cleanupBaseItem();
+    } catch (e) {
+      BabylonItemImpl.reportDisposeFailure(this.baseItemType.getInternalName(), this.getId(), e);
+    }
   }
 
   private cleanupBaseItem() {
