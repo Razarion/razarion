@@ -95,11 +95,12 @@ export class MainCockpitComponent implements MainCockpit {
    */
   techTreeNews = false;
   /**
-   * How long that mark stays up. An icon that is still asking for attention ten minutes after the
-   * level-up is not news any more, it is decoration - and decoration is what the next real prompt
-   * has to compete with.
+   * The mark stays until the tech tree is opened, but it only pings four times (the stylesheet) and
+   * then stands still - a still ring asks for nothing the next real prompt has to compete with. It
+   * comes from level 6 on only (MainCockpitService.FIRST_TECH_TREE_NEWS_LEVEL). This is the pause
+   * that lets a mark already standing ping again for the next level's news.
    */
-  private static readonly TECH_TREE_NEWS_MILLIS = 90_000;
+  private static readonly TECH_TREE_NEWS_RESTART_MILLIS = 50;
   private techTreeNewsTimeout: ReturnType<typeof setTimeout> | null = null;
   /** Cells in the power meter. An array because the template iterates it; the value is the index. */
   readonly powerSegments = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
@@ -302,14 +303,17 @@ export class MainCockpitComponent implements MainCockpit {
    */
   techTreeHasNews(): void {
     this.zone.run(() => {
-      this.techTreeNews = true;
       this.firstInteractionTrackerService.report('TECH_TREE_OFFERED');
       if (this.techTreeNewsTimeout !== null) {
         clearTimeout(this.techTreeNewsTimeout);
       }
-      this.techTreeNewsTimeout = setTimeout(
-        () => this.zone.run(() => this.techTreeNews = false),
-        MainCockpitComponent.TECH_TREE_NEWS_MILLIS);
+      // Off for a frame and on again, so a mark still standing from the level before pings anew:
+      // the four pings are a CSS animation, and it only restarts when the class comes back.
+      this.techTreeNews = false;
+      this.techTreeNewsTimeout = setTimeout(() => this.zone.run(() => {
+        this.techTreeNews = true;
+        this.techTreeNewsTimeout = null;
+      }), MainCockpitComponent.TECH_TREE_NEWS_RESTART_MILLIS);
     });
   }
 

@@ -10,6 +10,10 @@ export function deviceText(userAgent: string | null | undefined): string {
   if (!userAgent) {
     return '—';
   }
+  // Our own game recorder (razarion-recorder/lib/connection.mjs), not a player's browser.
+  if (/RazarionRecorder\//.test(userAgent)) {
+    return 'Recorder';
+  }
   const mobile = /Mobile|Android|iPhone|iPad/.test(userAgent);
   // Order matters: Edge and Chrome both claim Chrome, Chrome claims Safari.
   const browser = /Edg\//.test(userAgent) ? 'Edge'

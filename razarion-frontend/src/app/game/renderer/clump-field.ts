@@ -10,7 +10,15 @@ const STRIDE = 21;
 /** A chunk's clumps are sorted by their fade draw into this many buckets (assemble, visible) */
 const BUCKETS = 10;
 /** Phones and tablets get half the clumps: their GPU and CPU are a few times slower, the screen small */
-const DEVICE_DENSITY = typeof matchMedia !== 'undefined' && matchMedia('(pointer: coarse)').matches ? 0.5 : 1;
+export const COARSE_POINTER = typeof matchMedia !== 'undefined' && matchMedia('(pointer: coarse)').matches;
+const DEVICE_DENSITY = COARSE_POINTER ? 0.5 : 1;
+/**
+ * Radius (m) of the clumps around the screen's ground centre. The desktop has them to the top of the screen
+ * (the camera looks at a point 26 m ahead from 21 m up); a phone keeps 60: on PROD the clumps were half
+ * its drawn triangles and about 0.3 ms of frame per thousand (render telemetry, 2026-11-05), and 75
+ * would be half as many again.
+ */
+export const CLUMP_RADIUS = COARSE_POINTER ? 60 : 75;
 
 /** Hands a clump that stands to its variant's list. */
 export type AddClump = (variant: number, matrix: Matrix, r: number, g: number, b: number) => void;

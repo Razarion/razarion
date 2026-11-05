@@ -2757,6 +2757,22 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     this.resourceRemovedListeners = this.resourceRemovedListeners.filter(l => l !== listener);
   }
 
+  /** Where the buildings (base items that cannot move) stand and how wide they are: the bot-ground props clear them. */
+  public getBuildingFootprints(): { x: number, z: number, radius: number }[] {
+    const footprints: { x: number, z: number, radius: number }[] = [];
+    for (const item of this.babylonBaseItems) {
+      const area = item.getBaseItemType().getPhysicalAreaConfig();
+      if (area.fulfilledMovable()) {
+        continue;
+      }
+      const position = item.getPosition();
+      if (position) {
+        footprints.push({x: position.getX(), z: position.getY(), radius: area.getRadius()});
+      }
+    }
+    return footprints;
+  }
+
   public getBabylonBaseItemsByDiplomacy(diplomacy: Diplomacy): BabylonBaseItemImpl[] {
     return this.babylonBaseItems.filter(item => item.diplomacy === diplomacy);
   }

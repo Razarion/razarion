@@ -150,10 +150,15 @@
    the quest asking for it is the one two thirds of the players who reach it never finish.
    <p>
    A ping rather than a glow, the same shape the selection-box icon uses: motion away from the
-   source catches an eye that is aimed at the battlefield, and a static ring does not. */
+   source catches an eye that is aimed at the battlefield, and a static ring does not.
+   <p>
+   Four pings, then the static ring until the tech tree is opened: a mark that pulses on and on
+   while the player is busy with a quest is the distraction it was meant to replace. */
 .hud-btn.has-news,
 .menu-row.has-news {
-  animation: tech-tree-news-pulse 1.1s ease-out infinite;
+  box-shadow: 0 0 0 2px var(--p-amber-400, #fbbf24);
+  color: var(--p-amber-400, #fbbf24);
+  animation: tech-tree-news-pulse 1.1s ease-out 4;
 }
 
 @keyframes tech-tree-news-pulse {
@@ -174,7 +179,5 @@
   .hud-btn.has-news,
   .menu-row.has-news {
     animation: none;
-    box-shadow: 0 0 0 2px var(--p-amber-400, #fbbf24);
-    color: var(--p-amber-400, #fbbf24);
   }
 }

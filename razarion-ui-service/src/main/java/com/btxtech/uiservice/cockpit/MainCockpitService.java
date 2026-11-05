@@ -13,6 +13,18 @@ import java.util.function.Function;
 
 @Singleton
 public class MainCockpitService {
+    /**
+     * The first level whose news the tech tree is marked for.
+     * <p>
+     * Below it every new type is one a quest asks for by name - the viper at 2, the powerplant and
+     * the radar at 3 - so the build menu shows it the moment it matters, and the tech tree only
+     * repeats that. Worse, the mark came up at the level-up to 2, the moment the first harvest is
+     * asked for: on PROD 06.10.-04.11.2026 the players who opened the tech tree before passing
+     * quest 363 passed it less often (69% against 83% before 16.10.). A new player does not yet
+     * know that levels bring new units; from 6 on (dockyard, then hydra, transporter) the tech tree
+     * is where that is learned.
+     */
+    static final int FIRST_TECH_TREE_NEWS_LEVEL = 6;
     private final LevelService levelService;
     private MainCockpit mainCockpit;
     private Function<Integer, Rectangle> inventoryPositionProvider;
@@ -49,6 +61,7 @@ public class MainCockpitService {
         mainCockpit.displayXps(userContext.getXp(), levelConfig.getXp2LevelUp());
         mainCockpit.displayLevel(levelConfig.getNumber());
         if (shownLevelNumber != null && levelConfig.getNumber() > shownLevelNumber
+                && levelConfig.getNumber() >= FIRST_TECH_TREE_NEWS_LEVEL
                 && allowsMoreThanBefore(levelConfig)) {
             mainCockpit.techTreeHasNews();
         }

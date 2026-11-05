@@ -35,6 +35,7 @@ import {buildBotGroundTopMaterial} from "./bot-ground-top-material";
 import {buildBotGroundSideMaterial} from "./bot-ground-side-material";
 import {BotGroundFootprint, botGroundMarkingsTextures, GRAVEL_FULL, GRAVEL_REACH} from "./bot-ground-markings";
 import {buildBotGroundGravelMaterial} from "./bot-ground-gravel-material";
+import {createPropMeshes, planBotGroundProps, PropClearance} from "./bot-ground-props";
 import {addCloudShadow} from "./cloud-shadow-node";
 import {Showcase} from "./showcase";
 import {initPerm, scatterNoise, SEED} from "./procedural-textures";
@@ -856,6 +857,8 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     };
     removeFromIncluded(this.groundMesh);
     this.botGroundMeshes.forEach(removeFromIncluded);
+    this.botGroundPropMeshes.forEach(mesh => this.rendererService.shadowGenerator?.removeShadowCaster(mesh, false));
+    this.botGroundPropMeshes = [];
 
     // Sprite managers: pull out of scene.spriteManagers (if still in) and dispose (frees sprites +
     // sprite-sheet texture).
@@ -1161,6 +1164,8 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
   }
 
   private botGroundMeshes: Mesh[] = [];
+  // Shadow casters among them (the props), to be taken out of the shadow map again
+  private botGroundPropMeshes: Mesh[] = [];
 
   // Scene-global so every tile that shows a bot ground uses the same materials: one shared side
   // material ("BotGround side") and one top material per bot ground, since each top carries its
@@ -1275,6 +1280,7 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
         }
         const material = materials.plate;
         this.createBotGroundGravel(flats, slopes.map(slope => ({x: slope.xPos, z: slope.yPos})), materials.gravel);
+        this.createBotGroundProps(flats, slopes.map(slope => ({x: slope.xPos, z: slope.yPos})), botGround.height);
 
         let botGroundNorm = new Vector3(0, 1, 0).normalize();
         flats.forEach(flat => {
@@ -1375,6 +1381,32 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     scene.getLightByName(BabylonRenderServiceAccessImpl.SKY_LIGHT_NAME)?.excludedMeshes.push(gravel);
     this.rendererService.directionalLight.includedOnlyMeshes.push(gravel);
     this.botGroundMeshes.push(gravel);
+  }
+
+  /**
+   * Containers, barrels, crates, tanks, lamps and a mast on the plate (bot-ground-props.ts), purely
+   * visual. Planned from the whole plate, so they are the same from every tile, but only those standing
+   * in this tile are drawn here - a neighbouring tile draws its own.
+   */
+  private createBotGroundProps(flats: { x: number, z: number }[], slopes: { x: number, z: number }[], plateTop: number) {
+    const x0 = this.tileXOffset, z0 = this.tileYOffset;
+    const props = planBotGroundProps(flats, slopes).filter(prop =>
+      prop.x >= x0 && prop.x < x0 + BabylonTerrainTileImpl.NODE_X_COUNT && prop.z >= z0 && prop.z < z0 + BabylonTerrainTileImpl.NODE_Y_COUNT);
+    if (props.length === 0) {
+      return;
+    }
+    const scene = this.rendererService.getScene();
+    // Props under a bot building are hidden (and come back when it is gone)
+    PropClearance.install(scene, () => this.rendererService.getBuildingFootprints(),
+      listener => this.rendererService.addBaseItemCreatedListener(listener));
+    const included = this.rendererService.directionalLight.includedOnlyMeshes;
+    createPropMeshes(scene, this.container, props, plateTop).forEach(mesh => {
+      mesh.setEnabled(Showcase.isOn("botProps"));
+      included.push(mesh);
+      this.rendererService.shadowGenerator?.addShadowCaster(mesh, false);
+      this.botGroundMeshes.push(mesh);
+      this.botGroundPropMeshes.push(mesh);
+    });
   }
 
   /** Ground height between the nodes, interpolated - the gravel must lie on the ground, not step over it. */

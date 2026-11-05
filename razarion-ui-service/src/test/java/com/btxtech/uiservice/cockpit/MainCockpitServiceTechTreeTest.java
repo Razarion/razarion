@@ -23,7 +23,8 @@ import java.util.Map;
  * the hydra, 8 the transporter, and from nine on nothing changes at all. A mark on every level-up
  * would therefore point at nothing eleven times out of seventeen - and be ignored on the twelfth,
  * which is the one that matters: level 6 is where the dockyard appears, and the quest that asks for
- * it is the one two thirds of the players who reach it never finish.
+ * it is the one two thirds of the players who reach it never finish. Below level 6 nothing is
+ * marked at all (see MainCockpitService#FIRST_TECH_TREE_NEWS_LEVEL).
  */
 public class MainCockpitServiceTechTreeTest {
     private static final int VIPER = 3;
@@ -54,8 +55,8 @@ public class MainCockpitServiceTechTreeTest {
     }
 
     /**
-     * Levels 1 to 4, shaped like the real ones: a new type at 2, nothing at 3, more of an existing
-     * type at 4.
+     * Levels 1 to 8, shaped like the real ones: new types at 2 and 6, more of a type at 4 and 8,
+     * nothing new at 3, 5 and 7.
      */
     @Before
     public void setUp() {
@@ -64,7 +65,10 @@ public class MainCockpitServiceTechTreeTest {
         levels.add(level(102, 2, Map.of(VIPER, 3)));
         levels.add(level(103, 3, Map.of(VIPER, 3)));
         levels.add(level(104, 4, Map.of(VIPER, 6)));
-        levels.add(level(105, 5, Map.of(VIPER, 6, DOCKYARD, 1)));
+        levels.add(level(105, 5, Map.of(VIPER, 6)));
+        levels.add(level(106, 6, Map.of(VIPER, 6, DOCKYARD, 1)));
+        levels.add(level(107, 7, Map.of(VIPER, 6, DOCKYARD, 1)));
+        levels.add(level(108, 8, Map.of(VIPER, 9, DOCKYARD, 1)));
 
         InitializeService initializeService = new InitializeService();
         LevelService levelService = new LevelService(initializeService);
@@ -90,55 +94,68 @@ public class MainCockpitServiceTechTreeTest {
     }
 
     /**
-     * Arriving at a level is not reaching it. A player who comes back at level four has not just
+     * Arriving at a level is not reaching it. A player who comes back at level six has not just
      * unlocked anything, and marking the tech tree on every page load is noise, not news.
      */
     @Test
     public void saysNothingOnTheFirstUpdateOfASession() {
-        atLevel(104);
-
-        Assert.assertEquals(0, cockpit.news);
-    }
-
-    @Test
-    public void saysSoWhenALevelAddsAType() {
-        atLevel(101);
-        atLevel(102);
-
-        Assert.assertEquals(1, cockpit.news);
-    }
-
-    /** Level 3 allows exactly what level 2 allowed. Pointing at the tech tree there is a lie. */
-    @Test
-    public void staysQuietWhenNothingChanges() {
-        atLevel(102);
-        atLevel(103);
+        atLevel(106);
 
         Assert.assertEquals(0, cockpit.news);
     }
 
     /**
-     * More of a type the player already had is news too - the tech tree is a matrix of counts, and
-     * three vipers becoming six is the whole content of level four.
+     * Below level 6 every new type is one a quest asks for by name, and the mark at level 2 came
+     * exactly when the first harvest was asked for. Neither a new type nor a raised count speaks.
      */
     @Test
-    public void saysSoWhenALevelRaisesACount() {
-        atLevel(103);
-        atLevel(104);
-
-        Assert.assertEquals(1, cockpit.news);
-    }
-
-    /** Two level-ups in a row, one of them empty: only the one that allows something speaks. */
-    @Test
-    public void speaksOncePerLevelThatAllowsSomething() {
+    public void staysQuietBelowLevelSix() {
         atLevel(101);
         atLevel(102);
         atLevel(103);
         atLevel(104);
         atLevel(105);
 
-        Assert.assertEquals(3, cockpit.news);
+        Assert.assertEquals(0, cockpit.news);
+    }
+
+    @Test
+    public void saysSoWhenLevelSixAddsAType() {
+        atLevel(105);
+        atLevel(106);
+
+        Assert.assertEquals(1, cockpit.news);
+    }
+
+    /** Level 7 allows exactly what level 6 allowed. Pointing at the tech tree there is a lie. */
+    @Test
+    public void staysQuietWhenNothingChanges() {
+        atLevel(106);
+        atLevel(107);
+
+        Assert.assertEquals(0, cockpit.news);
+    }
+
+    /**
+     * More of a type the player already had is news too - the tech tree is a matrix of counts, and
+     * six vipers becoming nine is the whole content of that level.
+     */
+    @Test
+    public void saysSoWhenALevelRaisesACount() {
+        atLevel(107);
+        atLevel(108);
+
+        Assert.assertEquals(1, cockpit.news);
+    }
+
+    /** Level-ups one after another: only those from 6 on that allow something speak. */
+    @Test
+    public void speaksOncePerLevelThatAllowsSomething() {
+        for (int levelId = 101; levelId <= 108; levelId++) {
+            atLevel(levelId);
+        }
+
+        Assert.assertEquals(2, cockpit.news);
     }
 
     /**
@@ -148,8 +165,8 @@ public class MainCockpitServiceTechTreeTest {
      */
     @Test
     public void staysQuietGoingBackwards() {
-        atLevel(105);
-        atLevel(102);
+        atLevel(108);
+        atLevel(106);
 
         Assert.assertEquals(0, cockpit.news);
     }

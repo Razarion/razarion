@@ -18,6 +18,13 @@ export function packetPayload(text) {
   return JSON.parse(text.slice(text.indexOf('#') + 1));
 }
 
+/**
+ * Sent with every socket handshake, so the backend's connection table can tell the recorder from a
+ * player instead of showing a row with no device at all (frontend backend/device-text.ts).
+ */
+export const USER_AGENT = 'RazarionRecorder/1.0';
+const SOCKET_OPTIONS = { headers: { 'User-Agent': USER_AGENT } };
+
 function gameUrl(baseUrl, token) {
   return `${baseUrl.replace(/^http/, 'ws')}/gameconnection?token=${encodeURIComponent(token)}`;
 }
@@ -69,7 +76,7 @@ export class GameStream extends EventEmitter {
       return this.retry();
     }
     this.setState('connecting');
-    const socket = new WebSocket(gameUrl(this.baseUrl, token));
+    const socket = new WebSocket(gameUrl(this.baseUrl, token), SOCKET_OPTIONS);
     this.socket = socket;
     let alive = true;
     let ping;
@@ -122,7 +129,7 @@ export class GameStream extends EventEmitter {
 export async function takeKeyframe(baseUrl, auth) {
   const token = await auth.token();
   return new Promise((resolve, reject) => {
-    const socket = new WebSocket(gameUrl(baseUrl, token));
+    const socket = new WebSocket(gameUrl(baseUrl, token), SOCKET_OPTIONS);
     const timer = setTimeout(() => {
       socket.terminate();
       reject(new Error('No world within 30 s'));

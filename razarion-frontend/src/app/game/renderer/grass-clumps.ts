@@ -12,8 +12,9 @@ import {BabylonRenderServiceAccessImpl} from './babylon-render-service-access-im
 import {BabylonTerrainTileImpl} from './babylon-terrain-tile.impl';
 import {GroundZone} from './ground-zone';
 import {initPerm, scatterNoise, SEED} from './procedural-textures';
-import {AddClump, ClumpField, Clumps} from './clump-field';
+import {AddClump, CLUMP_RADIUS, ClumpField, Clumps} from './clump-field';
 import {CLUMP_FADE, ClumpFadePlugin} from './clump-fade-plugin';
+import {ClumpCloudPlugin} from './clump-cloud-plugin';
 
 /** Grass clump settings - the terrain lab's sliders. */
 export interface GrassSettings {
@@ -58,7 +59,7 @@ const ZONE_UPPER = 0;
  */
 export class GrassClumps {
   // The cliff lab's values: small and dense, a fuzz over the ground rather than single tufts
-  readonly settings: GrassSettings = {on: true, density: 14, height: 0.28, width: 0.47, radius: 60, tone: 1.6, dry: 0, patches: 0.5, splay: 0.9, fadeNear: 25, fadeFar: 60, castShadows: false};
+  readonly settings: GrassSettings = {on: true, density: 14, height: 0.28, width: 0.47, radius: CLUMP_RADIUS, tone: 2.6, dry: 0, patches: 0.5, splay: 0.9, fadeNear: 50, fadeFar: 85, castShadows: false};
   private texture: RawTexture | null = null;
   private material: PBRMaterial | null = null;
   // Per variant, made when first needed and refilled by show
@@ -251,6 +252,7 @@ export class GrassClumps {
       }
     });
     new ClumpFadePlugin(material, () => this.settings);
+    new ClumpCloudPlugin(material);
     this.texture = texture;
     this.material = material;
     this.applyTint();

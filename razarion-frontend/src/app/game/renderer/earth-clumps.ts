@@ -10,7 +10,8 @@ import {GroundZone} from './ground-zone';
 import {initPerm, scatterNoise, SEED} from './procedural-textures';
 import {cardAtlasMaterial, drawBlade, fillClumpMeshes, GrassClumps, keepClumps, warmClumpMeshes} from './grass-clumps';
 import {ClumpFadePlugin} from './clump-fade-plugin';
-import {AddClump, ClumpField} from './clump-field';
+import {ClumpCloudPlugin} from './clump-cloud-plugin';
+import {AddClump, CLUMP_RADIUS, ClumpField} from './clump-field';
 
 /** Bare ground clump settings - the terrain lab's sliders. */
 export interface EarthSettings {
@@ -51,7 +52,7 @@ const VARIANTS = 4;
  * to the lawn, sparse in its middle and on the paths, in clusters. Thin instances, only around the camera.
  */
 export class EarthClumps {
-  readonly settings: EarthSettings = {on: true, density: 8, height: 0.2, width: 0.5, radius: 60, splay: 0.6, tone: 2.2, castShadows: false};
+  readonly settings: EarthSettings = {on: true, density: 8, height: 0.2, width: 0.5, radius: CLUMP_RADIUS, splay: 0.6, tone: 3.4, castShadows: false};
   private texture: RawTexture | null = null;
   private material: PBRMaterial | null = null;
   private meshes: (Mesh | undefined)[] = [];
@@ -250,6 +251,7 @@ export class EarthClumps {
     material.albedoColor = new Color3(tone, tone, tone);
     // The grass's camera fade
     new ClumpFadePlugin(material, () => this.grass.settings);
+    new ClumpCloudPlugin(material);
     this.texture = texture;
     this.material = material;
     return material;

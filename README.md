@@ -14,7 +14,7 @@ No registration. No installation. Just play.
 
 - **Multiplayer on one shared world** – Everyone plays together on a single persistent planet
 - **Runs entirely in the browser via WebAssembly** – No login, no download, no ads
-- **Fully open-source** – MIT-licensed hobby project
+- **Open source · Non-commercial** – MIT-licensed hobby project with no company behind it; the developer pays the running costs (servers, domain) privately
 - **In active alpha** – Under development, feedback welcome
 
 ---
@@ -60,7 +60,7 @@ Everything is open-source under the MIT license:
 
 ## 🤝 Contributing
 
-Razarion is a non-commercial, no-profit hobby project.  
+Razarion is a non-commercial open-source hobby project.  
 Suggestions, issue reports, and pull requests are warmly welcome!
 
 ---
