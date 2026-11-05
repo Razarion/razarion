@@ -5,6 +5,7 @@
 //
 //   node publish_fb.mjs                    # what it would do
 //   node publish_fb.mjs --live --limit 1   # one post, to watch it land
+//   node publish_fb.mjs --live --id own-20261103204525   # one entry out of turn
 //   node publish_fb.mjs --live             # the rest
 //   node publish_fb.mjs --live --no-backdate
 //   node publish_fb.mjs --live --granularity hour
@@ -175,6 +176,8 @@ async function main() {
   const queue = doc.posts
     .filter((e) => e.status === 'ok')
     .filter((e) => !posted.posted[e.id])
+    // --id: just that entry, ahead of the queue (the engine, for a moment that goes out at once)
+    .filter((e) => !args.id || e.id === String(args.id))
     .filter((e) => !(e.media || []).length || (e.media || []).every((m) => m.url))
     .sort((a, b) => Date.parse(a.date) - Date.parse(b.date));
 

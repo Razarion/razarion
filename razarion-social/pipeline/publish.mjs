@@ -6,6 +6,7 @@
 //
 //   node publish.mjs                      # dry run: says what it would do, does nothing
 //   node publish.mjs --live --limit 1     # one real post, to see it land
+//   node publish.mjs --live --id own-20261103204525   # one entry out of turn
 //   node publish.mjs --live               # the rest, 60s apart
 //   node publish.mjs --live --pause 120   # slower, if Instagram starts complaining
 
@@ -128,6 +129,8 @@ async function main() {
   const queue = doc.captions
     .filter((e) => e.status === 'ok')
     .filter((e) => !posted.posted[e.id])
+    // --id: just that entry, ahead of the queue (the engine, for a moment that goes out at once)
+    .filter((e) => !args.id || e.id === String(args.id))
     .filter((e) => (e.media || []).some((m) => m.url))
     .sort((a, b) => Date.parse(a.date) - Date.parse(b.date));
 

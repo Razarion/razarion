@@ -6,6 +6,7 @@
 //
 //   node publish_x.mjs                    # what it would do, and what it would cost
 //   node publish_x.mjs --live --limit 1
+//   node publish_x.mjs --live --id own-20261103204525   # one entry out of turn
 //   node publish_x.mjs --live
 
 import { existsSync, statSync } from 'node:fs';
@@ -60,6 +61,8 @@ async function main() {
   const queue = doc.posts
     .filter((e) => e.status === 'ok')
     .filter((e) => !posted.posted[e.id])
+    // --id: just that entry, ahead of the queue (the engine, for a moment that goes out at once)
+    .filter((e) => !args.id || e.id === String(args.id))
     .sort((a, b) => Date.parse(a.date) - Date.parse(b.date));
 
   info(`${doc.posts.filter((e) => e.status === 'ok').length} entries marked ok`);

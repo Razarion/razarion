@@ -205,9 +205,9 @@ function failureOf(output) {
   return fail ?? lines.at(-1) ?? 'failed';
 }
 
-/** One post on one network. Returns what came of it, for the history. */
-async function publishOne(net) {
-  const r = await runNode(PUBLISHER[net], ['--live', '--limit', '1']);
+/** One post on one network - the oldest approved one, or the one named. Returns what came of it, for the history. */
+async function publishOne(net, id = null) {
+  const r = await runNode(PUBLISHER[net], ['--live', '--limit', '1', ...(id ? ['--id', id] : [])]);
   const preview = previewOf(r.output);
   if (r.code !== 0) {
     // Before the login test: tried again every slot, so it posts by itself once credits are bought.
@@ -227,8 +227,11 @@ async function publishOne(net) {
   return { net, outcome: 'nothing' };
 }
 
-/** A slot: media up, then one post per enabled network that has a working login. */
-async function publishSlot(slot, only = null) {
+/**
+ * A slot: media up, then one post per enabled network that has a working login. With an id, that
+ * post and no other, out of turn (a moment, see produceMoment).
+ */
+async function publishSlot(slot, only = null, id = null) {
   const settings = loadSchedule();
   const nets = (only ? [only] : NETS).filter((n) => settings.networks[n]);
   const results = [];
@@ -239,16 +242,18 @@ async function publishSlot(slot, only = null) {
       results.push({ net, outcome: 'login', message: 'waiting for a new login' });
       continue;
     }
-    results.push(await publishOne(net));
+    results.push(await publishOne(net, id));
   }
   // How far the last posts got. Asks only about posts younger than seven days.
   await runNode('metrics.mjs');
-  remember({ kind: only ? 'publish-now' : 'publish', slot: slot?.toISOString() ?? null, results });
+  remember({ kind: id ? 'publish-moment' : only ? 'publish-now' : 'publish', slot: slot?.toISOString() ?? null, id, results });
 }
 
 /**
  * One moment from the inbox becomes a post, approved like the planner's posts while the settings
- * say so (moments.autoApprove, on by default); off, it waits on "review".
+ * say so (moments.autoApprove, on by default); off, it waits on "review". Approved, it goes out at
+ * once rather than in the next slot: a player leaving the noob island is news today, and the
+ * queue of planned posts is days long. A network whose check held it gets nothing.
  */
 async function produceMoment() {
   const inbox = readJson(MOMENT_INBOX, { items: [] });
@@ -262,7 +267,12 @@ async function produceMoment() {
   const r = await runNode('produce.mjs', ['--format', 'moment', '--input', file, ...(settings.moments?.autoApprove ? ['--auto'] : [])]);
   const approval = autoApprove(settings);
   logApproval(approval);
-  remember({ kind: 'moment', made: r.code === 0 ? { id: moment.id, format: 'moment', subject: moment.rule } : null, note: r.code ? failureOf(r.output) : null });
+  const post = r.code === 0 ? loadLedger().items.findLast((e) => e.format === 'moment' && e.subject?.endsWith(`:${moment.id}`)) : null;
+  remember({ kind: 'moment', made: r.code === 0 ? { id: post?.id ?? moment.id, format: 'moment', subject: moment.rule } : null, note: r.code ? failureOf(r.output) : null });
+  if (post && settings.moments?.autoApprove) {
+    log(`    ${post.id} goes out now`);
+    await publishSlot(null, null, post.id);
+  }
 }
 
 /** The planner makes one post if the buffer wants one; the approval runs right after. */

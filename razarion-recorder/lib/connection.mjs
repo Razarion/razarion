@@ -103,6 +103,11 @@ export class GameStream extends EventEmitter {
     socket.on('unexpected-response', (req, res) => {
       if (res.statusCode === 401 || res.statusCode === 403) this.auth.invalidate();
       this.setState('rejected', new Error(`Handshake answered HTTP ${res.statusCode}`));
+      // With this listener ws leaves the request to us and closes nothing, so no retry came of a
+      // 502 while the server rolled out: the recorder stood still until restarted (2026-11-03).
+      res.resume();
+      req.destroy();
+      if (!this.stopped) this.retry();
     });
     socket.on('error', (error) => this.setState('error', error));
     socket.on('close', (code, reason) => {
