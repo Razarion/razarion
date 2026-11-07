@@ -279,6 +279,10 @@ export interface TipItemState {
   constructing: number;
   /** Item types a container carries; empty for anything else. Carried units are not in the list. */
   cargo: number[];
+  /** A harvester at work on a crystal, not while it drives there; harvestX/Y is the crystal. */
+  harvesting?: boolean;
+  harvestX?: number;
+  harvestY?: number;
 }
 
 export interface NativeSyncBaseItemTickInfo {

@@ -52,7 +52,7 @@ public class RegionClearedQuestUnitTest {
                 return base;
             }
         };
-        GameLogicService gameLogicService = new GameLogicService(null, null, null) {
+        GameLogicService gameLogicService = new GameLogicService(null, null, null, null) {
             @Override
             public void onQuestProgressUpdate(String userId, QuestProgressInfo questProgressInfo) {
                 progress.add(questProgressInfo.getCount());

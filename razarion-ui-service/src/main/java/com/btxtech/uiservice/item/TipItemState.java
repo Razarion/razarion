@@ -27,4 +27,8 @@ public class TipItemState {
     public double constructing;
     /** Item types a container carries; empty for anything else. The carried units themselves are not listed. */
     public int[] cargo;
+    /** A harvester at work on a crystal: true, and the crystal's position. Not while it drives there. */
+    public boolean harvesting;
+    public double harvestX;
+    public double harvestY;
 }
