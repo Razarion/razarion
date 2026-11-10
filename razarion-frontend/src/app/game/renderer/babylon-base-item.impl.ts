@@ -77,6 +77,7 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
   private lastHealth: number = 1.0;
   private readonly uiTexture: AdvancedDynamicTexture;
   private buildupEffect: BabylonBuildupEffect | null = null;
+  private cleanedUp = false;
   private isExploding = false;
   private damageEffect: BabylonDamageEffect | null = null;
   private factoryBuildPhase: 'idle' | 'intro' | 'progress' | 'exiting' = 'idle';
@@ -299,6 +300,7 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
     this.wakeRenderer = null;
     this.bowHalo?.dispose();
     this.bowHalo = null;
+    this.cleanedUp = true;
     this.buildupEffect?.cleanup();
     this.buildupEffect = null;
     this.harvestingBeamEffect?.dispose();
@@ -970,21 +972,19 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
       return;
     }
 
-    if (!this.buildupEffect) {
-      this.buildupEffect = new BabylonBuildupEffect(
-        this.rendererService.getScene(),
-        this.getContainer() as Mesh,
-        BabylonRenderServiceAccessImpl.color4Diplomacy(this.diplomacy),
-        this.baseItemType.getPhysicalAreaConfig().getRadius()
-      );
-    }
-
     const targetVector = new Vector3(bx!, this.getContainer().position.y, by!);
     // Defer the build beam start until the intro animation finishes (e.g. Builder arm fully
     // extended). For units without an intro phase the callback fires immediately, so the beam
     // starts on the same tick as before — backwards compatible.
     renderObject.setBuildAnimationActive(true, () => {
-      this.buildupEffect!.startBuildingBeam(
+      // The intro animation can outlast the item's own buildup: when the builder finishes being
+      // built in that window, setBuildup drops buildupEffect, and an item that is gone in the
+      // meantime has none either. Hence fetched here, not before the intro (5 sessions in 3 days
+      // crashed the render tick on that, 2026-11-08).
+      if (this.cleanedUp) {
+        return;
+      }
+      this.ensureBuildupEffect().startBuildingBeam(
         targetVector,
         {
           getBeamOrigin: () => renderObject.getBeamOrigin(),
@@ -1000,6 +1000,18 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
         }
       );
     }, warmupSeconds, cooldownSeconds);
+  }
+
+  private ensureBuildupEffect(): BabylonBuildupEffect {
+    if (!this.buildupEffect) {
+      this.buildupEffect = new BabylonBuildupEffect(
+        this.rendererService.getScene(),
+        this.getContainer() as Mesh,
+        BabylonRenderServiceAccessImpl.color4Diplomacy(this.diplomacy),
+        this.baseItemType.getPhysicalAreaConfig().getRadius()
+      );
+    }
+    return this.buildupEffect;
   }
 
   setHarvestingPosition(xOrPosition: any, y?: number): void {

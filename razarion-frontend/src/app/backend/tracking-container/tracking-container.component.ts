@@ -38,6 +38,7 @@ import {AttentionTrackingComponent} from '../attention-tracking/attention-tracki
 import {AttentionAnalyzer, AttentionReport} from './attention-analyzer';
 import {FirstInteractionComponent} from '../first-interaction/first-interaction.component';
 import {FirstInteractionAnalyzer, FirstInteractionReport} from './first-interaction-analyzer';
+import {ChatLogComponent} from '../chat-log/chat-log.component';
 import {announceConnectionChange, clearConnectionTabNotice} from './connection-tab-notice';
 
 /** The tab values from the template. Strings, because that is what p-tabs binds. */
@@ -60,7 +61,8 @@ const TAB_DAILY = '4';
     PlayerSessionsComponent,
     StartupTrackingComponent,
     AttentionTrackingComponent,
-    FirstInteractionComponent],
+    FirstInteractionComponent,
+    ChatLogComponent],
   templateUrl: './tracking-container.component.html',
   styleUrl: './tracking-container.component.scss'
 })

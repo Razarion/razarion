@@ -93,4 +93,25 @@ server.tool(
   },
 );
 
+server.tool(
+  'chat_log',
+  'The planet chat, newest first: what players wrote, with their level and open quest at that moment, and what the ' +
+    'chat assistant (Razarion AI) made of it - answered (kind technical/howto and the answer), not-a-question, error, ' +
+    'stale, before-start; news = the server announcing a player who left the noob island. The place to read what players ask and complain about.',
+  { limit: z.number().optional().describe('Default 100, at most 300') },
+  async ({ limit }) => {
+    const messages = await get('/api/chat?limit=' + (limit ?? 100));
+    // Players by user id, as everywhere here; only the assistant is named.
+    return ok(messages.map((m) => ({
+      id: m.id,
+      t: new Date(m.t).toISOString(),
+      from: m.userId ? m.userId : m.userName,
+      message: m.message,
+      level: m.player?.level ?? null,
+      quest: m.player?.currentQuest?.name ?? null,
+      outcome: m.outcome,
+    })));
+  },
+);
+
 await server.connect(new StdioServerTransport());

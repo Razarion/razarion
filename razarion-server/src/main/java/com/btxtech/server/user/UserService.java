@@ -1238,7 +1238,8 @@ public class UserService implements UserDetailsService {
             throw new IllegalStateException("The name has already been set: " + userContext);
         }
 
-        if (userRepository.existsByNameIgnoreCase(name)) {
+        // "Razarion" and "Razarion AI" are the chat's own voices (ChatService); nobody may write as them
+        if (name.trim().toLowerCase().startsWith("razarion") || userRepository.existsByNameIgnoreCase(name)) {
             return SetNameError.ALREADY_USED;
         }
 

@@ -232,6 +232,11 @@ export class GrassClumps {
     // The clumps lie around the screen's centre anyway; their bounds over tens of thousands of
     // instance matrices took longer than drawing the few that a culled mesh would save
     mesh.alwaysSelectAsActiveMesh = true;
+    // ...and so nothing reads those bounds - but Babylon still worked them out again over every
+    // matrix on each thinInstanceSetBuffer: 13 of the 18 ms a show took (64k clumps, RTX 4070
+    // desktop, 2026-11-08), and a show runs every few hundred ms while the camera scrolls - the
+    // regular hitch in the scrolling.
+    mesh.doNotSyncBoundingInfo = true;
     // The game's sun lights only the meshes listed with it. The sky light stays off, as on the ground
     // (its shader brings its own ambient): with it the blades were nearly twice as bright as the lawn.
     this.babylonRender.directionalLight.includedOnlyMeshes.push(mesh);

@@ -78,6 +78,7 @@
       <p-tab value="3">Startup</p-tab>
       <p-tab value="5">Attention</p-tab>
       <p-tab value="7">Controls</p-tab>
+      <p-tab value="8">Chat</p-tab>
     </p-tablist>
     <p-tabpanels>
       <p-tabpanel value="0">
@@ -232,6 +233,11 @@
     </p-tabpanel>
     <p-tabpanel value="7">
       <first-interaction [firstInteractionReport]="firstInteractionReport"></first-interaction>
+    </p-tabpanel>
+    <p-tabpanel value="8">
+      @if (isOpened('8')) {
+        <chat-log [fromDate]="fromDate" [toDate]="toDate"></chat-log>
+      }
     </p-tabpanel>
   </p-tabs>
 </div>

@@ -1,10 +1,9 @@
 package com.btxtech.client.jso.facade;
 
+import com.btxtech.client.jso.JsObject;
 import com.btxtech.shared.datatypes.ChatMessage;
 import com.btxtech.uiservice.cockpit.ChatCockpit;
 import org.teavm.jso.JSObject;
-
-import static com.btxtech.client.jso.facade.JsGwtAngularFacade.*;
 
 public class JsChatCockpit implements ChatCockpit {
     private final JSObject js;
@@ -13,12 +12,20 @@ public class JsChatCockpit implements ChatCockpit {
         this.js = js;
     }
 
+    /**
+     * A plain JS object with the fields, not the Java object: under WASM-GC a Java object reaches JS
+     * as an opaque reference, and calling getUserName() on it there fails - a message sent while
+     * the chat was open never appeared, the sender's own included.
+     */
     @Override
     public void onMessage(ChatMessage chatMessage) {
-        // TODO: Convert ChatMessage to JSObject via proxy factory
-        callOnMessage(js, chatMessage);
+        JsObject message = JsObject.create();
+        message.set("userName", chatMessage.getUserName());
+        message.set("message", chatMessage.getMessage());
+        message.setNullableInt("videoId", chatMessage.getVideoId());
+        callOnMessage(js, message);
     }
 
     @org.teavm.jso.JSBody(params = {"obj", "message"}, script = "obj.onMessage(message);")
-    private static native void callOnMessage(JSObject obj, Object message);
+    private static native void callOnMessage(JSObject obj, JSObject message);
 }

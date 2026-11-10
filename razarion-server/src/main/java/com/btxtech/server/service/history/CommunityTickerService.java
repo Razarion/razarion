@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Consumer;
 
 /**
  * What the players did lately, for the ticker over the game field: a few lines that show the planet
@@ -55,6 +57,8 @@ public class CommunityTickerService {
     private final Map<String, Long> lastTaken = new HashMap<>();
     private final Set<String> firstUnitsSeen = new LinkedHashSet<>();
     private long nextSeq = 1;
+    /** Told the userId of a player who just left the noob island - live only, never on warm-up. */
+    private final List<Consumer<String>> leftNoobIslandListeners = new CopyOnWriteArrayList<>();
 
     public record Event(long seq, long timeMillis, String userId, CommunityTickerKind kind, Integer level, String what) {
     }
@@ -62,6 +66,15 @@ public class CommunityTickerService {
     public CommunityTickerService(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
         CompletableFuture.runAsync(this::warmUp);
+    }
+
+    /**
+     * The chat announces a player leaving the noob island (ChatService). It registers here and is not
+     * called by HistoryService directly: UserService needs HistoryService, ChatService needs UserService.
+     * Called on the thread that writes the history row; a listener must hand its work off.
+     */
+    public void addLeftNoobIslandListener(Consumer<String> listener) {
+        leftNoobIslandListeners.add(listener);
     }
 
     /** Called for every history row as it is written; cheap for everything the ticker ignores. */
@@ -73,6 +86,9 @@ public class CommunityTickerService {
                 synchronized (events) {
                     events.addLast(event);
                     trim(event.timeMillis());
+                }
+                if (event.kind() == CommunityTickerKind.LEFT_NOOB_ISLAND) {
+                    leftNoobIslandListeners.forEach(listener -> listener.accept(event.userId()));
                 }
             }
         } catch (Exception e) {

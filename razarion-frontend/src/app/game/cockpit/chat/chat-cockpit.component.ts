@@ -9,9 +9,6 @@ import {ScrollPanel, ScrollPanelModule} from 'primeng/scrollpanel';
 import {HttpClient} from '@angular/common/http';
 import {TypescriptGenerator} from '../../../backend/typescript-generator';
 import {ChatCockpit, ChatMessage as GwtAngularChatMessage} from '../../../gwtangular/GwtAngularFacade';
-import {UserService} from '../../../auth/user.service';
-import {Dialog} from 'primeng/dialog';
-import {CockpitDisplayService} from '../cockpit-display.service';
 
 @Component({
   selector: 'chat-cockpit',
@@ -21,8 +18,7 @@ import {CockpitDisplayService} from '../cockpit-display.service';
     InputText,
     ReactiveFormsModule,
     FormsModule,
-    ScrollPanelModule,
-    Dialog
+    ScrollPanelModule
 ],
   templateUrl: './chat-cockpit.component.html',
   styleUrl: './chat-cockpit.component.scss'
@@ -34,21 +30,27 @@ export class ChatCockpitComponent implements ChatCockpit, AfterViewInit {
   chatMessageDiv!: ElementRef<HTMLDivElement>;
   chatMessages: ChatMessage[] = [];
   messageToSend = ""
-  showUnregisteredDialog = false;
+  sending = false;
+  sendError: string | null = null;
+  /**
+   * The clip being played, or null. Nothing of a clip is loaded before a player asks for it: the
+   * chat shows only a button, and the video element exists only while this is set.
+   */
+  playingVideoId: number | null = null;
+  videoError = false;
   private chatControllerClient: ChatControllerClient;
 
   constructor(httpClient: HttpClient,
-              private zone: NgZone,
-              public userService: UserService,
-              private cockpitDisplayService: CockpitDisplayService) {
+              private zone: NgZone) {
     this.chatControllerClient = new ChatControllerClient(TypescriptGenerator.generateHttpClientAdapter(httpClient))
   }
 
   onMessage(gwtAngularChatMessage: GwtAngularChatMessage): void {
     this.zone.run(() => {
       this.chatMessages.push({
-        userName: gwtAngularChatMessage.getUserName(),
-        message: gwtAngularChatMessage.getMessage()
+        userName: gwtAngularChatMessage.userName,
+        message: gwtAngularChatMessage.message,
+        videoId: gwtAngularChatMessage.videoId!
       });
       this.scrollToBottom();
     });
@@ -72,20 +74,40 @@ export class ChatCockpitComponent implements ChatCockpit, AfterViewInit {
       });
   }
 
+  /**
+   * Everybody may write: a player without a name writes under their ticker call sign, e.g. "Falcon-42" (ChatService). It took an
+   * account and a name before, and so the questions of the anonymous players never arrived.
+   */
   onSend() {
-    if (!this.userService.hasValidName()) {
-      this.showUnregisteredDialog = true;
+    const text = this.messageToSend.trim();
+    if (!text || this.sending) {
       return;
     }
-
-    this.chatControllerClient.send(this.messageToSend)
-      .then(value => {
+    this.sending = true;
+    this.sendError = null;
+    this.chatControllerClient.send(text)
+      .then(() => {
         this.messageToSend = "";
         this.scrollToBottom();
       })
       .catch(error => {
+        this.sendError = error?.status === 429 ? 'Too many messages, please wait a moment' : 'Could not send, please try again';
         console.warn(error);
-      });
+      })
+      .finally(() => this.sending = false);
+  }
+
+  playVideo(videoId: number) {
+    this.videoError = false;
+    this.playingVideoId = videoId;
+  }
+
+  closeVideo() {
+    this.playingVideoId = null;
+  }
+
+  videoUrl(videoId: number): string {
+    return `/rest/chat-controller/video/${videoId}`;
   }
 
   private scrollToBottom() {
@@ -93,19 +115,5 @@ export class ChatCockpitComponent implements ChatCockpit, AfterViewInit {
       const chatMessageDivHeight = this.chatMessageDiv.nativeElement.offsetHeight;
       this.scrollPanel.scrollTop(chatMessageDivHeight);
     }, 0);
-  }
-
-  onRegisterClicked() {
-    this.showUnregisteredDialog = false;
-    this.cockpitDisplayService.showRegisterDialog = true;
-  }
-
-  onSetNameClicked() {
-    this.showUnregisteredDialog = false;
-    this.cockpitDisplayService.showSetUserNameDialog = true;
-  }
-
-  showSetNameButton() {
-    return this.userService.showSetNameButton() && this.userService.isRegistered();
   }
 }

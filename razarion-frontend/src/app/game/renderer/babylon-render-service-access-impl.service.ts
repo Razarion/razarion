@@ -25,6 +25,7 @@ import {BabylonWaterRenderService} from "./babylon-water-render.service";
 import {VertexBuffer} from "@babylonjs/core/Buffers/buffer";
 import {FreeCamera} from "@babylonjs/core/Cameras/freeCamera";
 import {Ray} from "@babylonjs/core/Culling/ray.core";
+import {Effect} from "@babylonjs/core/Materials/effect";
 import {Engine} from "@babylonjs/core/Engines/engine";
 import {EngineInstrumentation} from "@babylonjs/core/Instrumentation/engineInstrumentation";
 import {SceneInstrumentation} from "@babylonjs/core/Instrumentation/sceneInstrumentation";
@@ -77,6 +78,7 @@ import {BabylonLightning} from "./babylon-lightning";
 import {BabylonImpact} from "./babylon-impact";
 import {BabylonPerfOverlay} from "./babylon-perf-overlay";
 import {RenderTelemetry, RenderTelemetrySceneStats} from "./render-telemetry";
+import {AdaptiveResolution} from "./adaptive-resolution";
 import {ParkedMeshFilter} from "./parked-mesh-filter";
 import {OutOfViewJump, TIP_OVERLAY_ATTRIBUTE} from './out-of-view-jump';
 import {whenTerrainReady} from './boot-gate';
@@ -88,7 +90,6 @@ import {TouchCameraControl} from "./touch-camera-control";
 import {TouchSelectionModeService} from "./touch-selection-mode.service";
 import {BabylonBoxItemImpl} from "./babylon-box-item.impl";
 import {BabylonItemImpl} from "./babylon-item.impl";
-import {LocationVisualization} from "src/app/editor/common/place-config/location-visualization";
 import {ActionService} from "../action.service";
 import {SelectionService as TsSelectionService} from "../selection.service";
 import {FirstInteractionTrackerService, InteractionKind} from "../tracking/first-interaction-tracker.service";
@@ -145,6 +146,10 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   private readonly SPAWN_PARTICLE_HEIGHT = 15;
   /** See setupViewFieldDirection. 3 degrees: from 20 m up, the view field reaches about 380 m. */
   private static readonly VIEW_FIELD_MIN_DOWN_ANGLE = 3 * Math.PI / 180;
+  /** How often a view field ray is cut with the ground height found at the previous cut. */
+  private static readonly VIEW_FIELD_HEIGHT_STEPS = 4;
+  /** As far as the pick ray it replaces reached. */
+  private static readonly VIEW_FIELD_MAX_RAY = 1000;
   /** See getHudBottomPixels. Long enough to survive one tip evaluation, short enough to follow a
    *  panel that opens - the tips re-evaluate twice a second anyway. */
   private static readonly HUD_MEASURE_TTL_MILLIS = 400;
@@ -264,6 +269,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   // The overlay's server-side counterpart: same measurements, but summarised and shipped, because
   // the overlay only ever exists on the machine that is not the one reporting the lag.
   private renderTelemetry: RenderTelemetry | null = null;
+  private adaptiveResolution: AdaptiveResolution | null = null;
   // Keeps the parked terrain-tile cache out of Babylon's per-frame walks — the fix for the PROD
   // finding that the frame time follows scene.meshes rather than what is drawn.
   private readonly parkedMeshFilter = new ParkedMeshFilter();
@@ -546,12 +552,26 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     if (RenderTelemetry.ENABLED && !this.renderTelemetry) {
       this.renderTelemetry = new RenderTelemetry(() => this.collectSceneStats());
     }
+    if (!this.adaptiveResolution) {
+      this.adaptiveResolution = new AdaptiveResolution(this.engine.getHardwareScalingLevel());
+    }
 
     // ----- Keyboard -----
     const self = this;
     // Console fallback in case F9 is intercepted by the browser/IDE.
     (window as any).togglePerfDebug = () => self.togglePerfDebug();
     (window as any).togglePerfOverlay = () => self.togglePerfOverlay();
+    // Sets the hardware scaling by hand and switches the automatic one off for this session, to
+    // compare the frame rate at two levels under the same load.
+    (window as any).razScaling = (level: number) => {
+      if (!(level >= 0.5 && level <= 4)) {
+        console.warn("razScaling(level): level between 0.5 and 4, e.g. 1 or 1.5");
+        return;
+      }
+      self.adaptiveResolution?.stop();
+      self.engine.setHardwareScalingLevel(level);
+      console.warn(`[AdaptiveResolution] scaling=${level} manual`);
+    };
     // Where the camera looks, for reporting a spot on the map (x, height, z)
     (window as any).razWhere = () => {
       const camera = self.scene.activeCamera as any;
@@ -868,6 +888,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
         drawCounter?.fetchNewFrame();
         const renderStart = measure ? performance.now() : 0;
         this.scene.render();
+        this.adaptResolution();
         if (measure) {
           const renderEnd = performance.now();
           const renderMs = renderEnd - renderStart;
@@ -1191,6 +1212,12 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     // catch that needs it is an inline @JSBody in TeaVMClientGameEngineControl, which has no Java
     // object to call back into at that point.
     (window as any).RAZ_engineError = (reason: string) => this.reportEngineError(reason);
+    // A compiled shader stays compiled. Units scrolled out of view are disposed, and with the last
+    // mesh using it Babylon threw the shader program away: scrolling back to a bot base on the noob
+    // island compiled the same 9 programs (PBR and node materials of its units) every time, with
+    // draw phases of 10-20 ms instead of 2 (2026-11-08). The programs are keyed by shader and
+    // defines, not by mesh, so there are a few dozen of them - nothing worth freeing.
+    Effect.PersistentMode = true;
     this.engine = new Engine(this.canvas)
     this.scene = new Scene(this.engine);
     // 1 MB the start does not wait for, fetched once the terrain is in (boot-gate.ts); until then
@@ -1431,7 +1458,8 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   }
 
   private ensureCameraViewOnMap() {
-    let height = LocationVisualization.getHeightFromTerrain(0, 0, this)
+    // From the height map, not a pick: this runs in every frame the camera moves (1.3 ms as a pick)
+    let height = this.getCameraTerrainHeightAt(0, 0) ?? 0;
     // make sure the transformation matrix we get when calling 'getTransformationMatrix()' is calculated with an up to date view matrix
     // getViewMatrix() forces recalculation of the camera view matrix
     this.camera.getViewMatrix();
@@ -1806,19 +1834,45 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     );
   }
 
+  /**
+   * Where a ray from the camera meets the ground, read off the height maps of the loaded tiles.
+   * <p>
+   * This was five scene.pickWithRay per view field - one per corner and the centre - and the view
+   * field is set up in every frame the camera moves. Measured while scrolling with the arrow keys
+   * (2026-11-08, RTX 4070 desktop): 9.8 ms of a 17 ms frame, against 2.4 ms for the whole rendering;
+   * the frame rate fell from 240 to an uneven 30-60. On integrated graphics with a slower CPU that
+   * is the "extremely jerky" scrolling. The height map gives the same surface the camera height
+   * already follows (getCameraTerrainHeightAt) for the cost of a few array reads.
+   * <p>
+   * The ray is cut with the plane at the ground height found at the previous cut, a few times over:
+   * the RTS camera looks down steeply enough for that to settle within a few steps, and the view
+   * field is a culling area, not a click - a metre off at a cliff edge changes nothing. Undefined,
+   * like a pick that missed, where no built tile lies under the ray; the caller then falls back to
+   * zero level.
+   */
   private setupTerrainPosition(direction: Vector3): Vector3 | undefined {
-    let terrainPosition = LocationVisualization.getTerrainPositionFromRay(
-      new Ray(
-        this.camera.position,
-        direction,
-        1000),
-      this);
-
-    if (terrainPosition) {
-      return terrainPosition;
-    } else {
+    const origin = this.camera.position;
+    if (!(direction.y < 0)) {
       return undefined;
     }
+    let height = this.centerTerrainHeight ?? 0;
+    for (let step = 0; step < BabylonRenderServiceAccessImpl.VIEW_FIELD_HEIGHT_STEPS; step++) {
+      const distance = (height - origin.y) / direction.y;
+      if (!(distance > 0 && distance <= BabylonRenderServiceAccessImpl.VIEW_FIELD_MAX_RAY)) {
+        return undefined;
+      }
+      const x = origin.x + direction.x * distance;
+      const z = origin.z + direction.z * distance;
+      const ground = this.getCameraTerrainHeightAt(x, z);
+      if (ground === null) {
+        return undefined;
+      }
+      if (Math.abs(ground - height) < 0.05 || step === BabylonRenderServiceAccessImpl.VIEW_FIELD_HEIGHT_STEPS - 1) {
+        return new Vector3(x, ground, z);
+      }
+      height = ground;
+    }
+    return undefined;
   }
 
   /**
@@ -2267,19 +2321,59 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   }
 
   public setupPointerZeroLevelPosition(): Vector3 {
-    // Convert pointer position to NDC
-    const ndcX = (this.scene.pointerX / this.engine.getRenderWidth()) * 2 - 1;
-    const ndcY = 1 - (this.scene.pointerY / this.engine.getRenderHeight()) * 2;
+    // Convert pointer position to NDC. The pointer counts CSS pixels, so it is measured against the
+    // canvas, not the back buffer - the two differ as soon as the hardware scaling is not 1.
+    const ndcX = (this.scene.pointerX / this.cssWidth()) * 2 - 1;
+    const ndcY = 1 - (this.scene.pointerY / this.cssHeight()) * 2;
     this.camera.getViewMatrix();
     const invertCameraViewProj = Matrix.Invert(this.camera.getTransformationMatrix());
     return this.setupZeroLevelPosition(ndcX, ndcY, invertCameraViewProj);
   }
 
   public setupPickInfoFromNDC(ndcX: number, ndcY: number): PickingInfo {
-    const x = (ndcX + 1) / 2 * this.engine.getRenderWidth();
-    const y = (1 - ndcY) / 2 * this.engine.getRenderHeight();
+    // scene.pick takes CSS pixels and applies the hardware scaling itself
+    const x = (ndcX + 1) / 2 * this.cssWidth();
+    const y = (1 - ndcY) / 2 * this.cssHeight();
 
     return this.scene.pick(x, y);
+  }
+
+  private cssWidth(): number {
+    return this.engine.getRenderWidth() * this.engine.getHardwareScalingLevel();
+  }
+
+  private cssHeight(): number {
+    return this.engine.getRenderHeight() * this.engine.getHardwareScalingLevel();
+  }
+
+  /**
+   * Fewer pixels while the frames are too slow - see {@link AdaptiveResolution}. The director films
+   * at the size it set itself and gets the start level back while it does.
+   */
+  private adaptResolution(): void {
+    const adaptive = this.adaptiveResolution;
+    if (!adaptive) {
+      return;
+    }
+    try {
+      if (this.directorActive) {
+        if (adaptive.getLevel() !== adaptive.getBaseLevel()) {
+          this.engine.setHardwareScalingLevel(adaptive.getBaseLevel());
+          this.adaptiveResolution = new AdaptiveResolution(adaptive.getBaseLevel());
+        }
+        return;
+      }
+      const level = adaptive.onFrame(performance.now());
+      if (level !== null) {
+        this.engine.setHardwareScalingLevel(level);
+        // One line per change, beside the telemetry: which sessions it touched and how far
+        console.warn(`[AdaptiveResolution] session=${(window as any).RAZ_gameSessionUuid ?? "-"} scaling=${level}`
+          + (adaptive.isStopped() ? " reverted=no-gain" : ""));
+      }
+    } catch (e) {
+      // Picture quality is never a reason for the render loop to stop
+      this.adaptiveResolution = null;
+    }
   }
 
   /**

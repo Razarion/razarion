@@ -22,6 +22,24 @@ moments (leaving the noob island first), and a replay of what players did.
 - **Dashboard** at http://127.0.0.1:4712, read-only. `/api/status`, `/api/bases`, `/api/base/<id>`,
   `/api/events`.
 
+## The chat and its assistant
+
+`lib/chat.mjs` reads the planet's chat from `/rest/recorder/chat` every `RECORDER_CHAT_SECONDS` (5) and
+keeps each message with the writer's level and open quest at that moment (`state/chat.json`, which
+also holds the last id, so a restart never answers a message twice and a fresh start answers nothing
+old).
+
+`lib/assistant.mjs` decides per message whether it is a technical problem (lag, loading, something
+broken) or a how-to question, and answers those as "Razarion AI" through `/rest/recorder/chat/answer`
+- the recorder's one write. Everything else (greetings, jokes, insults) gets no answer. It runs
+`claude -p` on this machine's Claude login, like the social pipeline's writer, and may only say what
+`chat-knowledge.md` and the player context say; an answer with a link, a promise or another player's
+name is not posted. Not answered: messages older than 10 minutes when seen, the same question
+repeated, more than 30 answers an hour. `RECORDER_CHAT_ANSWER=0` keeps reading and answers nothing.
+
+The server itself posts as "Razarion" when a player leaves the noob island (ChatService, fed by the
+community ticker); the recorder keeps those as `news` and answers none of them.
+
 ## Analysis, and the AI's way in
 
 `lib/players.mjs` keeps one record per player from the history feed (quests, levels, built, lost)
@@ -37,6 +55,7 @@ already playing.
 | `/api/funnel` | `funnel` | per quest step: reached, median minutes, stopped here |
 | `/api/stalls?min=5` | `stalls` | players on a quest open at least that long |
 | `/api/events` | `recent_events` | the latest events involving players |
+| `/api/chat` | `chat_log` | the chat with player context and what the assistant made of it |
 
 The MCP server is in the repo's `.mcp.json` as `razarion-recorder`; it asks the running recorder at
 `RECORDER_URL` (default http://127.0.0.1:4712). It hands out user ids and base ids, never names.
@@ -102,6 +121,12 @@ publishes it in its slots. It is approved by the engine's checks like the planne
 again every ten minutes. The dashboard lists the moments and where each one is.
 
 The takes are kept in `state/moments/` (the last 100 moments).
+
+A rule with `"chat": true` (leaving the noob island) also goes into the planet chat (`lib/chat-video.mjs`):
+the portrait take made small with ffmpeg (540 wide, no sound, faststart, about 4 MB for 47 s) and
+posted to `/rest/recorder/chat/video`. The server keeps the newest 50 and posts "<name>'s crossing to the
+mainland" under "Razarion"; the chat shows a Watch button and loads the clip from our own server only
+when it is clicked. What became of it is on the moment (`chat`: posted with the video id, or why not).
 
 ## Memory
 

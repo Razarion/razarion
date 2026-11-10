@@ -945,6 +945,7 @@ public class JsonDeserializer {
         ChatMessage r = new ChatMessage();
         r.setUserName(json.isNullOrUndefined("userName") ? null : json.getString("userName"));
         r.setMessage(json.isNullOrUndefined("message") ? null : json.getString("message"));
+        r.setVideoId(json.isNullOrUndefined("videoId") ? null : json.getInt("videoId"));
         return r;
     }
 }

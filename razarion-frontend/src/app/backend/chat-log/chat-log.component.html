@@ -1,0 +1,47 @@
+<div class="flex flex-row items-center gap-4 pb-3" style="flex-wrap: wrap">
+  @if (loading) {
+    <i class="pi pi-spin pi-spinner" title="Loading"></i>
+  }
+  <span><b>{{ entries.length }}</b> messages</span>
+  <span>{{ players }} players</span>
+  <span title="Posted by the recorder's assistant">{{ answers }} AI answers</span>
+  <span title="Posted by the planet: a player left the noob island">{{ news }} announcements</span>
+  @if (entries.length >= 1000) {
+    <span title="The server returns at most 1000 messages; narrow the span">only the newest 1000</span>
+  }
+  @if (error) {
+    <span style="color: var(--p-red-500)">{{ error }}</span>
+  }
+  <span class="inline-flex items-center gap-2" style="margin-left:auto">
+    <p-toggleswitch [(ngModel)]="live" (onChange)="onLiveChange()" title="Reload every 15 s, up to now"/>
+    Live
+  </span>
+</div>
+
+<p-table [value]="entries" dataKey="id" [scrollable]="true" scrollHeight="calc(100vh - 260px)">
+  <ng-template pTemplate="header">
+    <tr>
+      <th>Time</th>
+      <th>From</th>
+      <th title="Guests write under their ticker call sign (Falcon-42); the user id finds the player in History and Users">User id</th>
+      <th>Message</th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-entry>
+    <tr [style.background-color]="isAssistant(entry) ? 'rgba(124, 92, 214, 0.15)' : isNews(entry) ? 'rgba(47, 160, 80, 0.15)' : null">
+      <td style="white-space: nowrap">{{ entry.timestamp | date:'dd.MM. HH:mm:ss' }}</td>
+      <td style="white-space: nowrap">{{ entry.userName }}</td>
+      <td style="white-space: nowrap; font-family: monospace; font-size: 0.8em">{{ entry.userId }}</td>
+      <td style="white-space: pre-wrap; word-break: break-word">{{ entry.message }}
+        @if (entry.videoId) {
+          <a [href]="'/rest/chat-controller/video/' + entry.videoId" target="_blank" rel="noopener">video #{{ entry.videoId }}</a>
+        }
+      </td>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td colspan="4">No messages in this span</td>
+    </tr>
+  </ng-template>
+</p-table>

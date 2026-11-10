@@ -1,5 +1,6 @@
 package com.btxtech.server.rest.recorder;
 
+import com.btxtech.server.service.ChatService;
 import com.btxtech.server.service.engine.QuestConfigService;
 import com.btxtech.server.service.engine.StaticGameConfigService;
 import com.btxtech.server.service.history.RecorderFeedService;
@@ -14,6 +15,8 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.ItemType;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,7 +30,7 @@ import java.util.stream.Collectors;
  * What the game recorder (razarion-recorder) reads beside the game connection: the history feed,
  * and the names behind the ids it sees on the wire.
  * <p>
- * Read-only, and open to the recorder's own account ({@code razarion.recorder.email}, role
+ * Read-only but for the chat assistant's answers ({@link #chatAnswer}) and the moments filmed for the chat ({@link #chatVideo}), and open to the recorder's own account ({@code razarion.recorder.email}, role
  * RECORDER) as well as to admins. The game's own cold context would do for the names, but it is
  * built for a player: the caller's level, quest and unlocks, and an alarm for an account without a
  * level.
@@ -43,19 +46,22 @@ public class RecorderController {
     private final BaseItemService baseItemService;
     private final UserService userService;
     private final PlanetService planetService;
+    private final ChatService chatService;
 
     public RecorderController(RecorderFeedService recorderFeedService,
                               StaticGameConfigService staticGameConfigService,
                               QuestConfigService questConfigService,
                               BaseItemService baseItemService,
                               UserService userService,
-                              PlanetService planetService) {
+                              PlanetService planetService,
+                              ChatService chatService) {
         this.recorderFeedService = recorderFeedService;
         this.staticGameConfigService = staticGameConfigService;
         this.questConfigService = questConfigService;
         this.baseItemService = baseItemService;
         this.userService = userService;
         this.planetService = planetService;
+        this.chatService = chatService;
     }
 
     /** Where a player with a base stands now: what the feed only tells as it changes. */
@@ -111,6 +117,27 @@ public class RecorderController {
                         userService.getUserContextTransactional(info.getUserId()).getLevelId(),
                         userService.findActiveQuestId(info.getUserId())))
                 .toList();
+    }
+
+    /** Chat messages after {@code after} (id), oldest first; see {@link ChatService#after}. */
+    @GetMapping(value = "chat", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<ChatService.Entry> chat(@RequestParam(value = "after", required = false) Long after) {
+        return chatService.after(after);
+    }
+
+    /** The chat assistant's answer, shown to everybody under {@link ChatService#ASSISTANT_NAME}. */
+    @PostMapping(value = "chat/answer", consumes = MediaType.TEXT_PLAIN_VALUE)
+    public void chatAnswer(@RequestBody String message) {
+        chatService.answer(message);
+    }
+
+    /**
+     * A player's moment filmed for the chat (an mp4 of a few MB): kept and announced under
+     * {@link ChatService#NEWS_NAME}, played only when a player clicks it.
+     */
+    @PostMapping(value = "chat/video", consumes = "video/mp4")
+    public int chatVideo(@RequestParam String userId, @RequestBody byte[] data) {
+        return chatService.video(userId, data);
     }
 
     @GetMapping(value = "config", produces = MediaType.APPLICATION_JSON_VALUE)

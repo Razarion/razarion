@@ -45,6 +45,17 @@ class CommunityTickerServiceTest {
     }
 
     @Test
+    void tellsTheChatWhoLeftTheNoobIsland() {
+        CommunityTickerService service = new CommunityTickerService(null);
+        List<String> told = new java.util.ArrayList<>();
+        service.addLeftNoobIslandListener(told::add);
+        service.onHistory(human(GameHistoryType.QUEST_PASSED, "a").questId(358));
+        service.onHistory(human(GameHistoryType.LEVEL_UP, "a").levelNumber(9));
+        service.onHistory(human(GameHistoryType.QUEST_PASSED, "b").questId(CommunityTickerService.LEFT_NOOB_ISLAND_QUEST_ID));
+        assertEquals(List.of("b"), told);
+    }
+
+    @Test
     void leavesOutNoiseAndBots() {
         CommunityTickerService service = new CommunityTickerService(null);
         service.onHistory(human(GameHistoryType.QUEST_PASSED, "a").questId(358));

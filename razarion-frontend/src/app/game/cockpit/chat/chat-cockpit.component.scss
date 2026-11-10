@@ -7,3 +7,74 @@
   font-size: smaller;
   color: #CCCCCC;
 }
+
+// The chat assistant's answers (ChatService.ASSISTANT_NAME), so nobody takes them for a person
+.user-name.assistant {
+  background-color: #3b2f5c;
+}
+
+// What happens on the planet (ChatService.NEWS_NAME), e.g. a player leaving the noob island
+.user-name.news {
+  background-color: #2f5c3b;
+}
+
+.send-error {
+  font-size: smaller;
+  color: #f0a0a0;
+}
+
+// A clip with the message (ChatService.video): a button only, nothing loads before the click
+.watch {
+  align-self: flex-start;
+  margin-top: 0.2em;
+  padding: 0.1em 0.6em;
+  border-radius: 0.4em;
+  border: 1px solid #2f5c3b;
+  background-color: #1f3b28;
+  color: inherit;
+  cursor: pointer;
+  font-size: 0.9em;
+}
+
+.video-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.75);
+}
+
+.video-box {
+  position: relative;
+  max-width: 92vw;
+  max-height: 88vh;
+
+  video {
+    display: block;
+    max-width: 92vw;
+    max-height: 88vh;
+    border-radius: 0.5em;
+    background-color: black;
+  }
+}
+
+.video-gone {
+  padding: 2em;
+  border-radius: 0.5em;
+  background-color: #1e1e1e;
+}
+
+.video-close {
+  position: absolute;
+  top: -0.8em;
+  right: -0.8em;
+  width: 2em;
+  height: 2em;
+  border-radius: 50%;
+  border: none;
+  background-color: #333;
+  color: white;
+  cursor: pointer;
+}

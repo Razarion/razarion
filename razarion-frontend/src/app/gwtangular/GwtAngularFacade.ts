@@ -789,10 +789,11 @@ export interface ChatCockpit {
   onMessage(chatMessage: ChatMessage): void;
 }
 
+/** Plain fields (JsChatCockpit): a Java object would reach JS opaque under WASM-GC. */
 export interface ChatMessage {
-  getUserName(): string;
-
-  getMessage(): string;
+  userName: string;
+  message: string;
+  videoId: number | null;
 }
 
 export interface BaseItemPlacerPresenter {

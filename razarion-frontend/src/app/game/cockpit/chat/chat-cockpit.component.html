@@ -1,52 +1,45 @@
-<div class="flex flex-col gap-1" style="width: 30em">
+<div class="flex flex-col gap-1" style="width: 30em; max-width: 100%">
   <div class="chat-box bg-surface-800 p-2 rounded-xl border border-surface-500">
     <p-scrollpanel #scrollPanel [style]="{ width: '100%', height: '10em' }">
       <div class="flex flex-col gap-1" #chatMessageDiv>
-        @for (chatMessage of chatMessages; track chatMessage) {
-          <div class="chat-message flex flex-col p-0 m-0" style="width: 28em">
-            <p class="user-name">{{ chatMessage.userName }}</p>
+        @for (chatMessage of chatMessages; track $index) {
+          <div class="chat-message flex flex-col p-0 m-0" style="max-width: 28em">
+            <p class="user-name" [class.assistant]="chatMessage.userName === 'Razarion AI'" [class.news]="chatMessage.userName === 'Razarion'">{{ chatMessage.userName }}</p>
             <div class="message">{{ chatMessage.message }}</div>
+            @if (chatMessage.videoId) {
+              <button type="button" class="watch" (click)="playVideo(chatMessage.videoId)">&#9654; Watch</button>
+            }
           </div>
         }
       </div>
     </p-scrollpanel>
   </div>
   <div class="chat-box flex bg-surface-800 p-2 rounded-xl border border-surface-500 items-center bg-surface-100 gap-1">
-    <input pInputText [(ngModel)]="messageToSend" class="w-full"/>
+    <input pInputText [(ngModel)]="messageToSend" (keydown.enter)="onSend()" maxlength="300"
+           placeholder="Message to all players" class="w-full"/>
     <p-button
       class="rounded"
       label="Send"
       size="small"
-      [disabled]="!messageToSend || messageToSend.trim().length === 0"
+      [disabled]="sending || !messageToSend || messageToSend.trim().length === 0"
       (click)="onSend()">
     </p-button>
   </div>
+  @if (sendError) {
+    <div class="send-error px-2">{{ sendError }}</div>
+  }
 </div>
 
-<!-- On the body for the same reason as the quest dialog: the compact chat panel scrolls and is
-     hidden when closed, and a dialog inside it inherits both. -->
-<p-dialog header="You have no name" appendTo="body" [(visible)]="showUnregisteredDialog">
-  <div class="flex flex-col bg-surface-800 p-3 rounded-xl border border-surface-500 w-120 items-center justify-center gap-3">
-    <p>
-      You must be registered and have chosen a name before sending chat messages
-    </p>
-    <div class="flex gap-2 justify-center">
-      @if (userService.showRegisterButton()) {
-        <p-button
-          class="rounded"
-          label="Register"
-          size="small"
-          (click)="onRegisterClicked()">
-        </p-button>
+@if (playingVideoId !== null) {
+  <!-- Over the game, so a portrait clip has room on a phone. Loaded from our own server only now. -->
+  <div class="video-overlay" (click)="closeVideo()">
+    <div class="video-box" (click)="$event.stopPropagation()">
+      @if (videoError) {
+        <div class="video-gone">This video is no longer available</div>
+      } @else {
+        <video [src]="videoUrl(playingVideoId)" controls autoplay muted playsinline (error)="videoError = true"></video>
       }
-      @if (showSetNameButton()) {
-        <p-button
-          class="rounded"
-          label="Set name"
-          size="small"
-          (click)="onSetNameClicked()">
-        </p-button>
-      }
+      <button type="button" class="video-close" (click)="closeVideo()" title="Close">&#10005;</button>
     </div>
   </div>
-</p-dialog>
+}
