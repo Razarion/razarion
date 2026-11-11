@@ -1769,6 +1769,10 @@ public final class TeaVMWorkerMarshaller {
         type.setSpawnDurationMillis(obj.getInt("spawnDurationMillis"));
         type.setSpawnParticleSystemId(obj.getNullableInt("spawnParticleSystemId"));
         type.setSpawnAudioId(obj.getNullableInt("spawnAudioId"));
+        type.setBuildArmAudioId(obj.getNullableInt("buildArmAudioId"));
+        type.setDriveAudioId(obj.getNullableInt("driveAudioId"));
+        type.setHarvestAudioId(obj.getNullableInt("harvestAudioId"));
+        type.setBuildAudioId(obj.getNullableInt("buildAudioId"));
         type.setExplosionAudioItemConfigId(obj.getNullableInt("explosionAudioItemConfigId"));
         type.setExplosionParticleId(obj.getNullableInt("explosionParticleId"));
 

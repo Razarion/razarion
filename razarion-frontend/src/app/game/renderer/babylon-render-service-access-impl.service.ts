@@ -2360,7 +2360,9 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
       });
     }
     if (spawnAudioId != null) {
-      this.babylonAudioService.playAudio(spawnAudioId);
+      // Spatial: the server broadcasts every spawn on the planet (bot respawns, other players), so
+      // a flat playAudio() rang out for spawns nobody could see.
+      this.babylonAudioService.playAudioAtPosition(spawnAudioId, new Vector3(x, z, y));
     }
   }
 

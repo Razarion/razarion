@@ -40,6 +40,29 @@ import {BabylonDamageEffect} from "./babylon-damage-effect";
 import {RenderObject} from "./render-object";
 import {ShipWakeRenderer} from "./ship-wake-renderer";
 import {BowWaveHalo} from "./bow-wave-halo";
+import {renderBuildLoop, renderDriveLoop, renderServo} from "./procedural-sounds";
+
+// Unit sound levels, relative to the weapon sounds (0.8-1.0).
+const SERVO_VOLUME = 0.5;
+const ARM_SAMPLE_VOLUME = 0.5;
+// 1 = the recording's pitch both ways (asked for 2026-11-06). 0.7 would match the recording's own
+// lowering pitch (396 / 566 Hz).
+const ARM_RETRACT_PLAYBACK_RATE = 1;
+const BUILD_LOOP_VOLUME = 0.35;
+const BUILD_SAMPLE_VOLUME = 0.45;
+const HARVEST_SAMPLE_VOLUME = 0.4;
+const DRIVE_LOOP_VOLUME = 0.28;
+const DRIVE_SAMPLE_VOLUME = 0.45;
+// Faster than this (m/s) counts as driving; slower is ORCA shuffling or a correction.
+const DRIVE_MIN_SPEED = 0.25;
+// A jump further than this in one tick is a teleport/snap, not driving.
+const DRIVE_MAX_TICK_DISTANCE = 8;
+// The engine keeps running this long after the last move, so short stops don't stutter it.
+const DRIVE_HOLD_MS = 400;
+// Turning on the spot faster than this (radians per second, ~6°/s) runs the engine too.
+const DRIVE_MIN_TURN_RATE = 0.1;
+// Engine pitch while turning on the spot: a slow drive.
+const TURN_ENGINE_PITCH = 0.9;
 import {Subscription} from 'rxjs';
 
 // Wave-bobbing for ships: small sinusoidal Y / pitch / roll oscillation so
@@ -97,6 +120,12 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
   // lazily on first setPosition so it doesn't briefly flash at world origin.
   private bowHalo: BowWaveHalo | null = null;
   private nameVisibilitySubscription: Subscription | null = null;
+  // Drive sound: on while position updates keep coming faster than DRIVE_MIN_SPEED.
+  private driveSoundUntil = 0;
+  private driveSoundActive = false;
+  // Fastest speed seen so far; the engine pitch rises towards it. Speed is not in the client DTO.
+  private driveReferenceSpeed = 3;
+  private drivePitch = TURN_ENGINE_PITCH;
 
   constructor(id: number,
               private baseItemType: BaseItemType,
@@ -156,6 +185,31 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
     const explosionId = this.baseItemType.getExplosionAudioItemConfigId();
     if (explosionId != null) {
       audioService.preloadAudio(explosionId);
+    }
+    // The builder arm loop is NOT loaded here: the builder is the first unit, so this would put it
+    // into the first seconds of the game. It loads on selection or on the first build instead.
+  }
+
+  override select(active: boolean): void {
+    super.select(active);
+    if (active) {
+      this.preloadBuildArmAudio();
+    }
+  }
+
+  private preloadBuildArmAudio(): void {
+    const armAudioId = this.baseItemType.getBuildArmAudioId();
+    if (armAudioId != null) {
+      this.rendererService.babylonAudioService.preloadAudio(armAudioId);
+    }
+    // The building loop starts when the arm is out - loaded on selection, it is there by then.
+    const buildAudioId = this.baseItemType.getBuildAudioId();
+    if (buildAudioId != null) {
+      this.rendererService.babylonAudioService.preloadAudio(buildAudioId);
+    }
+    const harvestAudioId = this.baseItemType.getHarvestAudioId();
+    if (harvestAudioId != null) {
+      this.rendererService.babylonAudioService.preloadAudio(harvestAudioId);
     }
   }
 
@@ -295,6 +349,10 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
     if (this.baseItemType.getPhysicalAreaConfig().fulfilledMovable()) {
       this.rendererService.removeInterpolationListener(this);
     }
+    this.rendererService.babylonAudioService.releaseLoop(this.soundKey('drive'));
+    this.rendererService.babylonAudioService.releaseLoop(this.soundKey('build'));
+    this.rendererService.babylonAudioService.releaseLoop(this.soundKey('harvest'));
+    this.driveSoundActive = false;
     this.wakeRenderer?.dispose();
     this.wakeRenderer = null;
     this.bowHalo?.dispose();
@@ -432,6 +490,7 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
       if (this.factoryBuildPhase === 'exiting' && progress < 1.0) {
         this.factoryBuildPhase = 'idle';
         renderObject.setBuildAnimationActive(false);
+        this.stopBuildSound();
         this.disposeFactoryScanEffect();
         this.stopFactoryExitAnimation();
         // Hand off the just-finished unit's preview: it already slid to the rally point and the real
@@ -457,17 +516,21 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
       if (progress > 0 && this.factoryBuildPhase === 'idle') {
         this.factoryBuildPhase = 'progress';
         renderObject.resumeBuildAnimation();
+        this.startBuildSound();
       }
 
       if (progress < 0 && this.factoryBuildPhase === 'idle') {
         // Warmup phase: play intro animation (platform goes down)
         this.factoryBuildPhase = 'intro';
         const introSeconds = this.baseItemType.getFactoryType()?.getAnimationIntroSeconds() || 0;
+        // The platform going down sounds like the builder's arm, the building like its beam.
+        this.playServo(renderObject.getIntroDurationSeconds(introSeconds), true);
         renderObject.setBuildAnimationActive(true, () => {
           if (this.factoryBuildPhase === 'intro') {
             this.factoryBuildPhase = 'progress';
             renderObject.setProgressAnimationValue(this.progress);
             this.startFactoryScanEffect();
+            this.startBuildSound();
           }
         }, introSeconds);
       } else if (progress < 0) {
@@ -478,6 +541,7 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
         // channel) has time to appear — avoids a visible "blink" between preview and real unit.
         this.factoryBuildPhase = 'idle';
         renderObject.setBuildAnimationActive(false);
+        this.stopBuildSound();
         this.disposeFactoryScanEffect();
         this.stopFactoryExitAnimation();
         setTimeout(() => this.disposeFactoryBuildPreview(), 300);
@@ -493,6 +557,7 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
           // the progress===0 branch above cleans up.
           this.factoryBuildPhase = 'exiting';
           renderObject.setBuildAnimationActive(false);
+          this.stopBuildSound();
           this.disposeFactoryScanEffect();
           this.startFactoryExitAnimation();
         }
@@ -964,11 +1029,15 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
     const warmupSeconds = builderType ? builderType.getBuildAnimationWarmupSeconds() : 0;
     const cooldownSeconds = builderType ? builderType.getBuildAnimationCooldownSeconds() : 0;
 
+    const audio = this.rendererService.babylonAudioService;
     if (!hasPosition) {
       this.buildupEffect?.disposeBuildingBeam();
       renderObject.setBuildAnimationActive(false, undefined, undefined, cooldownSeconds);
+      audio.releaseLoop(this.soundKey('build'));
+      this.playServo(renderObject.getOutroDurationSeconds(cooldownSeconds), false);
       return;
     }
+    this.playServo(renderObject.getIntroDurationSeconds(warmupSeconds), true);
 
     if (!this.buildupEffect) {
       this.buildupEffect = new BabylonBuildupEffect(
@@ -984,6 +1053,7 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
     // extended). For units without an intro phase the callback fires immediately, so the beam
     // starts on the same tick as before — backwards compatible.
     renderObject.setBuildAnimationActive(true, () => {
+      this.startBuildSound();
       this.buildupEffect!.startBuildingBeam(
         targetVector,
         {
@@ -1023,10 +1093,18 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
       return;
     }
 
+    const audio = this.rendererService.babylonAudioService;
     if (!hasPosition) {
       this.harvestingBeamEffect?.dispose();
       this.harvestingBeamEffect = null;
+      audio.releaseLoop(this.soundKey('harvest'));
       return;
+    }
+    // Only a recorded sound: there is no synthetic harvesting hum.
+    const harvestAudioId = this.baseItemType.getHarvestAudioId();
+    if (harvestAudioId != null) {
+      audio.requestLoop(this.soundKey('harvest'), 'harvest', this.getContainer(), {audioId: harvestAudioId},
+        HARVEST_SAMPLE_VOLUME, 1);
     }
 
     const renderObject = this.getRenderObject();
@@ -1059,6 +1137,7 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
   }
 
   override onPosition3D(position3D: Vector3): boolean {
+    this.updateDriveSound(position3D);
     let updateImmediately = !this.position3D || this.lastPositionUpdateTime === null;
     this.oldPosition3D = updateImmediately ? position3D.clone() : this.getContainer().position.clone();
     this.position3D = position3D.clone();
@@ -1067,6 +1146,7 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
   }
 
   override onRotation3D(rotation3D: Vector3): boolean {
+    this.updateTurnSound(rotation3D);
     let updateImmediately = this.rotation3D === null || this.lastRotationUpdateTime === null;
     this.oldRotation3D = updateImmediately ? rotation3D.clone() : this.getContainer().rotation.clone();
     this.rotation3D = rotation3D.clone();
@@ -1074,7 +1154,123 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
     return updateImmediately;
   }
 
+  private soundKey(kind: 'drive' | 'build' | 'harvest'): string {
+    return `${kind}-${this.getId()}`;
+  }
+
+  /** Bigger units sound deeper: 1.0 at radius ~1.8, clamped to a fifth either way. */
+  private sizePitch(): number {
+    const radius = this.baseItemType.getPhysicalAreaConfig().getRadius();
+    return Math.min(1.3, Math.max(0.75, 1.35 / Math.sqrt(Math.max(radius, 0.1))));
+  }
+
+  /** The building hum: the builder's beam, the factory's scan plate. */
+  private startBuildSound(): void {
+    const audio = this.rendererService.babylonAudioService;
+    // A recorded building sound replaces the synthetic one; it keeps its own pitch, like the engine.
+    const buildAudioId = this.baseItemType.getBuildAudioId();
+    if (buildAudioId != null) {
+      audio.requestLoop(this.soundKey('build'), 'build', this.getContainer(), {audioId: buildAudioId},
+        BUILD_SAMPLE_VOLUME, 1);
+    } else {
+      audio.requestLoop(this.soundKey('build'), 'build', this.getContainer(),
+        {bufferKey: 'build-loop', render: renderBuildLoop}, BUILD_LOOP_VOLUME, this.sizePitch());
+    }
+  }
+
+  private stopBuildSound(): void {
+    this.rendererService.babylonAudioService.releaseLoop(this.soundKey('build'));
+  }
+
+  private playServo(durationSeconds: number, extend: boolean): void {
+    if (durationSeconds <= 0) {
+      return;
+    }
+    // A library loop if one is set on the item type, else the synthesised servo.
+    const armAudioId = this.baseItemType.getBuildArmAudioId();
+    if (armAudioId != null) {
+      this.rendererService.babylonAudioService.playLoopForDuration(armAudioId, this.getContainer(),
+        durationSeconds, extend ? 1 : ARM_RETRACT_PLAYBACK_RATE, ARM_SAMPLE_VOLUME);
+      return;
+    }
+    // One buffer per tenth of a second, so the sound ends with the arm whatever the warmup.
+    const rounded = Math.round(durationSeconds * 10) / 10;
+    this.rendererService.babylonAudioService.playProceduralAtNode(
+      `servo-${extend ? 'out' : 'in'}-${rounded}`,
+      () => renderServo(rounded, extend),
+      this.getContainer(),
+      SERVO_VOLUME);
+  }
+
+  /**
+   * The client gets no speed, so it is taken from the position updates: they come once per tick
+   * while the unit moves and stop when it stands. The engine is switched off in interpolate()
+   * once no move came for DRIVE_HOLD_MS.
+   */
+  private updateDriveSound(newPosition: Vector3): void {
+    if (!this.baseItemType.getPhysicalAreaConfig().fulfilledMovable()
+      || this.position3D === null || this.lastPositionUpdateTime === null) {
+      return;
+    }
+    const now = Date.now();
+    const dx = newPosition.x - this.position3D.x;
+    const dz = newPosition.z - this.position3D.z;
+    const distance = Math.sqrt(dx * dx + dz * dz);
+    if (distance > DRIVE_MAX_TICK_DISTANCE) {
+      return;
+    }
+    const seconds = Math.max(now - this.lastPositionUpdateTime, 50) / 1000;
+    const speed = distance / seconds;
+    if (speed < DRIVE_MIN_SPEED) {
+      return;
+    }
+    this.driveReferenceSpeed = Math.max(this.driveReferenceSpeed, speed);
+    this.keepEngineRunning(now, 0.85 + 0.3 * Math.min(speed / this.driveReferenceSpeed, 1));
+  }
+
+  /**
+   * Turning on the spot moves nothing, only the heading changes - the engine runs all the same.
+   * Only the yaw counts: the tilt follows the terrain and changes while driving straight.
+   */
+  private updateTurnSound(newRotation: Vector3): void {
+    if (!this.baseItemType.getPhysicalAreaConfig().fulfilledMovable()
+      || this.rotation3D === null || this.lastRotationUpdateTime === null) {
+      return;
+    }
+    const now = Date.now();
+    let delta = Math.abs(newRotation.y - this.rotation3D.y) % (2 * Math.PI);
+    delta = Math.min(delta, 2 * Math.PI - delta);
+    const seconds = Math.max(now - this.lastRotationUpdateTime, 50) / 1000;
+    if (delta / seconds < DRIVE_MIN_TURN_RATE) {
+      return;
+    }
+    // Turning while driving (a curve) keeps the driving pitch, or it would jump every tick.
+    this.keepEngineRunning(now, this.driveSoundActive ? this.drivePitch : TURN_ENGINE_PITCH);
+  }
+
+  private keepEngineRunning(now: number, speedPitch: number): void {
+    this.drivePitch = speedPitch;
+    this.driveSoundUntil = now + DRIVE_HOLD_MS;
+    this.driveSoundActive = true;
+    const audio = this.rendererService.babylonAudioService;
+    const driveAudioId = this.baseItemType.getDriveAudioId();
+    if (driveAudioId != null) {
+      // A recorded engine was picked for this item type: only the speed bends its pitch, the size
+      // pitch would change the sound that was chosen.
+      audio.requestLoop(this.soundKey('drive'), 'drive', this.getContainer(), {audioId: driveAudioId},
+        DRIVE_SAMPLE_VOLUME, speedPitch);
+      return;
+    }
+    const variant = this.isWaterUnit() ? 'water' : 'ground';
+    audio.requestLoop(this.soundKey('drive'), 'drive', this.getContainer(),
+      {bufferKey: `drive-${variant}`, render: () => renderDriveLoop(variant)}, DRIVE_LOOP_VOLUME, speedPitch * this.sizePitch());
+  }
+
   interpolate(date: number): void {
+    if (this.driveSoundActive && date > this.driveSoundUntil) {
+      this.driveSoundActive = false;
+      this.rendererService.babylonAudioService.releaseLoop(this.soundKey('drive'));
+    }
     if (this.lastPositionUpdateTime !== null && this.position3D && this.oldPosition3D) {
       let t = (date - this.lastPositionUpdateTime) / BabylonBaseItemImpl.TICK_TIME_MILLI_SECONDS;
       if (t > 1) {

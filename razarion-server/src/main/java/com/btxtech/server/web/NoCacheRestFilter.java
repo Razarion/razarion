@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.regex.Pattern;
 
 /**
  * Tells GCP Cloud CDN (and any other proxy/cache in front of this pod) to
@@ -31,6 +32,8 @@ import java.io.IOException;
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class NoCacheRestFilter extends OncePerRequestFilter {
+    private static final Pattern AUDIO_FILE_READ = Pattern.compile("^/rest/audio/\\d+$");
+
     @Override
     protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain chain)
             throws ServletException, IOException {
@@ -65,6 +68,9 @@ public class NoCacheRestFilter extends OncePerRequestFilter {
                 // The minimap's background, 2026-09-27: 300 KB, and until then downloaded on
                 // every start with a timestamp in the url.
                 || uri.startsWith("/rest/image/minimap/")
-                || uri.startsWith("/rest/editor/particle-system/data/"));
+                || uri.startsWith("/rest/editor/particle-system/data/")
+                // Unit sounds, 2026-11-06: the builder arm loop alone is ~130 KB and was fetched on
+                // every start. Only the file read - /rest/audio/read and the writes stay no-store.
+                || AUDIO_FILE_READ.matcher(uri).matches());
     }
 }

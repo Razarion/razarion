@@ -441,6 +441,10 @@ public class JsonDeserializer {
         r.setSpawnDurationMillis(json.getInt("spawnDurationMillis"));
         r.setSpawnParticleSystemId(json.getNullableInt("spawnParticleSystemId"));
         r.setSpawnAudioId(json.getNullableInt("spawnAudioId"));
+        r.setBuildArmAudioId(json.getNullableInt("buildArmAudioId"));
+        r.setDriveAudioId(json.getNullableInt("driveAudioId"));
+        r.setHarvestAudioId(json.getNullableInt("harvestAudioId"));
+        r.setBuildAudioId(json.getNullableInt("buildAudioId"));
         r.setDemolitionStepEffects(list(json, "demolitionStepEffects", JsonDeserializer::deserializeDemolitionStepEffect));
         r.setExplosionAudioItemConfigId(json.getNullableInt("explosionAudioItemConfigId"));
         r.setExplosionParticleId(json.getNullableInt("explosionParticleId"));

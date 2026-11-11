@@ -167,6 +167,10 @@ export class GameMockService {
           getPrice(): number { return 300; }
           getConsumingHouseSpace(): number { return 2; }
           getSpawnAudioId(): number | null { return null; }
+          getBuildArmAudioId(): number | null { return null; }
+          getDriveAudioId(): number | null { return null; }
+          getHarvestAudioId(): number | null { return null; }
+          getBuildAudioId(): number | null { return null; }
         };
 
         const viperType = new class implements BaseItemType {
@@ -194,6 +198,10 @@ export class GameMockService {
           getPrice(): number { return 100; }
           getConsumingHouseSpace(): number { return 1; }
           getSpawnAudioId(): number | null { return null; }
+          getBuildArmAudioId(): number | null { return null; }
+          getDriveAudioId(): number | null { return null; }
+          getHarvestAudioId(): number | null { return null; }
+          getBuildAudioId(): number | null { return null; }
         };
 
         {
@@ -849,6 +857,22 @@ export class GameMockService {
           }
 
           getSpawnAudioId(): number | null {
+            return null;
+          }
+
+          getBuildArmAudioId(): number | null {
+            return null;
+          }
+
+          getDriveAudioId(): number | null {
+            return null;
+          }
+
+          getHarvestAudioId(): number | null {
+            return null;
+          }
+
+          getBuildAudioId(): number | null {
             return null;
           }
         }

@@ -60,6 +60,18 @@ public class BaseItemTypeEntity extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private AudioLibraryEntity spawnAudio;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn
+    private AudioLibraryEntity buildArmAudio;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn
+    private AudioLibraryEntity driveAudio;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn
+    private AudioLibraryEntity harvestAudio;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn
+    private AudioLibraryEntity buildAudio;
     private int spawnDurationMillis;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
@@ -133,6 +145,18 @@ public class BaseItemTypeEntity extends BaseEntity {
         }
         if (spawnAudio != null) {
             baseItemType.setSpawnAudioId(spawnAudio.getId());
+        }
+        if (buildArmAudio != null) {
+            baseItemType.setBuildArmAudioId(buildArmAudio.getId());
+        }
+        if (driveAudio != null) {
+            baseItemType.setDriveAudioId(driveAudio.getId());
+        }
+        if (harvestAudio != null) {
+            baseItemType.setHarvestAudioId(harvestAudio.getId());
+        }
+        if (buildAudio != null) {
+            baseItemType.setBuildAudioId(buildAudio.getId());
         }
         baseItemType.setSpawnDurationMillis(spawnDurationMillis);
         if (thumbnail != null) {
@@ -304,6 +328,22 @@ public class BaseItemTypeEntity extends BaseEntity {
 
     public void setSpawnAudio(AudioLibraryEntity spawnAudio) {
         this.spawnAudio = spawnAudio;
+    }
+
+    public void setBuildArmAudio(AudioLibraryEntity buildArmAudio) {
+        this.buildArmAudio = buildArmAudio;
+    }
+
+    public void setDriveAudio(AudioLibraryEntity driveAudio) {
+        this.driveAudio = driveAudio;
+    }
+
+    public void setHarvestAudio(AudioLibraryEntity harvestAudio) {
+        this.harvestAudio = harvestAudio;
+    }
+
+    public void setBuildAudio(AudioLibraryEntity buildAudio) {
+        this.buildAudio = buildAudio;
     }
 
     public void setThumbnail(ImageLibraryEntity thumbnail) {

@@ -27,6 +27,10 @@ public class BaseItemTypeService extends AbstractConfigCrudService<BaseItemType,
         baseItemTypeEntity.setModel3DEntity(getServiceProviderService().getModel3DCrudPersistence().getEntity(baseItemType.getModel3DId()));
         // TODO baseItemTypeEntity.setWreckageShape3D(shape3DPersistence.getEntity(baseItemType.getWreckageShape3DId()));
         baseItemTypeEntity.setSpawnAudio(getServiceProviderService().getAudioPersistence().getAudioLibraryEntity(baseItemType.getSpawnAudioId()));
+        baseItemTypeEntity.setBuildArmAudio(getServiceProviderService().getAudioPersistence().getAudioLibraryEntity(baseItemType.getBuildArmAudioId()));
+        baseItemTypeEntity.setDriveAudio(getServiceProviderService().getAudioPersistence().getAudioLibraryEntity(baseItemType.getDriveAudioId()));
+        baseItemTypeEntity.setHarvestAudio(getServiceProviderService().getAudioPersistence().getAudioLibraryEntity(baseItemType.getHarvestAudioId()));
+        baseItemTypeEntity.setBuildAudio(getServiceProviderService().getAudioPersistence().getAudioLibraryEntity(baseItemType.getBuildAudioId()));
         baseItemTypeEntity.setThumbnail(getServiceProviderService().getImagePersistence().getImageLibraryEntity(baseItemType.getThumbnail()));
     }
 }

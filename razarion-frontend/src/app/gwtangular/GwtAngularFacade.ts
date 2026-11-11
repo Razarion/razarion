@@ -387,6 +387,12 @@ export interface BaseItemType extends ItemType {
 
   getSpawnAudioId(): number | null;
 
+  getBuildArmAudioId(): number | null;
+
+  getDriveAudioId(): number | null;
+  getHarvestAudioId(): number | null;
+  getBuildAudioId(): number | null;
+
   getPrice(): number;
 
   getConsumingHouseSpace(): number;

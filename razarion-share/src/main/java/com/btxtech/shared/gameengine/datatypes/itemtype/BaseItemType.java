@@ -36,6 +36,14 @@ public class BaseItemType extends ItemType {
     private int spawnDurationMillis;
     private Integer spawnParticleSystemId;
     private Integer spawnAudioId;
+    // Builder arm sound: a seamless loop, played while the arm extends (and slower while it retracts)
+    private Integer buildArmAudioId;
+    // Engine sound: a seamless loop, played while the unit moves, pitched by speed
+    private Integer driveAudioId;
+    // Harvesting sound: a seamless loop, played while the harvesting beam is on
+    private Integer harvestAudioId;
+    // Building sound: a seamless loop, played while the builder works (between arm out and arm in)
+    private Integer buildAudioId;
     private List<DemolitionStepEffect> demolitionStepEffects;
     private Integer explosionAudioItemConfigId;
     private Integer explosionParticleId;
@@ -229,6 +237,38 @@ public class BaseItemType extends ItemType {
         this.spawnAudioId = spawnAudioId;
     }
 
+    public Integer getBuildArmAudioId() {
+        return buildArmAudioId;
+    }
+
+    public void setBuildArmAudioId(Integer buildArmAudioId) {
+        this.buildArmAudioId = buildArmAudioId;
+    }
+
+    public Integer getDriveAudioId() {
+        return driveAudioId;
+    }
+
+    public void setDriveAudioId(Integer driveAudioId) {
+        this.driveAudioId = driveAudioId;
+    }
+
+    public Integer getHarvestAudioId() {
+        return harvestAudioId;
+    }
+
+    public void setHarvestAudioId(Integer harvestAudioId) {
+        this.harvestAudioId = harvestAudioId;
+    }
+
+    public Integer getBuildAudioId() {
+        return buildAudioId;
+    }
+
+    public void setBuildAudioId(Integer buildAudioId) {
+        this.buildAudioId = buildAudioId;
+    }
+
     public List<DemolitionStepEffect> getDemolitionStepEffects() {
         return demolitionStepEffects;
     }
@@ -370,6 +410,26 @@ public class BaseItemType extends ItemType {
 
     public BaseItemType spawnAudioId(Integer spawnAudioId) {
         setSpawnAudioId(spawnAudioId);
+        return this;
+    }
+
+    public BaseItemType buildArmAudioId(Integer buildArmAudioId) {
+        setBuildArmAudioId(buildArmAudioId);
+        return this;
+    }
+
+    public BaseItemType driveAudioId(Integer driveAudioId) {
+        setDriveAudioId(driveAudioId);
+        return this;
+    }
+
+    public BaseItemType harvestAudioId(Integer harvestAudioId) {
+        setHarvestAudioId(harvestAudioId);
+        return this;
+    }
+
+    public BaseItemType buildAudioId(Integer buildAudioId) {
+        setBuildAudioId(buildAudioId);
         return this;
     }
 

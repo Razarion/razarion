@@ -436,6 +436,10 @@ public class DtoConverter {
         setGetterObj(obj, "getFactoryType", () -> convertFactoryType(type));
         setGetterObj(obj, "getThumbnail", () -> convertNullableInt(type.getThumbnail()));
         setGetterObj(obj, "getSpawnAudioId", () -> convertNullableInt(type.getSpawnAudioId()));
+        setGetterObj(obj, "getBuildArmAudioId", () -> convertNullableInt(type.getBuildArmAudioId()));
+        setGetterObj(obj, "getDriveAudioId", () -> convertNullableInt(type.getDriveAudioId()));
+        setGetterObj(obj, "getHarvestAudioId", () -> convertNullableInt(type.getHarvestAudioId()));
+        setGetterObj(obj, "getBuildAudioId", () -> convertNullableInt(type.getBuildAudioId()));
         setGetterInt(obj, "getPrice", type::getPrice);
         setGetterInt(obj, "getConsumingHouseSpace", type::getConsumingHouseSpace);
         return obj;

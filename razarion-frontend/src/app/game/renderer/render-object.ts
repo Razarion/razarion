@@ -151,6 +151,34 @@ export class RenderObject {
     return this.buildAnimationActive;
   }
 
+  /**
+   * Wall-clock length of the intro (arm extending) as setBuildAnimationActive will play it:
+   * the target if one is given, else the longest group at its natural rate. 0 = no intro.
+   */
+  getIntroDurationSeconds(targetDurationSeconds?: number): number {
+    return RenderObject.phaseDurationSeconds(this.introAnimationGroups, targetDurationSeconds);
+  }
+
+  /** Same as getIntroDurationSeconds for the outro (arm retracting). */
+  getOutroDurationSeconds(targetDurationSeconds?: number): number {
+    return RenderObject.phaseDurationSeconds(this.outroAnimationGroups, targetDurationSeconds);
+  }
+
+  private static phaseDurationSeconds(groups: AnimationGroup[], targetDurationSeconds?: number): number {
+    if (groups.length === 0) {
+      return 0;
+    }
+    if (targetDurationSeconds && targetDurationSeconds > 0) {
+      return targetDurationSeconds;
+    }
+    let longest = 0;
+    groups.forEach(group => {
+      const fps = group.targetedAnimations.length > 0 ? group.targetedAnimations[0].animation.framePerSecond : 60;
+      longest = Math.max(longest, (group.to - group.from) / (fps > 0 ? fps : 60));
+    });
+    return longest;
+  }
+
   addPhasedAnimationGroup(phase: BuildAnimationPhase, group: AnimationGroup) {
     // Make sure the cloned group does not auto-play (Babylon's clone may carry over a running state)
     group.stop();
