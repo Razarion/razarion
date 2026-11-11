@@ -12,6 +12,8 @@ public class UserBackendInfo {
     private Date verificationDoneDate;
     private String email;
     private String name;
+    /** What the chat, the ticker and the island news call this player, e.g. "Falcon-42" (CallSign). */
+    private String callSign;
     private Integer activeQuest;
     private List<Integer> completedQuestIds;
     private Integer levelId;
@@ -80,6 +82,19 @@ public class UserBackendInfo {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getCallSign() {
+        return callSign;
+    }
+
+    public void setCallSign(String callSign) {
+        this.callSign = callSign;
+    }
+
+    public UserBackendInfo callSign(String callSign) {
+        setCallSign(callSign);
+        return this;
     }
 
     public Integer getActiveQuest() {

@@ -875,6 +875,11 @@ public class DtoConverter {
                 }
             }
             obj.set("cargo", cargo);
+            obj.set("harvesting", state.harvesting);
+            if (state.harvesting) {
+                obj.set("harvestX", state.harvestX);
+                obj.set("harvestY", state.harvestY);
+            }
             arr.push(obj);
         }
         return arr;

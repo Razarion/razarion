@@ -56,7 +56,14 @@ export const INTERACTION_KINDS = [
   // The tech tree: the game marking it after a level that allows something new, and the player
   // acting on that mark. Shown as a pair - the second against the first is the whole question.
   'TECH_TREE_OFFERED',
-  'TECH_TREE_OPENED'
+  'TECH_TREE_OPENED',
+  // The chat reel: opened, closed, touched inside, page gone to the background while it was open,
+  // and back. LEFT minus RETURNED is the players lost to Instagram (ChatCockpitComponent).
+  'REEL_OPENED',
+  'REEL_CLOSED',
+  'REEL_TOUCHED',
+  'REEL_LEFT',
+  'REEL_RETURNED'
 ] as const;
 
 export type InteractionKind = typeof INTERACTION_KINDS[number];
@@ -82,7 +89,10 @@ const NOT_THE_PLAYER: InteractionKind[] = ['PLACER_SHOWN', 'PLACER_NO_TERRAIN', 
   // was offered, never what he did with it.
   'GROUP_TIP',
   // Marking the tech tree is the game offering, like PLACER_SHOWN. TECH_TREE_OPENED is the player.
-  'TECH_TREE_OFFERED'];
+  'TECH_TREE_OFFERED',
+  // The page going to the background with a reel open and coming back: what the browser did, not a
+  // move in the game. REEL_OPENED, REEL_CLOSED and REEL_TOUCHED are the player.
+  'REEL_LEFT', 'REEL_RETURNED'];
 
 /**
  * The player reached and got nothing out of it: a finger on the game field that led nowhere, a

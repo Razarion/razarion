@@ -34,10 +34,13 @@ public class GameLogicService {
     private final Provider<BotService> botServiceInstance;
 
     private final Provider<GuardingItemService> guardingItemServiceInstance;
+
+    private final Provider<AutoHarvestService> autoHarvestServiceInstance;
     private Optional<GameLogicListener> gameLogicListener = Optional.empty();
 
     @Inject
-    public GameLogicService(Provider<com.btxtech.shared.gameengine.planet.GuardingItemService> guardingItemServiceInstance, Provider<com.btxtech.shared.gameengine.planet.bot.BotService> botServiceInstance, Provider<com.btxtech.shared.gameengine.planet.quest.QuestService> questServiceInstance) {
+    public GameLogicService(Provider<com.btxtech.shared.gameengine.planet.GuardingItemService> guardingItemServiceInstance, Provider<com.btxtech.shared.gameengine.planet.bot.BotService> botServiceInstance, Provider<com.btxtech.shared.gameengine.planet.quest.QuestService> questServiceInstance, Provider<AutoHarvestService> autoHarvestServiceInstance) {
+        this.autoHarvestServiceInstance = autoHarvestServiceInstance;
         this.guardingItemServiceInstance = guardingItemServiceInstance;
         this.botServiceInstance = botServiceInstance;
         this.questServiceInstance = questServiceInstance;
@@ -225,6 +228,7 @@ public class GameLogicService {
             botServiceInstance.get().onBotSyncBaseItemCreated(syncBaseItem, createdBy);
         } else {
             questServiceInstance.get().onSyncItemBuilt(syncBaseItem);
+            autoHarvestServiceInstance.get().onFactoryItemCreated(syncBaseItem);
         }
         gameLogicListener.ifPresent(listener -> listener.onFactorySyncItem(syncBaseItem, createdBy));
     }

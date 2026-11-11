@@ -409,8 +409,11 @@
                 [class.compact-icon-open]="compactLayout.isOpen('chat')"
                 [disabled]="!cockpitDisplayService.showChatCockpit"
                 (click)="compactLayout.toggle('chat')"
-                aria-label="Chat">
+                [attr.aria-label]="compactLayout.chatUnread() ? 'Chat, new messages' : 'Chat'">
           <i class="pi pi-comments"></i>
+          @if (compactLayout.chatUnread() && cockpitDisplayService.showChatCockpit) {
+            <span class="compact-icon-dot"></span>
+          }
         </button>
       }
       <!-- The tech tree is a row inside this menu, so when a level allows something new it is the

@@ -78,6 +78,7 @@
       <p-tab value="3">Startup</p-tab>
       <p-tab value="5">Attention</p-tab>
       <p-tab value="7">Controls</p-tab>
+      <p-tab value="8">Chat</p-tab>
     </p-tablist>
     <p-tabpanels>
       <p-tabpanel value="0">
@@ -217,21 +218,34 @@
         <player-sessions [fromDate]="fromDate" [toDate]="toDate"></player-sessions>
       }
     </p-tabpanel>
+    <!-- Users and Startup exist only while their tab shows, not from the first opening on: the user
+         table is some 3000 rows and 56 000 elements, and every change detection of the page walked
+         all of them, visible or not - about a second per click, scroll and poll (measured
+         2026-11-11). Leaving the tab costs nothing; coming back reloads the users. -->
     <p-tabpanel value="2">
-      <user-mgmt class="col-span-4"></user-mgmt>
+      @if (activeTab === '2') {
+        <user-mgmt class="col-span-4"></user-mgmt>
+      }
     </p-tabpanel>
     <p-tabpanel value="6">
       <app-open-connections class="col-span-4" [events]="connectionEvents"
                             (clearEvents)="clearConnectionEvents()"></app-open-connections>
     </p-tabpanel>
     <p-tabpanel value="3">
-      <startup-tracking [startupTerminatedJsons]="startupTerminatedJsons" [startupTaskJsons]="startupTaskJsons"></startup-tracking>
+      @if (activeTab === '3') {
+        <startup-tracking [startupTerminatedJsons]="startupTerminatedJsons" [startupTaskJsons]="startupTaskJsons"></startup-tracking>
+      }
     </p-tabpanel>
     <p-tabpanel value="5">
       <attention-tracking [attentionReport]="attentionReport"></attention-tracking>
     </p-tabpanel>
     <p-tabpanel value="7">
       <first-interaction [firstInteractionReport]="firstInteractionReport"></first-interaction>
+    </p-tabpanel>
+    <p-tabpanel value="8">
+      @if (isOpened('8')) {
+        <chat-log [fromDate]="fromDate" [toDate]="toDate"></chat-log>
+      }
     </p-tabpanel>
   </p-tabs>
 </div>

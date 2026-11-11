@@ -949,6 +949,8 @@ public class JsonDeserializer {
         ChatMessage r = new ChatMessage();
         r.setUserName(json.isNullOrUndefined("userName") ? null : json.getString("userName"));
         r.setMessage(json.isNullOrUndefined("message") ? null : json.getString("message"));
+        r.setInstagramUrl(json.isNullOrUndefined("instagramUrl") ? null : json.getString("instagramUrl"));
+        r.setTimestamp(json.isNullOrUndefined("timestamp") ? null : (long) json.getDouble("timestamp"));
         return r;
     }
 }

@@ -13,7 +13,8 @@
 // In memory only, for now: a restart starts an empty tape. On disk are only the log and the
 // volume measurement (state/), which hold sizes and counts and nothing of the game.
 //
-// Local only: it listens on 127.0.0.1, and nothing it serves changes anything.
+// Local only: it listens on 127.0.0.1, and nothing it serves changes anything. Its one write to the
+// game is the chat assistant's answer (lib/chat.mjs).
 
 import { createServer } from 'node:http';
 import { appendFileSync, existsSync, readFileSync, renameSync, statSync, writeFileSync } from 'node:fs';
@@ -28,6 +29,8 @@ import { buildTrack, MAX_RANGE_MS } from './lib/replay.mjs';
 import { ReplaySession, startReplayProxy } from './lib/replay-server.mjs';
 import { Moments } from './lib/moments.mjs';
 import { HistoryFeed } from './lib/feed.mjs';
+import { ChatWatch } from './lib/chat.mjs';
+import { answerChat } from './lib/assistant.mjs';
 
 const HOUR = 3_600_000;
 const STATE_DIR = ensureStateDir();
@@ -62,6 +65,8 @@ const feed = new HistoryFeed(settings.baseUrl, auth, settings.feedSeconds * 1000
   players.onHistory(row, t);
   moments?.onHistory(row, t);
 });
+// The chat, and the assistant answering questions in it (lib/chat.mjs, lib/assistant.mjs).
+const chat = new ChatWatch({ baseUrl: settings.baseUrl, auth, players, stateFile: join(STATE_DIR, 'chat.json'), everyMs: settings.chatSeconds * 1000, answering: settings.chatAnswer, log, answerChat });
 const keyframes = { taken: 0, failed: 0, lastError: null };
 let configLoadedAt = null;
 
@@ -141,6 +146,7 @@ function status() {
       tokenExpiresAt: auth.expiresAt,
     },
     feed: { state: feed.state, rows: feed.rows, lastPollAt: feed.lastPollAt, lastError: feed.lastError },
+    chat: chat.status(),
     keyframes: { ...keyframes, everyMinutes: settings.keyframeMinutes },
     names: { loadedAt: configLoadedAt, baseItemTypes: world.names.baseItemTypes.size },
     world: { bases: world.bases.size, items: world.items.size, tickCount: world.tickCount, snapshots: world.snapshots, lastError: world.lastError },
@@ -181,7 +187,9 @@ async function minimapImage() {
 const sessions = new Map();
 let replaySession = null;
 // Shorts from players' moments (rules.json), filmed from the tape and handed to the social engine.
-const moments = new Moments({ dir: join(STATE_DIR, 'moments'), rulesFile: join(ROOT, 'rules.json'), tape, world, players, sessions, settings, log });
+const moments = new Moments({
+  dir: join(STATE_DIR, 'moments'), rulesFile: join(ROOT, 'rules.json'), tape, world, players, sessions, settings, log,
+});
 
 async function readJson(req) {
   let body = '';
@@ -276,6 +284,7 @@ const server = createServer((req, res) => {
   }
   // What the analysis reads; see lib/players.mjs and mcp.mjs.
   if (url.pathname === '/api/players') return send(res, 200, players.list(Date.now()));
+  if (url.pathname === '/api/chat') return send(res, 200, chat.list(Math.min(Number(url.searchParams.get('limit') || 100), 300)));
   if (url.pathname === '/api/funnel') return send(res, 200, players.funnel(Date.now()));
   if (url.pathname === '/api/stalls') return send(res, 200, players.stalls(Date.now(), Number(url.searchParams.get('min') || 5)));
   const playerMatch = url.pathname.match(/^\/api\/player\/([\w-]+)$/);
@@ -298,6 +307,7 @@ server.listen(settings.port, '127.0.0.1', () => {
   loadConfig().then(loadPlayers).then(() => {
     stream.start();
     feed.start();
+    chat.start();
   });
 });
 

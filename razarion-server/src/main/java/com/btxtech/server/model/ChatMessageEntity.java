@@ -24,6 +24,8 @@ public class ChatMessageEntity {
     private String message;
     @Column(columnDefinition = "DATETIME(3)")
     private Date timestamp;
+    @Column(length = 300)
+    private String instagramUrl;
 
     public ChatMessageEntity init(String userId, String userName, String message) {
         this.userId = userId;
@@ -33,7 +35,39 @@ public class ChatMessageEntity {
         return this;
     }
 
+    public ChatMessageEntity instagramUrl(String instagramUrl) {
+        this.instagramUrl = instagramUrl;
+        return this;
+    }
+
+    /** A reel on our Instagram the message points to, or null. */
+    public String getInstagramUrl() {
+        return instagramUrl;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    /** Null for an answer of the chat assistant: it is nobody's account. */
+    public String getUserId() {
+        return userId;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public Date getTimestamp() {
+        return timestamp;
+    }
+
     public ChatMessage toChatMessage() {
-        return new ChatMessage().userName(userName).message(message);
+        return new ChatMessage().userName(userName).message(message).instagramUrl(instagramUrl)
+                .timestamp(timestamp != null ? timestamp.getTime() : null);
     }
 }

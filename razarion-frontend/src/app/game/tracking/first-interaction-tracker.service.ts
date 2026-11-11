@@ -249,7 +249,20 @@ export type InteractionKind =
    * different question - not "did the task finish" but "was anybody there at all" - and a player
    * who is reading, scrolling or hunting for a button answers it without finishing anything.
    */
-  | 'TIP_COLD';
+  | 'TIP_COLD'
+/**
+ * A chat reel (ChatService.reel): the player tapped the Instagram button and the reel's embed
+ * opened, closed it again with the X or a tap beside it, touched something inside the embed (focus
+ * went into Instagram's frame: play, like, the profile ...), and the page went to the background
+ * while the reel was open - in an app's browser that is Instagram itself taking over - and came
+ * back. LEFT without RETURNED in a session is a player we lost to Instagram. The detail is the
+ * reel's shortcode.
+ */
+  | 'REEL_OPENED'
+  | 'REEL_CLOSED'
+  | 'REEL_TOUCHED'
+  | 'REEL_LEFT'
+  | 'REEL_RETURNED';
 
 /**
  * How a group size is reported. Bucketed rather than exact: {@link

@@ -279,6 +279,10 @@ export interface TipItemState {
   constructing: number;
   /** Item types a container carries; empty for anything else. Carried units are not in the list. */
   cargo: number[];
+  /** A harvester at work on a crystal, not while it drives there; harvestX/Y is the crystal. */
+  harvesting?: boolean;
+  harvestX?: number;
+  harvestY?: number;
 }
 
 export interface NativeSyncBaseItemTickInfo {
@@ -791,10 +795,13 @@ export interface ChatCockpit {
   onMessage(chatMessage: ChatMessage): void;
 }
 
+/** Plain fields (JsChatCockpit): a Java object would reach JS opaque under WASM-GC. */
 export interface ChatMessage {
-  getUserName(): string;
-
-  getMessage(): string;
+  userName: string;
+  message: string;
+  instagramUrl: string | null;
+  /** Epoch milliseconds, or null. */
+  timestamp: number | null;
 }
 
 export interface BaseItemPlacerPresenter {

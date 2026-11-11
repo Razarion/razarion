@@ -591,6 +591,11 @@ public class BaseItemUiService {
             // -1 is the factory's warmup sentinel, set where SyncBaseItem fills the tick info
             state.constructing = Math.max(0, info.constructing);
             state.cargo = info.containingItemTypeIds != null ? info.containingItemTypeIds : new int[0];
+            if (info.harvestingResourcePosition != null) {
+                state.harvesting = true;
+                state.harvestX = info.harvestingResourcePosition.x;
+                state.harvestY = info.harvestingResourcePosition.y;
+            }
             result.add(state);
         }
         return result.toArray(new TipItemState[0]);

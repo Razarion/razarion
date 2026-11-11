@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, NgZone, OnDestroy, OnInit} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {
   BaseItemTypeEditorControllerClient,
@@ -38,6 +38,7 @@ import {AttentionTrackingComponent} from '../attention-tracking/attention-tracki
 import {AttentionAnalyzer, AttentionReport} from './attention-analyzer';
 import {FirstInteractionComponent} from '../first-interaction/first-interaction.component';
 import {FirstInteractionAnalyzer, FirstInteractionReport} from './first-interaction-analyzer';
+import {ChatLogComponent} from '../chat-log/chat-log.component';
 import {announceConnectionChange, clearConnectionTabNotice} from './connection-tab-notice';
 
 /** The tab values from the template. Strings, because that is what p-tabs binds. */
@@ -60,7 +61,8 @@ const TAB_DAILY = '4';
     PlayerSessionsComponent,
     StartupTrackingComponent,
     AttentionTrackingComponent,
-    FirstInteractionComponent],
+    FirstInteractionComponent,
+    ChatLogComponent],
   templateUrl: './tracking-container.component.html',
   styleUrl: './tracking-container.component.scss'
 })
@@ -191,7 +193,7 @@ export class TrackingContainerComponent implements OnInit, OnDestroy {
   private attentionAnalyzer = new AttentionAnalyzer();
   private firstInteractionAnalyzer = new FirstInteractionAnalyzer();
 
-  constructor(httpClient: HttpClient) {
+  constructor(httpClient: HttpClient, private zone: NgZone) {
     this.trackerControllerImplClient = new TrackerControllerImplClient(TypescriptGenerator.generateHttpClientAdapter(httpClient));
     this.connectionMgmtControllerClient =
       new ConnectionMgmtControllerClient(TypescriptGenerator.generateHttpClientAdapter(httpClient));
@@ -334,7 +336,10 @@ export class TrackingContainerComponent implements OnInit, OnDestroy {
       }
     });
     this.recordConnectionEvents(joined, left);
-    announceConnectionChange(joined, left);
+    // Outside Angular: the notice starts a one-second pulse that only swaps the tab icon. Inside the
+    // zone every pulse ran a change detection of the whole backend, once a second for as long as
+    // the tab sat in the background.
+    this.zone.runOutsideAngular(() => announceConnectionChange(joined, left));
   }
 
   /**

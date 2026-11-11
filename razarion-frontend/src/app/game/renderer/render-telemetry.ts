@@ -43,6 +43,8 @@ export interface RenderTelemetrySceneStats {
   instancedMeshes: number;
   /** Size of the ShadowGenerator's render list — a second per-frame walk over the same meshes. */
   shadowCasters: number;
+  /** False once the adaptive quality has switched the shadows off for a slow session. */
+  shadowsEnabled: boolean;
   /**
    * Edge length of the shadow map. Kept after the three shadow arms were removed, because unlike
    * an arm this varies per device by rule (see ShadowQuality) and a reader of the line otherwise
@@ -273,7 +275,7 @@ export class RenderTelemetry {
       `tickApplyP50=${apply.p50.toFixed(1)} tickApplyMax=${apply.max.toFixed(1)} ` +
       `meshes=${stats.meshes} activeMeshes=${stats.activeMeshes} activeIndices=${stats.activeIndices} materials=${stats.materials} ` +
       `disabledMeshes=${stats.disabledMeshes} instanced=${stats.instancedMeshes} shadowCasters=${stats.shadowCasters} ` +
-      `shadowMap=${stats.shadowMapSize} ` +
+      `shadowMap=${stats.shadowMapSize} shadows=${stats.shadowsEnabled ? "on" : "off"} ` +
       `parked=${stats.parkedMeshes} parkingFilter=${stats.parkingFilter} ` +
       `meshTop="${this.clean(stats.meshTop)}" indexTop="${this.clean(stats.indexTop)}" ` +
       `heapMb=${stats.heapUsedMb} heapLimitMb=${stats.heapLimitMb} textures=${stats.textureCount} textureMb=${stats.textureMb} geometries=${stats.geometries} ` +
@@ -351,7 +353,7 @@ export class RenderTelemetry {
     } catch (e) {
       return {
         meshes: -1, activeMeshes: -1, activeIndices: -1, materials: -1,
-        disabledMeshes: -1, instancedMeshes: -1, shadowCasters: -1,
+        disabledMeshes: -1, instancedMeshes: -1, shadowCasters: -1, shadowsEnabled: true,
         shadowMapSize: -1, meshTop: "unknown", indexTop: "unknown",
         heapUsedMb: -1, heapLimitMb: -1, textureCount: -1, textureMb: -1, geometries: -1,
         parkedMeshes: -1, parkingFilter: false,

@@ -127,8 +127,15 @@ export class ClumpField {
             if ((px - x) * (px - x) + (pz - z) * (pz - z) > r2) {
               continue;
             }
-            m.set(list.subarray(i, i + 16), n * 16);
-            c.set(list.subarray(i + 16, i + 20), n * 4);
+            // Element by element: a subarray per clump was an allocation per clump, 64k per show
+            const mo = n * 16, co = n * 4;
+            for (let k = 0; k < 16; k++) {
+              m[mo + k] = list[i + k];
+            }
+            c[co] = list[i + 16];
+            c[co + 1] = list[i + 17];
+            c[co + 2] = list[i + 18];
+            c[co + 3] = list[i + 19];
             f[n] = list[i + 20];
             n++;
           }

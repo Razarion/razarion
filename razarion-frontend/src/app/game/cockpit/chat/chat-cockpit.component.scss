@@ -7,3 +7,85 @@
   font-size: smaller;
   color: #CCCCCC;
 }
+
+// The chat assistant's answers (ChatService.ASSISTANT_NAME), so nobody takes them for a person
+.user-name.assistant {
+  background-color: #3b2f5c;
+}
+
+// What happens on the planet (ChatService.NEWS_NAME), e.g. a player leaving the noob island
+.user-name.news {
+  background-color: #2f5c3b;
+}
+
+.send-error {
+  font-size: smaller;
+  color: #f0a0a0;
+}
+
+.time {
+  float: right;
+  margin-left: 0.6em;
+  font-size: 0.75em;
+  opacity: 0.6;
+}
+
+// A reel on our Instagram (ChatService.reel): a button only, nothing of Instagram loads before the tap
+.instagram {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+  margin-top: 0.25em;
+  padding: 0.2em 0.75em;
+  border: none;
+  border-radius: 1em;
+  color: white;
+  cursor: pointer;
+  font-size: 0.85em;
+  background: linear-gradient(45deg, #f58529, #dd2a7b 50%, #8134af 80%, #515bd4);
+
+  svg {
+    width: 1.1em;
+    height: 1.1em;
+    fill: none;
+    stroke: white;
+    stroke-width: 2;
+  }
+
+  .dot {
+    fill: white;
+    stroke: none;
+  }
+}
+
+.reel-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+.reel-card {
+  max-width: 540px;
+  margin: 56px auto 24px;
+  padding: 0 8px;
+}
+
+.reel-close {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  z-index: 1001;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  background-color: white;
+  color: black;
+  font-size: 22px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}

@@ -24,6 +24,9 @@ interface Follow {
   idleSince: number | null;
   point: Point | null;
   stop: (() => void) | null;
+  /** A harvester the server sent out on its own, see watchAutoHarvest. */
+  auto: boolean;
+  harvestStartedAt: number | null;
 }
 
 /**
@@ -38,6 +41,11 @@ interface Follow {
  * Only while there is a tip - the guided start - and the player always wins: moving the camera ends
  * the follow for this order. It also ends when the units have arrived and stand, when the target is
  * gone, when no unit of the order is left, and with the next order.
+ * <p>
+ * A harvester out of the factory goes to the nearest crystal by itself (AutoHarvestService on the
+ * server), without an order here. The camera goes along with that too, so the player sees what the
+ * new unit does: from when it drives off until it has harvested for a moment. The client learns the
+ * crystal only once the harvester works on it, so on the way the camera follows the harvester alone.
  */
 @Injectable({
   providedIn: 'root'
@@ -55,8 +63,22 @@ export class OrderFollowService {
   /** A harvester never stands: it is there once it has reached the field. */
   private static readonly HARVEST_ARRIVED_DISTANCE = 12;
   private static readonly MAX_MILLIS = 180000;
+  /** How often new harvesters are looked for while a tip is up. */
+  private static readonly AUTO_WATCH_MILLIS = 500;
+  /** A new harvester that gets busy within this time was sent by the server, not left standing. */
+  private static readonly AUTO_START_WINDOW_MILLIS = 3000;
+  /** Harvester and crystal stay on screen this long once the harvesting has started. */
+  private static readonly AUTO_HARVEST_LINGER_MILLIS = 2000;
+  private static readonly AUTO_MAX_MILLIS = 30000;
   private follow: Follow | null = null;
   private timer: ReturnType<typeof setInterval> | null = null;
+  /** Own harvesters already seen; null until the first look while a tip is up. */
+  private knownHarvesterIds: Set<number> | null = null;
+  /** New harvesters, by when they were first seen, waiting to get busy. */
+  private readonly pendingHarvesters = new Map<number, number>();
+  /** Units the player gave an order: theirs is followed as an order, not as an auto harvest. */
+  private readonly orderedUnitIds = new Set<number>();
+  private readonly harvesterTypes = new Map<number, boolean>();
 
   constructor(private readonly actionService: ActionService,
               private readonly renderService: BabylonRenderServiceAccessImpl,
@@ -67,9 +89,11 @@ export class OrderFollowService {
               private readonly zone: NgZone) {
     this.actionService.addOrderListener(order => this.onOrder(order));
     this.renderService.setArrowJumpFraming((x, y) => this.frameArrowJump(x, y));
+    this.zone.runOutsideAngular(() => setInterval(() => this.watchAutoHarvest(), OrderFollowService.AUTO_WATCH_MILLIS));
   }
 
   private onOrder(order: OrderNote): void {
+    order.unitIds.forEach(id => this.orderedUnitIds.add(id));
     this.end(null);
     if (!this.tipService.isActive()) {
       return;
@@ -96,16 +120,87 @@ export class OrderFollowService {
       targetGoneAt: null,
       idleSince: null,
       point: this.framePoint(units, target),
-      stop: null
+      stop: null,
+      auto: false,
+      harvestStartedAt: null
     };
     this.follow = follow;
-    this.tracker.report('ORDER_FOLLOW', 'kind=' + order.kind);
+    this.startCamera(follow);
+    this.startPolling(follow);
+  }
+
+  /**
+   * Looks for own harvesters that are new and get busy without an order from the player: the
+   * server sent them to a crystal. Only while a tip is up, like the order follow.
+   */
+  private watchAutoHarvest(): void {
+    if (!this.tipService.isActive()) {
+      this.knownHarvesterIds = null;
+      this.pendingHarvesters.clear();
+      this.orderedUnitIds.clear();
+      return;
+    }
+    const items = this.safeItemStates(-1);
+    if (!items) {
+      return;
+    }
+    const harvesters = items.filter(item => item.own && item.buildup >= 1 && this.isHarvester(item.itemTypeId));
+    if (this.knownHarvesterIds === null) {
+      // The ones already there when the tip came up are not new.
+      this.knownHarvesterIds = new Set(harvesters.map(harvester => harvester.id));
+      return;
+    }
+    const now = performance.now();
+    for (const harvester of harvesters) {
+      if (!this.knownHarvesterIds.has(harvester.id)) {
+        this.knownHarvesterIds.add(harvester.id);
+        this.pendingHarvesters.set(harvester.id, now);
+      }
+    }
+    for (const [id, seenAt] of [...this.pendingHarvesters]) {
+      const harvester = harvesters.find(candidate => candidate.id === id);
+      if (!harvester || this.orderedUnitIds.has(id) || now - seenAt > OrderFollowService.AUTO_START_WINDOW_MILLIS) {
+        this.pendingHarvesters.delete(id);
+      } else if (!harvester.idle) {
+        this.pendingHarvesters.delete(id);
+        // An order the player gave is followed already, and theirs wins.
+        if (!this.follow) {
+          this.startAutoHarvest(harvester);
+        }
+      }
+    }
+  }
+
+  private startAutoHarvest(harvester: TipItemState): void {
+    const follow: Follow = {
+      order: {kind: 'harvest', unitIds: [harvester.id], targetId: null, targetTypeId: null, target: null},
+      startedAt: performance.now(),
+      target: null,
+      targetTracked: false,
+      targetGoneAt: null,
+      idleSince: null,
+      point: {x: harvester.x, y: harvester.y},
+      // The camera only comes along once the harvester or its crystal leaves the picture, see pollAuto.
+      stop: null,
+      auto: true,
+      harvestStartedAt: null
+    };
+    this.follow = follow;
+    this.startPolling(follow);
+  }
+
+  private startCamera(follow: Follow): void {
+    const kind = follow.auto ? 'autoHarvest' : follow.order.kind;
+    this.tracker.report('ORDER_FOLLOW', 'kind=' + kind);
     follow.stop = this.renderService.followViewFieldCenter(() => follow.point, () => {
       follow.stop = null;
       const seconds = Math.round((performance.now() - follow.startedAt) / 1000);
-      this.tracker.report('ORDER_FOLLOW_TAKEOVER', `kind=${order.kind} after=${seconds < 3 ? '0-2' : seconds < 10 ? '3-9' : '10+'}`);
+      this.tracker.report('ORDER_FOLLOW_TAKEOVER', `kind=${kind} after=${seconds < 3 ? '0-2' : seconds < 10 ? '3-9' : '10+'}`);
       this.end(follow);
     });
+  }
+
+  private startPolling(follow: Follow): void {
     // The look-ups run outside Angular like the follow itself: they change no template.
     this.timer = this.zone.runOutsideAngular(() => setInterval(() => this.poll(follow), OrderFollowService.POLL_MILLIS));
   }
@@ -117,9 +212,13 @@ export class OrderFollowService {
     const now = performance.now();
     const items = this.items(follow.order);
     const units = items ? this.centroid(items, follow.order.unitIds) : null;
-    if (!items || !units || now - follow.startedAt > OrderFollowService.MAX_MILLIS) {
+    if (!items || !units || now - follow.startedAt > (follow.auto ? OrderFollowService.AUTO_MAX_MILLIS : OrderFollowService.MAX_MILLIS)) {
       // No unit of the order left - dead, or loaded into the transporter it was sent to.
       this.end(follow);
+      return;
+    }
+    if (follow.auto) {
+      this.pollAuto(follow, items, units, now);
       return;
     }
     if (follow.targetTracked) {
@@ -139,6 +238,44 @@ export class OrderFollowService {
       return;
     }
     follow.point = this.framePoint(units, follow.target);
+  }
+
+  /**
+   * On the way the harvester alone, then harvester and crystal for AUTO_HARVEST_LINGER_MILLIS. The
+   * camera joins only when one of them is out of the picture; a harvester that stops without
+   * harvesting (no crystal in reach) ends it.
+   */
+  private pollAuto(follow: Follow, items: TipItemState[], units: Point, now: number): void {
+    const harvester = items.find(item => item.own && item.id === follow.order.unitIds[0]);
+    if (harvester?.harvesting && harvester.harvestX !== undefined && harvester.harvestY !== undefined) {
+      follow.target = {x: harvester.harvestX, y: harvester.harvestY};
+      follow.harvestStartedAt ??= now;
+    } else if (harvester?.idle && now - follow.startedAt > OrderFollowService.START_GRACE_MILLIS) {
+      this.end(follow);
+      return;
+    }
+    if (follow.harvestStartedAt !== null && now - follow.harvestStartedAt > OrderFollowService.AUTO_HARVEST_LINGER_MILLIS) {
+      this.end(follow);
+      return;
+    }
+    follow.point = this.framePoint(units, follow.target);
+    if (!follow.stop && (!this.inView(units) || (follow.target && !this.inView(follow.target)))) {
+      this.startCamera(follow);
+    }
+  }
+
+  private isHarvester(itemTypeId: number): boolean {
+    let harvester = this.harvesterTypes.get(itemTypeId);
+    if (harvester === undefined) {
+      try {
+        harvester = !!this.gwtAngularService.gwtAngularFacade.itemTypeService.getBaseItemTypeAngular(itemTypeId).getHarvesterType();
+      } catch (e) {
+        // Not ready yet: ask again next time
+        return false;
+      }
+      this.harvesterTypes.set(itemTypeId, harvester);
+    }
+    return harvester;
   }
 
   private arrived(follow: Follow, items: TipItemState[], units: Point, now: number): boolean {

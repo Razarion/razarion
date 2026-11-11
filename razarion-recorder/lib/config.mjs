@@ -51,6 +51,9 @@ export const settings = {
   // A fresh picture of the whole world, so a replay can start anywhere and not only at a connect.
   keyframeMinutes: number('RECORDER_KEYFRAME_MINUTES', 5),
   feedSeconds: number('RECORDER_FEED_SECONDS', 5),
+  // The planet's chat (lib/chat.mjs); RECORDER_CHAT_ANSWER=0 keeps reading it but answers nothing.
+  chatSeconds: number('RECORDER_CHAT_SECONDS', 5),
+  chatAnswer: env.RECORDER_CHAT_ANSWER !== '0',
   port: number('RECORDER_PORT', 4712),
   // The game client watching a replay (lib/replay-server.mjs): the game server's pages, the tape's game connection.
   replayPort: number('RECORDER_REPLAY_PORT', 4713),

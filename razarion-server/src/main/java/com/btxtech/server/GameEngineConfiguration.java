@@ -6,6 +6,7 @@ import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.LevelService;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.Path;
+import com.btxtech.shared.gameengine.planet.AutoHarvestService;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.BoxService;
 import com.btxtech.shared.gameengine.planet.CommandService;
@@ -380,8 +381,17 @@ public class GameEngineConfiguration {
     @Bean
     public GameLogicService gameLogicService(jakarta.inject.Provider<GuardingItemService> guardingItemServiceInstance,
                                              jakarta.inject.Provider<BotService> botServiceInstance,
-                                             jakarta.inject.Provider<QuestService> questServiceInstance) {
-        return new GameLogicService(guardingItemServiceInstance::get, botServiceInstance::get, questServiceInstance::get);
+                                             jakarta.inject.Provider<QuestService> questServiceInstance,
+                                             jakarta.inject.Provider<AutoHarvestService> autoHarvestServiceInstance) {
+        return new GameLogicService(guardingItemServiceInstance::get, botServiceInstance::get, questServiceInstance::get, autoHarvestServiceInstance::get);
+    }
+
+    @Bean
+    public AutoHarvestService autoHarvestService(jakarta.inject.Provider<CommandService> commandService,
+                                                 jakarta.inject.Provider<PathingService> pathingService,
+                                                 jakarta.inject.Provider<SyncItemContainerServiceImpl> syncItemContainerService,
+                                                 jakarta.inject.Provider<BaseItemService> baseItemService) {
+        return new AutoHarvestService(commandService::get, pathingService::get, syncItemContainerService::get, baseItemService::get);
     }
 
     @Bean

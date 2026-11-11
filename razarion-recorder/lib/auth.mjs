@@ -57,3 +57,18 @@ export async function getJson(baseUrl, auth, path) {
   }
   return res.json();
 }
+
+/** The recorder's one write: the chat assistant's answer (RecorderController.chatAnswer). */
+export async function postText(baseUrl, auth, path, text) {
+  const res = await fetch(`${baseUrl}${path}`, {
+    method: 'POST',
+    headers: { Authorization: 'Bearer ' + (await auth.token()), 'Content-Type': 'text/plain; charset=utf-8' },
+    body: text,
+  });
+  if (res.status === 401) auth.invalidate();
+  if (!res.ok) {
+    const error = new Error(`POST ${path}: HTTP ${res.status}`);
+    error.status = res.status;
+    throw error;
+  }
+}

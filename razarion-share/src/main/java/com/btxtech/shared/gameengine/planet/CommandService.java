@@ -85,7 +85,7 @@ public class CommandService {
         moveCommand.setId(syncBaseItem.getId());
         moveCommand.updateTimeStamp();
         moveCommand.setSimplePath(pathingService.setupPathToDestination(syncBaseItem,
-                correctDestination(syncBaseItem, destination)));
+                correctDestination(syncBaseItem, pathingService.toFreeDestination(syncBaseItem, destination))));
         executeCommand(moveCommand);
     }
 

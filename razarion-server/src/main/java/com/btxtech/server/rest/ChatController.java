@@ -3,12 +3,15 @@ package com.btxtech.server.rest;
 import com.btxtech.server.service.ChatService;
 import com.btxtech.shared.datatypes.ChatMessage;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -28,5 +31,12 @@ public class ChatController {
     @PostMapping(value = "send", consumes = MediaType.TEXT_PLAIN_VALUE)
     public void send(@RequestBody String message) {
         chatService.send(message);
+    }
+
+    /** The backend chat tab: what was written in a span, with user ids, the assistant's answers included. */
+    @GetMapping(value = "admin", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public List<ChatService.Entry> admin(@RequestParam long from, @RequestParam long to) {
+        return chatService.between(new Date(from), new Date(to));
     }
 }

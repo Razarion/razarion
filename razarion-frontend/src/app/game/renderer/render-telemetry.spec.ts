@@ -4,7 +4,7 @@ describe('RenderTelemetry', () => {
   const STATS: RenderTelemetrySceneStats = {
     meshes: 400, activeMeshes: 180, activeIndices: 1234, materials: 88,
     disabledMeshes: 210, instancedMeshes: 380, shadowCasters: 395,
-    shadowMapSize: 2048,
+    shadowMapSize: 2048, shadowsEnabled: false,
     heapUsedMb: 128.5, heapLimitMb: 512, textureCount: 40, textureMb: 96.25, geometries: 210,
     meshTop: 'Rock:200,Palm:120,ground:20',
     parkedMeshes: 205, parkingFilter: true, indexTop: 'ground:900k,palm:430k',
@@ -70,6 +70,8 @@ describe('RenderTelemetry', () => {
     expect(field(lines[0], 'frames')).toBe('15');
     expect(field(lines[0], 'periodS')).toBe('3.0');
     expect(field(lines[0], 'seq')).toBe('1');
+    // Whether the adaptive quality has turned the shadows off, so a session can be split at it
+    expect(field(lines[0], 'shadows')).toBe('off');
   });
 
   it('emits one summary line once the period is full', () => {

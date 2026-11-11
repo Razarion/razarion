@@ -8,6 +8,8 @@ import com.btxtech.server.model.Roles;
 import com.btxtech.server.model.SetNameError;
 import com.btxtech.server.model.SetNameResult;
 import com.btxtech.server.model.UserEntity;
+import com.btxtech.server.rest.CallSign;
+import org.springframework.data.domain.PageRequest;
 import com.btxtech.server.model.engine.InventoryArtifactCountEntity;
 import com.btxtech.server.model.engine.InventoryArtifactEntity;
 import com.btxtech.server.model.engine.InventoryItemEntity;
@@ -66,9 +68,12 @@ import java.util.Base64;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.NoSuchElementException;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -197,6 +202,7 @@ public class UserService implements UserDetailsService {
 
         UserBackendInfo userBackendInfo = new UserBackendInfo()
                 .name(userEntity.getName())
+                .callSign(CallSign.of(userEntity.getUserId()))
                 .creationDate(userEntity.getCreationDate())
                 .verificationStartedDate(userEntity.getVerificationStartedDate())
                 .verificationDoneDate(userEntity.getVerificationDoneDate())
@@ -853,6 +859,67 @@ public class UserService implements UserDetailsService {
         return levels;
     }
 
+    /** How many the backend shows of the newest users and of the newest registrations. */
+    public static final int BACKEND_NEWEST = 10;
+    /** At most this many search hits; a search that finds more is too wide to read anyway. */
+    public static final int BACKEND_SEARCH_LIMIT = 50;
+
+    /**
+     * The backend's user tab no longer loads every user - some 3000 in November 2026, 300 more each
+     * day of a campaign, and the table of all of them froze the page. It shows these two short lists
+     * and a search.
+     */
+    @Transactional
+    public List<UserBackendInfo> getNewestUserBackendInfos() {
+        return toBackendInfos(userRepository.findNewestForBackendInfo(PageRequest.of(0, BACKEND_NEWEST)));
+    }
+
+    @Transactional
+    public List<UserBackendInfo> getNewestRegisteredUserBackendInfos() {
+        return toBackendInfos(userRepository.findNewestRegisteredForBackendInfo(PageRequest.of(0, BACKEND_NEWEST)));
+    }
+
+    /**
+     * Name, email, user id or call sign, any part of them, case ignored. The call sign is what the
+     * chat and the ticker show of an anonymous player, so it is what one comes looking with; it is
+     * derived from the user id and not stored, hence matched here over all ids.
+     */
+    @Transactional
+    public List<UserBackendInfo> searchUserBackendInfos(String query) {
+        String needle = normalizeSearch(query);
+        if (needle == null) {
+            return List.of();
+        }
+        Set<String> byCallSign = userIdsWithCallSign(userRepository.findAllUserIds(), needle);
+        return toBackendInfos(userRepository.searchForBackendInfo("%" + needle + "%",
+                // An empty IN list is not portable SQL; an id nobody has stands in for it.
+                byCallSign.isEmpty() ? Set.of("-") : byCallSign,
+                PageRequest.of(0, BACKEND_SEARCH_LIMIT)));
+    }
+
+    /** Lower case and trimmed, without the LIKE wildcards; null when there is nothing to search for. */
+    static String normalizeSearch(String query) {
+        if (query == null) {
+            return null;
+        }
+        String needle = query.trim().toLowerCase(Locale.ROOT).replace("%", "").replace("_", "");
+        return needle.length() < 2 ? null : needle;
+    }
+
+    static Set<String> userIdsWithCallSign(Collection<String> userIds, String needle) {
+        Set<String> matches = new HashSet<>();
+        for (String userId : userIds) {
+            if (CallSign.of(userId).toLowerCase(Locale.ROOT).contains(needle)) {
+                matches.add(userId);
+            }
+        }
+        return matches;
+    }
+
+    private List<UserBackendInfo> toBackendInfos(List<UserEntity> userEntities) {
+        return userEntities.stream().map(this::userEntity2UserBackendInfo).collect(Collectors.toList());
+    }
+
     @Transactional
     public List<UserBackendInfo> getUserBackendInfos() {
         return userRepository.findAllForBackendInfo()
@@ -1238,7 +1305,8 @@ public class UserService implements UserDetailsService {
             throw new IllegalStateException("The name has already been set: " + userContext);
         }
 
-        if (userRepository.existsByNameIgnoreCase(name)) {
+        // "Razarion" and "Razarion AI" are the chat's own voices (ChatService); nobody may write as them
+        if (name.trim().toLowerCase().startsWith("razarion") || userRepository.existsByNameIgnoreCase(name)) {
             return SetNameError.ALREADY_USED;
         }
 

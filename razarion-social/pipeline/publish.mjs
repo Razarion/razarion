@@ -17,6 +17,7 @@ import {
 import {
   credentials, post, publishingLimit, waitForContainer, InstagramError,
 } from './lib/instagram.mjs';
+import { announceReelInChat } from './lib/chat-reel.mjs';
 import { sleep } from '../src/util/http.mjs';
 import { info, step, ok, warn, fail } from '../src/util/log.mjs';
 
@@ -213,6 +214,13 @@ async function main() {
       writeJson(POSTED_FILE, posted);
       published++;
       ok(`published as ${mediaId}`);
+      // A player's crossing to the mainland also goes into the planet chat (lib/chat-reel.mjs).
+      const chat = await announceReelInChat(entry.id, mediaId, token);
+      if (chat === 'announced') {
+        step('announced in the planet chat');
+      } else if (chat !== 'not-a-crossing' && chat !== 'known') {
+        warn(`not in the planet chat: ${chat}`);
+      }
     } catch (err) {
       // An action block is Instagram judging the account, not the request. It clears on its own
       // after hours, and retrying into it extends it - so this one stops and says to come back

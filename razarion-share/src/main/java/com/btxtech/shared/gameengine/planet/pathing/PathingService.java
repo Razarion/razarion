@@ -56,6 +56,33 @@ public class PathingService {
         return setupPathToDestination(syncItem, syncItem.getAbstractSyncPhysical().getTerrainType(), destination, 0);
     }
 
+    /**
+     * A clicked destination the unit can never stand on - a cliff, water for a land unit - pulled
+     * back along the line to the unit until it is ground the unit fits on.
+     * <p>
+     * The path search throws on such a destination, and a move order then did nothing at all: no
+     * movement, no message. 36 of 615 sessions hit that within three days, and a player called the
+     * game "glitchy as hell" after three of them (2026-11-08). Driving to the edge of what was clicked
+     * is what the player meant.
+     * <p>
+     * When there is no such point on the way the destination comes back unchanged, so the search
+     * fails exactly as before.
+     */
+    public DecimalPosition toFreeDestination(SyncBaseItem syncBaseItem, DecimalPosition destination) {
+        TerrainType terrainType = syncBaseItem.getAbstractSyncPhysical().getTerrainType();
+        if (terrainService.getTerrainAnalyzer().getPathingNodeWrapper(destination).isFree(terrainType)) {
+            return destination;
+        }
+        try {
+            return findNearestPosition(destination,
+                    terrainType,
+                    syncBaseItem.getAbstractSyncPhysical().getPosition(),
+                    syncBaseItem.getAbstractSyncPhysical().getRadius());
+        } catch (IllegalArgumentException e) {
+            return destination;
+        }
+    }
+
     public SimplePath setupPathToDestination(SyncBaseItem syncBaseItem, double rangeOtherTerrain, SyncItem target) {
         long start = System.currentTimeMillis();
         SimplePath path = setupPathToDestination(syncBaseItem, rangeOtherTerrain, target.getAbstractSyncPhysical().getTerrainType(), target.getAbstractSyncPhysical().getPosition(), target.getAbstractSyncPhysical().getRadius());
