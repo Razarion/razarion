@@ -12,7 +12,7 @@ interface ChatEntry {
   userId: string | null;
   userName: string;
   message: string;
-  videoId: number | null;
+  instagramUrl: string | null;
 }
 
 const ASSISTANT_NAME = 'Razarion AI';

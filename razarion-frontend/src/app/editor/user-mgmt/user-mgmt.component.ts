@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {EditorPanel} from '../editor-model';
 import {QuestBackendInfo, UserBackendInfo, UserMgmtControllerClient} from 'src/app/generated/razarion-share';
 import {TypescriptGenerator} from 'src/app/backend/typescript-generator';
@@ -14,13 +14,30 @@ import {ChipModule} from 'primeng/chip';
 import {FormsModule} from '@angular/forms';
 import {Select} from 'primeng/select';
 import {ToolbarModule} from 'primeng/toolbar';
-import {CheckboxModule} from 'primeng/checkbox';
+import {InputText} from 'primeng/inputtext';
 import {RippleModule} from 'primeng/ripple';
 import {DialogModule} from 'primeng/dialog';
 import {GwtAngularService} from 'src/app/gwtangular/GwtAngularService';
 import {GwtInstance} from 'src/app/gwtangular/GwtInstance';
 import {BabylonRenderServiceAccessImpl} from '../../game/renderer/babylon-render-service-access-impl.service';
 
+/**
+ * A user as the table shows it: under a list heading, and keyed by list as well, since a new player
+ * who just registered is in both lists. The row is the DTO itself, so edits land on it.
+ */
+type UserRow = UserBackendInfo & { listName: string; rowKey: string; heading?: string };
+
+/** Typing pauses this long before the search goes out, so a name is one request and not six. */
+const SEARCH_DELAY_MS = 300;
+
+/**
+ * The user table no longer holds every user: in November 2026 that was some 3000 rows, growing by
+ * 300 a day of an ad campaign, and the backend page froze on it. Without a search it shows the ten
+ * newest players and the ten newest registrations; the search goes to the server
+ * (UserService.searchUserBackendInfos) and also finds the call sign the chat shows. Who is online
+ * is the Connections tab's business. Cleaning up anonymous users went with the full list - the
+ * server does that on its own (UserRepository, the unregistered cleanup).
+ */
 @Component({
   selector: 'user-mgmt',
   imports: [
@@ -34,7 +51,7 @@ import {BabylonRenderServiceAccessImpl} from '../../game/renderer/babylon-render
     FormsModule,
     CommonModule,
     ToolbarModule,
-    CheckboxModule,
+    InputText,
     RippleModule,
     DialogModule
 ],
@@ -45,12 +62,18 @@ import {BabylonRenderServiceAccessImpl} from '../../game/renderer/babylon-render
     .um-detail > div:nth-child(even) { background: rgba(255, 255, 255, 0.05); }
   `]
 })
-export class UserMgmtComponent extends EditorPanel implements OnInit {
-  userBackendInfos: UserBackendInfo[] = [];
+export class UserMgmtComponent extends EditorPanel implements OnInit, OnDestroy {
+  rows: UserRow[] = [];
+  /** Users in the table, headings not counted. */
+  userCount = 0;
+  searchText = '';
+  loading = false;
+  readonly searchLimit = 50;
   questOptions: { label: string, questId: number }[] = [];
   private userMgmtControllerClient: UserMgmtControllerClient;
-  selectedUserIds = new Set<string>();
-  minutes: number = 60;
+  private searchTimer: ReturnType<typeof setTimeout> | null = null;
+  /** Only the newest request may fill the table; an older answer arriving late is dropped. */
+  private loadSequence = 0;
   showDeleteDialog = false;
   userToDelete: UserBackendInfo | null = null;
   // Per base: last unit id the camera jumped to, so a repeated "Move to" advances to the next unit.
@@ -92,18 +115,69 @@ export class UserMgmtComponent extends EditorPanel implements OnInit {
     return ` lvl: ${questBackendInfo.levelNumber} ${QuestCockpitComponent.conditionTriggerToTitle(questBackendInfo.conditionConfig.conditionTrigger)} '${questBackendInfo.id}'`
   }
 
+  ngOnDestroy(): void {
+    if (this.searchTimer !== null) {
+      clearTimeout(this.searchTimer);
+    }
+  }
+
+  /** The server searches from two characters on; below that the default lists show. */
+  searching(): boolean {
+    return this.searchText.trim().length >= 2;
+  }
+
+  onSearchChanged(): void {
+    if (this.searchTimer !== null) {
+      clearTimeout(this.searchTimer);
+    }
+    this.searchTimer = setTimeout(() => {
+      this.searchTimer = null;
+      this.loadUsers();
+    }, SEARCH_DELAY_MS);
+  }
+
   private loadUsers(): void {
-    this.userMgmtControllerClient.getUserBackendInfos().then(userBackendInfos => {
-      this.selectedUserIds.clear();
-      this.userBackendInfos.length = 0;
-      this.userBackendInfos.push(...userBackendInfos);
+    const sequence = ++this.loadSequence;
+    this.loading = true;
+    const query = this.searchText.trim();
+    const lists: Promise<UserRow[]> = this.searching()
+      ? this.userMgmtControllerClient.searchUserBackendInfos({query})
+        .then(users => UserMgmtComponent.toRows(users, `Search "${query}"`))
+      : Promise.all([
+        this.userMgmtControllerClient.getNewestUserBackendInfos(),
+        this.userMgmtControllerClient.getNewestRegisteredUserBackendInfos()
+      ]).then(([newest, registered]) => [
+        ...UserMgmtComponent.toRows(newest, 'Newest players'),
+        ...UserMgmtComponent.toRows(registered, 'Newest registrations')
+      ]);
+    lists.then(rows => {
+      if (sequence === this.loadSequence) {
+        this.rows = rows;
+        this.userCount = rows.filter(row => !row.heading).length;
+      }
     }).catch(err =>
       this.messageService.add({
         severity: 'error',
         summary: `Can not load user infos`,
         detail: err.message,
         sticky: true
-      }));
+      })).finally(() => {
+      if (sequence === this.loadSequence) {
+        this.loading = false;
+      }
+    });
+  }
+
+  /** An empty list has no heading either, so a search that finds nobody shows the table's empty message. */
+  static toRows(users: UserBackendInfo[], listName: string): UserRow[] {
+    if (users.length === 0) {
+      return [];
+    }
+    return [
+      // The heading over a list, a row of its own; it carries no user.
+      {heading: listName, rowKey: listName} as UserRow,
+      ...users.map(user => Object.assign(user, {listName, rowKey: `${listName}|${user.userId}`}))
+    ];
   }
 
   /**
@@ -226,19 +300,6 @@ export class UserMgmtComponent extends EditorPanel implements OnInit {
     this.loadUsers();
   }
 
-  onSelectionChanged(checked: boolean, userBackendInfo: UserBackendInfo) {
-    if (checked) {
-      this.selectedUserIds.add(userBackendInfo.userId);
-    } else {
-      this.selectedUserIds.delete(userBackendInfo.userId);
-    }
-  }
-
-  deleteSelectedUsers() {
-    this.userMgmtControllerClient.deleteUsersAndBases(Array.from(this.selectedUserIds))
-      .then(() => this.loadUsers());
-  }
-
   askDeleteUser(userBackendInfo: UserBackendInfo) {
     this.userToDelete = userBackendInfo;
     this.showDeleteDialog = true;
@@ -273,35 +334,6 @@ export class UserMgmtComponent extends EditorPanel implements OnInit {
         });
         this.cancelDeleteUser();
       });
-  }
-
-  selectUnregistered() {
-    const now = new Date();
-    this.userBackendInfos.forEach((userBackendInfo) => {
-      // Only ever auto-select anonymous (unregistered) users.
-      if (userBackendInfo.email) {
-        return;
-      }
-      // Never touch a user that currently holds a live connection. The server persists
-      // systemConnectionOpened the moment a system connection opens (UserService.onClientSystemConnectionOpened),
-      // so anyone mid-connect already has that timestamp and is no longer a "grey" row — but we still
-      // guard on the live flags to be safe against a user who is about to build a connection.
-      if (userBackendInfo.systemConnectionOpen || userBackendInfo.gameConnectionOpen) {
-        return;
-      }
-      if (userBackendInfo.systemConnectionClosed) {
-        // Red row: was online and disconnected. Select once offline longer than the threshold.
-        if (UserMgmtComponent.isOlderThanMinutes(userBackendInfo.systemConnectionClosed, now, this.minutes)) {
-          this.selectedUserIds.add(userBackendInfo.userId);
-        }
-      } else if (!userBackendInfo.systemConnectionOpened && userBackendInfo.creationDate) {
-        // Grey row: never established a system connection at all. Guard by creation age so a freshly
-        // created account that might still be opening its connection is left alone.
-        if (UserMgmtComponent.isOlderThanMinutes(userBackendInfo.creationDate, now, this.minutes)) {
-          this.selectedUserIds.add(userBackendInfo.userId);
-        }
-      }
-    })
   }
 
   // True only while the game engine is running (in-game editor). Opened via the backend URL the WASM
@@ -345,13 +377,4 @@ export class UserMgmtComponent extends EditorPanel implements OnInit {
     this.lastMovedToUnitId.set(baseId, next.id);
     this.renderService.setViewFieldCenter(next.x, next.y);
   }
-
-  public static isOlderThanMinutes(date: Date, now: Date, minutes: number): boolean {
-    date = new Date(date)
-    const diffInMs = now.getTime() - date.getTime();
-    const diffInMinutes = diffInMs / (1000 * 60);
-
-    return diffInMinutes > minutes;
-  }
-
 }

@@ -572,6 +572,8 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
       self.engine.setHardwareScalingLevel(level);
       console.warn(`[AdaptiveResolution] scaling=${level} manual`);
     };
+    // The scene, for measuring what a part of it costs on a device (remote debugging)
+    (window as any).razScene = () => self.scene;
     // Where the camera looks, for reporting a spot on the map (x, height, z)
     (window as any).razWhere = () => {
       const camera = self.scene.activeCamera as any;
@@ -2364,6 +2366,22 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
         return;
       }
       const level = adaptive.onFrame(performance.now());
+      if (level !== null && level > adaptive.getBaseLevel() && this.scene.shadowsEnabled) {
+        // The first step up turns the shadows off instead of taking pixels away, and the frames are
+        // judged afresh from there: only if they are still too slow does the resolution go down.
+        // Not at the start and not on one bad window - see AdaptiveResolution.
+        //
+        // Measured on a Pixel 7 (2026-11-11, scene.render CPU time after placing the base): shadows
+        // off 12.5 -> 8 ms, and at native resolution, where the GPU is the limit, 77 -> 90 fps. The
+        // resolution step this replaces made the frames 22 % slower in the field, because it fires
+        // when the base appears and the scene grows - fewer pixels do not help against that, a
+        // missing shadow pass does (it walks every caster, all scenery included). Off for the rest
+        // of the session: a picture that changes back and forth is worse than one without shadows.
+        this.scene.shadowsEnabled = false;
+        this.adaptiveResolution = new AdaptiveResolution(adaptive.getBaseLevel());
+        console.warn(`[AdaptiveResolution] session=${(window as any).RAZ_gameSessionUuid ?? "-"} shadows=off`);
+        return;
+      }
       if (level !== null) {
         this.engine.setHardwareScalingLevel(level);
         // One line per change, beside the telemetry: which sessions it touched and how far
@@ -2627,6 +2645,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
       instancedMeshes: census.instanced,
       shadowCasters: this.shadowGenerator?.getShadowMap()?.renderList?.length ?? -1,
       shadowMapSize: this.shadowMapSize,
+      shadowsEnabled: this.scene.shadowsEnabled,
       meshTop: census.top,
       indexTop: census.indexTop,
       parkedMeshes: this.parkedMeshFilter.getParkedCount(),

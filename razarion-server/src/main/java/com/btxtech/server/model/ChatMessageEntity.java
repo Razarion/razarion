@@ -24,7 +24,8 @@ public class ChatMessageEntity {
     private String message;
     @Column(columnDefinition = "DATETIME(3)")
     private Date timestamp;
-    private Integer videoId;
+    @Column(length = 300)
+    private String instagramUrl;
 
     public ChatMessageEntity init(String userId, String userName, String message) {
         this.userId = userId;
@@ -34,14 +35,14 @@ public class ChatMessageEntity {
         return this;
     }
 
-    public ChatMessageEntity videoId(Integer videoId) {
-        this.videoId = videoId;
+    public ChatMessageEntity instagramUrl(String instagramUrl) {
+        this.instagramUrl = instagramUrl;
         return this;
     }
 
-    /** A clip to play with the message (ChatVideoEntity), or null. */
-    public Integer getVideoId() {
-        return videoId;
+    /** A reel on our Instagram the message points to, or null. */
+    public String getInstagramUrl() {
+        return instagramUrl;
     }
 
     public Long getId() {
@@ -66,6 +67,7 @@ public class ChatMessageEntity {
     }
 
     public ChatMessage toChatMessage() {
-        return new ChatMessage().userName(userName).message(message).videoId(videoId);
+        return new ChatMessage().userName(userName).message(message).instagramUrl(instagramUrl)
+                .timestamp(timestamp != null ? timestamp.getTime() : null);
     }
 }

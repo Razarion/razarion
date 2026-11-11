@@ -8,21 +8,13 @@ import org.dominokit.jackson.annotation.JSONMapper;
 public class ChatMessage {
     private String userName;
     private String message;
-    /** A clip that plays with the message (/rest/chat-controller/video/{id}), or null. */
-    private Integer videoId;
-
-    public Integer getVideoId() {
-        return videoId;
-    }
-
-    public void setVideoId(Integer videoId) {
-        this.videoId = videoId;
-    }
-
-    public ChatMessage videoId(Integer videoId) {
-        this.videoId = videoId;
-        return this;
-    }
+    /**
+     * A reel on our Instagram the message points to (https://www.instagram.com/reel/.../), or null.
+     * The chat shows it behind a button and loads nothing from Instagram before that is tapped.
+     */
+    private String instagramUrl;
+    /** When the message was written, epoch milliseconds; null for a message from before it was sent along. */
+    private Long timestamp;
 
     public String getUserName() {
         return userName;
@@ -40,6 +32,22 @@ public class ChatMessage {
         this.message = message;
     }
 
+    public String getInstagramUrl() {
+        return instagramUrl;
+    }
+
+    public void setInstagramUrl(String instagramUrl) {
+        this.instagramUrl = instagramUrl;
+    }
+
+    public Long getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(Long timestamp) {
+        this.timestamp = timestamp;
+    }
+
     public ChatMessage userName(String userName) {
         this.userName = userName;
         return this;
@@ -47,6 +55,16 @@ public class ChatMessage {
 
     public ChatMessage message(String message) {
         this.message = message;
+        return this;
+    }
+
+    public ChatMessage instagramUrl(String instagramUrl) {
+        this.instagramUrl = instagramUrl;
+        return this;
+    }
+
+    public ChatMessage timestamp(Long timestamp) {
+        this.timestamp = timestamp;
         return this;
     }
 

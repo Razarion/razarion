@@ -27,6 +27,8 @@ describe('AdaptiveResolution', () => {
   beforeEach(() => {
     now = 1000;
     adaptive = new AdaptiveResolution(1);
+    // Past the start, which is never judged
+    run(16, AdaptiveResolution.WARMUP_MS);
   });
 
   it('leaves a smooth game alone', () => {
@@ -57,14 +59,14 @@ describe('AdaptiveResolution', () => {
   });
 
   it('does not step back to a level that was just too slow', () => {
-    run(pixelBound(64), 9000);
+    run(pixelBound(64), 10000);
     expect(adaptive.getLevel()).toBe(1.25);
     expect(run(16, 60000)).toEqual([]);
     expect(adaptive.getLevel()).toBe(1.25);
   });
 
   it('gives the pixels back once the slow level is a while ago', () => {
-    run(pixelBound(64), 9000);
+    run(pixelBound(64), 10000);
     expect(adaptive.getLevel()).toBe(1.25);
     expect(run(16, AdaptiveResolution.SLOW_LEVEL_BLOCK_MS + 20000)).toEqual([1]);
   });
@@ -86,6 +88,19 @@ describe('AdaptiveResolution', () => {
       now += 2000;
       expect(adaptive.onFrame(now)).toBeNull();
     }
+    expect(adaptive.getLevel()).toBe(1);
+  });
+
+  it('does not judge the start, however slow it is', () => {
+    adaptive = new AdaptiveResolution(1);
+    expect(run(130, AdaptiveResolution.WARMUP_MS - 500)).toEqual([]);
+    expect(run(16, 30000)).toEqual([]);
+    expect(adaptive.getLevel()).toBe(1);
+  });
+
+  it('does not take one slow window for a slow device', () => {
+    expect(run(130, AdaptiveResolution.WINDOW_MS + 200)).toEqual([]);
+    expect(run(16, 30000)).toEqual([]);
     expect(adaptive.getLevel()).toBe(1);
   });
 

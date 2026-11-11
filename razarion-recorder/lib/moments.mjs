@@ -75,7 +75,7 @@ export function followedBase(when, row) {
  * One at a time: a take is filmed in real time, on the GPU of this machine.
  */
 export class Moments {
-  constructor({ dir, rulesFile, tape, world, players, sessions, settings, log, toChat = null }) {
+  constructor({ dir, rulesFile, tape, world, players, sessions, settings, log }) {
     this.dir = dir;
     this.world = world;
     this.rulesFile = rulesFile;
@@ -84,8 +84,6 @@ export class Moments {
     this.sessions = sessions;
     this.settings = settings;
     this.log = log;
-    // A rule with "chat": true also goes into the planet chat (lib/chat-video.mjs)
-    this.toChat = toChat;
     this.file = join(dir, 'moments.json');
     mkdirSync(dir, { recursive: true });
     this.items = existsSync(this.file) ? JSON.parse(readFileSync(this.file, 'utf8')).items || [] : [];
@@ -212,11 +210,6 @@ export class Moments {
       await browser.close();
     }
     await this.handOver(moment);
-    const rule = this.rules().find((r) => r.id === moment.rule);
-    if (rule?.chat && this.toChat) {
-      await this.toChat(moment);
-      this.save();
-    }
   }
 
   /** One take: the stretch played in its own replay session, recorded from the canvas. */

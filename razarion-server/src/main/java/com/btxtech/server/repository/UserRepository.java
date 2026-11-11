@@ -2,6 +2,7 @@ package com.btxtech.server.repository;
 
 import com.btxtech.server.model.UserEntity;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -37,6 +38,34 @@ public interface UserRepository extends JpaRepository<UserEntity, Integer> {
     @EntityGraph(attributePaths = {"level", "activeQuest"})
     @Query("SELECT u FROM UserEntity u")
     List<UserEntity> findAllForBackendInfo();
+
+    /** The backend's default user view: the newest players. Same graph as findAllForBackendInfo. */
+    @EntityGraph(attributePaths = {"level", "activeQuest"})
+    @Query("SELECT u FROM UserEntity u ORDER BY u.creationDate DESC")
+    List<UserEntity> findNewestForBackendInfo(Pageable pageable);
+
+    /**
+     * The newest registrations. Registering sets the email and starts the verification; a user from
+     * before verification dates existed falls back to when it was created.
+     */
+    @EntityGraph(attributePaths = {"level", "activeQuest"})
+    @Query("SELECT u FROM UserEntity u WHERE u.email IS NOT NULL "
+            + "ORDER BY COALESCE(u.verificationStartedDate, u.creationDate) DESC")
+    List<UserEntity> findNewestRegisteredForBackendInfo(Pageable pageable);
+
+    /**
+     * The backend user search: a part of the name, the email or the user id, or one of the given
+     * user ids - those whose call sign matched, which the database cannot compute.
+     */
+    @EntityGraph(attributePaths = {"level", "activeQuest"})
+    @Query("SELECT u FROM UserEntity u WHERE LOWER(u.name) LIKE :pattern OR LOWER(u.email) LIKE :pattern "
+            + "OR LOWER(u.userId) LIKE :pattern OR u.userId IN :userIds ORDER BY u.creationDate DESC")
+    List<UserEntity> searchForBackendInfo(@Param("pattern") String pattern,
+                                          @Param("userIds") Collection<String> userIds,
+                                          Pageable pageable);
+
+    @Query("SELECT u.userId FROM UserEntity u WHERE u.userId IS NOT NULL")
+    List<String> findAllUserIds();
 
     boolean existsByNameIgnoreCase(String name);
 

@@ -2,9 +2,7 @@ package com.btxtech.server.service;
 
 import com.btxtech.server.gameengine.ClientSystemConnectionService;
 import com.btxtech.server.model.ChatMessageEntity;
-import com.btxtech.server.model.ChatVideoEntity;
 import com.btxtech.server.repository.ChatMessagesRepository;
-import com.btxtech.server.repository.ChatVideoRepository;
 import com.btxtech.server.rest.CallSign;
 import com.btxtech.server.service.history.CommunityTickerService;
 import com.btxtech.server.user.UserService;
@@ -22,6 +20,8 @@ import java.util.Deque;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -40,6 +40,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * The recorder (razarion-recorder) reads the chat and answers questions about the game through
  * {@link #answer}, under {@link #ASSISTANT_NAME}. The planet itself announces a player leaving the
  * noob island, under {@link #NEWS_NAME}: newcomers see that it can be done and that others play.
+ * The social pipeline adds a line when such a crossing has become a reel on our Instagram
+ * ({@link #reel}); the chat shows it behind a button and loads nothing from Instagram before that.
  */
 @Service
 public class ChatService {
@@ -50,20 +52,17 @@ public class ChatService {
     static final long MIN_GAP_MS = 3_000;
     static final long WINDOW_MS = 60_000;
     static final int BURST = 6;
-    /** At most so many clips are kept; a 50 s clip is a few MB. */
-    static final int KEEP_VIDEOS = 50;
-    /** Under MariaDB's max_allowed_packet (16 MB) with room to spare; the recorder makes about 5 MB. */
-    static final int MAX_VIDEO_BYTES = 12 * 1024 * 1024;
+    static final String REEL_TEXT = "A new crossing to the mainland is on our Instagram";
+    /** A post or reel of any account, with or without a query; only the shortcode is kept. */
+    private static final Pattern INSTAGRAM_URL = Pattern.compile("^https://(?:www\\.)?instagram\\.com/(?:[A-Za-z0-9_.]+/)?(reel|p)/([A-Za-z0-9_-]{5,40})/?(?:\\?.*)?$");
     private final ChatMessagesRepository chatMessagesRepository;
-    private final ChatVideoRepository chatVideoRepository;
     private final UserService userService;
     private final ClientSystemConnectionService clientSystemConnectionService;
     private final Map<String, Deque<Long>> sentPerUser = new ConcurrentHashMap<>();
     private final Logger logger = LoggerFactory.getLogger(ChatService.class);
 
-    public ChatService(ChatMessagesRepository chatMessagesRepository, ChatVideoRepository chatVideoRepository, UserService userService, ClientSystemConnectionService clientSystemConnectionService, CommunityTickerService communityTickerService) {
+    public ChatService(ChatMessagesRepository chatMessagesRepository, UserService userService, ClientSystemConnectionService clientSystemConnectionService, CommunityTickerService communityTickerService) {
         this.chatMessagesRepository = chatMessagesRepository;
-        this.chatVideoRepository = chatVideoRepository;
         this.userService = userService;
         this.clientSystemConnectionService = clientSystemConnectionService;
         if (communityTickerService != null) {
@@ -122,46 +121,43 @@ public class ChatService {
     }
 
     /**
-     * A player's moment filmed for the chat by the recorder: kept, announced, the oldest beyond
-     * {@link #KEEP_VIDEOS} removed. Returns the clip's id.
+     * A crossing that has become a reel on our Instagram, reported by the social pipeline after it
+     * posted it. Announced once per reel; a report of the same reel again is ignored, so the
+     * pipeline may retry. Returns false for a repeat.
      */
     @Transactional
-    public int video(String userId, byte[] data) {
-        if (!isMp4(data) || data.length > MAX_VIDEO_BYTES) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Not an mp4 of at most " + MAX_VIDEO_BYTES + " bytes");
+    public boolean reel(String url) {
+        String permalink = normalizeInstagramUrl(url);
+        if (permalink == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Not an Instagram post or reel: " + url);
         }
-        ChatVideoEntity video = chatVideoRepository.save(new ChatVideoEntity().init(userId, data));
-        String name = userService.getUserNames(Set.of(userId)).getOrDefault(userId, guestName(userId));
+        if (chatMessagesRepository.existsByInstagramUrl(permalink)) {
+            return false;
+        }
         var chatMessageEntity = chatMessagesRepository.save(new ChatMessageEntity()
-                .init(null, NEWS_NAME, videoText(name))
-                .videoId(video.getId()));
-        List<Integer> ids = chatVideoRepository.findIdsNewestFirst();
-        if (ids.size() > KEEP_VIDEOS) {
-            chatVideoRepository.deleteAllByIdInBatch(ids.subList(KEEP_VIDEOS, ids.size()));
-        }
+                .init(null, NEWS_NAME, REEL_TEXT)
+                .instagramUrl(permalink));
         clientSystemConnectionService.sendChatMessage(chatMessageEntity.toChatMessage());
-        return video.getId();
+        return true;
     }
 
-    @Transactional
-    public byte[] videoData(int id) {
-        return chatVideoRepository.findById(id).map(ChatVideoEntity::getData).orElse(null);
-    }
-
-    static String videoText(String name) {
-        return name + "'s crossing to the mainland, replayed from the live planet";
-    }
-
-    /** An ISO media file (mp4) starts with a box called ftyp. */
-    static boolean isMp4(byte[] data) {
-        return data != null && data.length > 12 && data[4] == 'f' && data[5] == 't' && data[6] == 'y' && data[7] == 'p';
+    /** https://www.instagram.com/reel/{shortcode}/ for any post or reel link, null for anything else. */
+    static String normalizeInstagramUrl(String url) {
+        if (url == null) {
+            return null;
+        }
+        Matcher matcher = INSTAGRAM_URL.matcher(url.trim());
+        if (!matcher.matches()) {
+            return null;
+        }
+        return "https://www.instagram.com/" + matcher.group(1) + "/" + matcher.group(2) + "/";
     }
 
     static String leftNoobIslandText(String name) {
         return name + " just left the Noob Island and landed on the mainland!";
     }
 
-    public record Entry(long id, Date timestamp, String userId, String userName, String message, Integer videoId) {
+    public record Entry(long id, Date timestamp, String userId, String userName, String message, String instagramUrl) {
     }
 
     /**
@@ -187,7 +183,7 @@ public class ChatService {
     }
 
     private static Entry entry(ChatMessageEntity e) {
-        return new Entry(e.getId(), e.getTimestamp(), e.getUserId(), e.getUserName(), e.getMessage(), e.getVideoId());
+        return new Entry(e.getId(), e.getTimestamp(), e.getUserId(), e.getUserName(), e.getMessage(), e.getInstagramUrl());
     }
 
     /** The ticker's call sign: the same player is the same name in the ticker, the chat and on the map. */

@@ -20,7 +20,7 @@ import { createServer } from 'node:http';
 import { appendFileSync, existsSync, readFileSync, renameSync, statSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { settings, ensureStateDir, ROOT } from './lib/config.mjs';
-import { createAuth, getJson, postBytes } from './lib/auth.mjs';
+import { createAuth, getJson } from './lib/auth.mjs';
 import { GameStream, takeKeyframe } from './lib/connection.mjs';
 import { Tape } from './lib/tape.mjs';
 import { World } from './lib/world.mjs';
@@ -31,7 +31,6 @@ import { Moments } from './lib/moments.mjs';
 import { HistoryFeed } from './lib/feed.mjs';
 import { ChatWatch } from './lib/chat.mjs';
 import { answerChat } from './lib/assistant.mjs';
-import { momentToChat } from './lib/chat-video.mjs';
 
 const HOUR = 3_600_000;
 const STATE_DIR = ensureStateDir();
@@ -190,10 +189,6 @@ let replaySession = null;
 // Shorts from players' moments (rules.json), filmed from the tape and handed to the social engine.
 const moments = new Moments({
   dir: join(STATE_DIR, 'moments'), rulesFile: join(ROOT, 'rules.json'), tape, world, players, sessions, settings, log,
-  toChat: (moment) => momentToChat(moment, {
-    log,
-    post: (userId, bytes) => postBytes(settings.baseUrl, auth, `/rest/recorder/chat/video?userId=${encodeURIComponent(userId)}`, bytes, 'video/mp4'),
-  }),
 });
 
 async function readJson(req) {

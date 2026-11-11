@@ -33,8 +33,8 @@
       <td style="white-space: nowrap">{{ entry.userName }}</td>
       <td style="white-space: nowrap; font-family: monospace; font-size: 0.8em">{{ entry.userId }}</td>
       <td style="white-space: pre-wrap; word-break: break-word">{{ entry.message }}
-        @if (entry.videoId) {
-          <a [href]="'/rest/chat-controller/video/' + entry.videoId" target="_blank" rel="noopener">video #{{ entry.videoId }}</a>
+        @if (entry.instagramUrl) {
+          <a [href]="entry.instagramUrl" target="_blank" rel="noopener">reel</a>
         }
       </td>
     </tr>

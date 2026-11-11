@@ -36,6 +36,16 @@
  * MAX_LEVEL is 1.5 (44 % of the pixels) and not more, because the item labels and the placer are
  * drawn in render pixels: they grow and soften with the scaling, and at 2 they would be twice as
  * large.
+ *
+ * <h3>Not at the start, and not on one bad window</h3>
+ *
+ * The first seconds of every session are slow on every device: shaders compile, models load, the
+ * base appears. Measured on a Pixel 7 (2026-11-11): 6.8 fps in the first window, 66-89 fps from the
+ * second on. Judged then, the first step fired for nearly every player - in the field it coincided
+ * with the scene growing from 0.9 to 3.2 M indices and made the frames 22 % slower. So nothing is
+ * judged for {@link WARMUP_MS} after the first frame, and a step up needs
+ * {@link SLOW_WINDOWS_TO_STEP_UP} slow windows in a row, so a single hitch (a model arriving, a
+ * shader compiling) is not taken for a slow device.
  */
 export class AdaptiveResolution {
   static readonly WINDOW_MS = 4000;
@@ -54,6 +64,10 @@ export class AdaptiveResolution {
   private static readonly MIN_FRAMES = 20;
   /** How much faster the median frame has to get for a step up to stay. */
   static readonly MIN_GAIN = 0.15;
+  /** How long after the first frame nothing is judged: the start is slow on every device. */
+  static readonly WARMUP_MS = 15000;
+  /** Slow windows in a row before a step up. */
+  static readonly SLOW_WINDOWS_TO_STEP_UP = 2;
 
   private level: number;
   private readonly baseLevel: number;
@@ -63,6 +77,8 @@ export class AdaptiveResolution {
   private windowStart: number | null = null;
   private lastFrame: number | null = null;
   private goodWindows = 0;
+  private slowWindows = 0;
+  private firstFrame: number | null = null;
   private discardNextWindow = false;
   /** The step up waiting for its proof: where it came from and how slow it was there. */
   private pendingStep: { fromLevel: number, medianMs: number } | null = null;
@@ -108,6 +124,9 @@ export class AdaptiveResolution {
       }
     }
     this.lastFrame = now;
+    if (this.firstFrame === null) {
+      this.firstFrame = now;
+    }
     if (this.windowStart === null) {
       this.windowStart = now;
       return null;
@@ -119,6 +138,9 @@ export class AdaptiveResolution {
     this.startWindow(now);
     if (this.discardNextWindow) {
       this.discardNextWindow = false;
+      return null;
+    }
+    if (now - this.firstFrame < AdaptiveResolution.WARMUP_MS) {
       return null;
     }
     if (intervals.length < AdaptiveResolution.MIN_FRAMES) {
@@ -143,9 +165,15 @@ export class AdaptiveResolution {
       if (this.level >= AdaptiveResolution.MAX_LEVEL) {
         return null;
       }
+      this.slowWindows++;
+      if (this.slowWindows < AdaptiveResolution.SLOW_WINDOWS_TO_STEP_UP) {
+        return null;
+      }
+      this.slowWindows = 0;
       this.pendingStep = {fromLevel: this.level, medianMs};
       return this.change(Math.min(AdaptiveResolution.MAX_LEVEL, this.level + AdaptiveResolution.STEP));
     }
+    this.slowWindows = 0;
     if (medianMs < AdaptiveResolution.FAST_FRAME_MS && this.level > this.baseLevel) {
       this.goodWindows++;
       const lower = Math.max(this.baseLevel, this.level - AdaptiveResolution.STEP);

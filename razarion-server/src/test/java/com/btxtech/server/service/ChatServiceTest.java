@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -11,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * cleaned and capped message, and a limit per player.
  */
 class ChatServiceTest {
-    private final ChatService chatService = new ChatService(null, null, null, null, null);
+    private final ChatService chatService = new ChatService(null, null, null, null);
 
     @Test
     void guestNameIsTheTickerCallSign() {
@@ -22,12 +23,20 @@ class ChatServiceTest {
     }
 
     @Test
-    void takesOnlyAnMp4() {
-        byte[] mp4 = new byte[64];
-        System.arraycopy("ftypisom".getBytes(), 0, mp4, 4, 8);
-        assertTrue(ChatService.isMp4(mp4));
-        assertFalse(ChatService.isMp4(new byte[64]));
-        assertFalse(ChatService.isMp4(null));
+    void keepsOnlyTheShortcodeOfAnInstagramLink() {
+        assertEquals("https://www.instagram.com/reel/Dfm54pojyCd/",
+                ChatService.normalizeInstagramUrl("https://www.instagram.com/reel/Dfm54pojyCd/?utm_source=ig_embed&utm_campaign=loading"));
+        assertEquals("https://www.instagram.com/reel/Dfm54pojyCd/", ChatService.normalizeInstagramUrl("https://instagram.com/razariongame/reel/Dfm54pojyCd"));
+        assertEquals("https://www.instagram.com/p/Dfm54pojyCd/", ChatService.normalizeInstagramUrl(" https://www.instagram.com/p/Dfm54pojyCd/ "));
+    }
+
+    @Test
+    void refusesWhatIsNotAnInstagramPost() {
+        assertNull(ChatService.normalizeInstagramUrl("https://evil.example/reel/Dfm54pojyCd/"));
+        assertNull(ChatService.normalizeInstagramUrl("https://www.instagram.com/razariongame/"));
+        assertNull(ChatService.normalizeInstagramUrl("javascript:alert(1)"));
+        assertNull(ChatService.normalizeInstagramUrl("https://www.instagram.com/reel/<script>/"));
+        assertNull(ChatService.normalizeInstagramUrl(null));
     }
 
     @Test

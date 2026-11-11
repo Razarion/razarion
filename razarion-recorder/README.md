@@ -122,11 +122,9 @@ again every ten minutes. The dashboard lists the moments and where each one is.
 
 The takes are kept in `state/moments/` (the last 100 moments).
 
-A rule with `"chat": true` (leaving the noob island) also goes into the planet chat (`lib/chat-video.mjs`):
-the portrait take made small with ffmpeg (540 wide, no sound, faststart, about 4 MB for 47 s) and
-posted to `/rest/recorder/chat/video`. The server keeps the newest 50 and posts "<name>'s crossing to the
-mainland" under "Razarion"; the chat shows a Watch button and loads the clip from our own server only
-when it is clicked. What became of it is on the moment (`chat`: posted with the video id, or why not).
+The planet chat shows these crossings as reels on our Instagram: once the social engine has posted
+one, it reports the reel's link to `/rest/recorder/chat/reel`, and the chat offers it behind an
+Instagram button (razarion-social, `lib/chat-reel.mjs`). The recorder itself posts nothing to the chat.
 
 ## Memory
 

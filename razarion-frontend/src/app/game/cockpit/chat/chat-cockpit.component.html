@@ -4,10 +4,14 @@
       <div class="flex flex-col gap-1" #chatMessageDiv>
         @for (chatMessage of chatMessages; track $index) {
           <div class="chat-message flex flex-col p-0 m-0" style="max-width: 28em">
-            <p class="user-name" [class.assistant]="chatMessage.userName === 'Razarion AI'" [class.news]="chatMessage.userName === 'Razarion'">{{ chatMessage.userName }}</p>
+            <p class="user-name" [class.assistant]="chatMessage.userName === 'Razarion AI'" [class.news]="chatMessage.userName === 'Razarion'">{{ chatMessage.userName }}<span class="time">{{ time(chatMessage.timestamp) }}</span></p>
             <div class="message">{{ chatMessage.message }}</div>
-            @if (chatMessage.videoId) {
-              <button type="button" class="watch" (click)="playVideo(chatMessage.videoId)">&#9654; Watch</button>
+            @if (hasReel(chatMessage)) {
+              <!-- Nothing of Instagram loads before this is tapped (openReel). -->
+              <button type="button" class="instagram" (click)="openReel(chatMessage.instagramUrl!)">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle class="dot" cx="17.5" cy="6.5" r="1"/></svg>
+                Instagram
+              </button>
             }
           </div>
         }
@@ -30,16 +34,11 @@
   }
 </div>
 
-@if (playingVideoId !== null) {
-  <!-- Over the game, so a portrait clip has room on a phone. Loaded from our own server only now. -->
-  <div class="video-overlay" (click)="closeVideo()">
-    <div class="video-box" (click)="$event.stopPropagation()">
-      @if (videoError) {
-        <div class="video-gone">This video is no longer available</div>
-      } @else {
-        <video [src]="videoUrl(playingVideoId)" controls autoplay muted playsinline (error)="videoError = true"></video>
-      }
-      <button type="button" class="video-close" (click)="closeVideo()" title="Close">&#10005;</button>
-    </div>
+@if (openReelUrl !== null) {
+  <!-- Over the game, scrollable on a phone. The X stays where it is while the card scrolls; a tap
+       beside the card closes it as well. -->
+  <div class="reel-overlay" (click)="closeReel()">
+    <button type="button" class="reel-close" (click)="closeReel(); $event.stopPropagation()" aria-label="Close">&#10005;</button>
+    <div class="reel-card" (click)="$event.stopPropagation()" #reelHost></div>
   </div>
 }

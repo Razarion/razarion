@@ -793,7 +793,9 @@ export interface ChatCockpit {
 export interface ChatMessage {
   userName: string;
   message: string;
-  videoId: number | null;
+  instagramUrl: string | null;
+  /** Epoch milliseconds, or null. */
+  timestamp: number | null;
 }
 
 export interface BaseItemPlacerPresenter {

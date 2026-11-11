@@ -21,4 +21,7 @@ public interface ChatMessagesRepository extends JpaRepository<ChatMessageEntity,
 
     /** For the backend, newest first: what was written in a span. */
     List<ChatMessageEntity> findTop1000ByTimestampBetweenOrderByIdDesc(Date from, Date to);
+
+    /** Whether a reel was announced already: the social pipeline may report one twice. */
+    boolean existsByInstagramUrl(String instagramUrl);
 }

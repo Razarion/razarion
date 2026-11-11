@@ -22,7 +22,16 @@ public class JsChatCockpit implements ChatCockpit {
         JsObject message = JsObject.create();
         message.set("userName", chatMessage.getUserName());
         message.set("message", chatMessage.getMessage());
-        message.setNullableInt("videoId", chatMessage.getVideoId());
+        if (chatMessage.getInstagramUrl() != null) {
+            message.set("instagramUrl", chatMessage.getInstagramUrl());
+        } else {
+            message.setNull("instagramUrl");
+        }
+        if (chatMessage.getTimestamp() != null) {
+            message.set("timestamp", (double) chatMessage.getTimestamp());
+        } else {
+            message.setNull("timestamp");
+        }
         callOnMessage(js, message);
     }
 

@@ -4,67 +4,59 @@
       class="mr-2"
       text
       severity="secondary"
+      title="Reload"
       (onClick)="refresh()"/>
-      <p-button icon="pi pi-trash"
-        class="mr-2"
-        text
-        severity="secondary"
-        [disabled]="selectedUserIds.size === 0"
-        (onClick)="deleteSelectedUsers()"/>
-      </ng-template>
-      <ng-template pTemplate="end">
-        <span>Select unregistered offline [min]&nbsp;</span>
-        <p-inputnumber [(ngModel)]="minutes" inputId="integeronly"></p-inputnumber>
-        <p-button icon="pi pi-play"
-          class="mr-2"
-          text
-          severity="secondary"
-          (onClick)="selectUnregistered()"/>
-        </ng-template>
-      </p-toolbar>
+    <input pInputText type="search" class="w-96"
+      [(ngModel)]="searchText"
+      (ngModelChange)="onSearchChanged()"
+      placeholder="Search name, email, user id or call sign (Falcon-42)"/>
+    @if (loading) {
+      <i class="pi pi-spin pi-spinner ml-2"></i>
+    }
+  </ng-template>
+  <ng-template pTemplate="end">
+    @if (searching()) {
+      <span class="text-sm opacity-70">{{ userCount }}{{ userCount >= searchLimit ? '+' : '' }} found</span>
+    }
+  </ng-template>
+</p-toolbar>
 
-      <p-table [value]="userBackendInfos"
-        dataKey="userId"
+      <p-table [value]="rows"
+        dataKey="rowKey"
         (onRowExpand)="onRowExpand($event.data)"
         [scrollable]="true"
         scrollHeight="calc(100vh - 150px)">
         <ng-template pTemplate="header">
           <tr>
             <th></th>
-            <th>Online</th>
             <th>Last login</th>
             <th>Creation</th>
             <th>Name</th>
+            <th>Call sign</th>
             <th>Level</th>
             <th>Base</th>
             <th>Email</th>
             <th></th>
           </tr>
         </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="9" class="opacity-70">{{ searching() ? 'Nobody found' : 'No users' }}</td>
+          </tr>
+        </ng-template>
         <ng-template pTemplate="body" let-userBackendInfo let-expanded="expanded">
+          <!-- A list heading is a row of its own: the table's subheader grouping put it one row late. -->
+          @if (userBackendInfo.heading) {
+            <tr>
+              <td colspan="9" class="font-bold">{{ userBackendInfo.heading }}</td>
+            </tr>
+          } @else {
           <tr>
             <td>
               <button type="button" pRipple [pRowToggler]="userBackendInfo" class="p-button p-button-text p-button-rounded p-button-plain">
                 <i [class]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></i>
             </button>
               </td>
-              @if (userBackendInfo.systemConnectionClosed) {
-                <td style="background-color: #ff7f8a">
-                  {{ userBackendInfo.systemConnectionClosed | date:'dd.MM.yyyy HH:mm:ss' }}
-                </td>
-              }
-              @if (userBackendInfo.systemConnectionOpened && !userBackendInfo.systemConnectionClosed) {
-                <td
-                  style="background-color: #63dba9">
-                  {{ userBackendInfo.systemConnectionOpened | date:'dd.MM.yyyy HH:mm:ss' }}
-                </td>
-              }
-              @if (!userBackendInfo.systemConnectionOpened && !userBackendInfo.systemConnectionClosed) {
-                <td
-                  style="background-color: #737373">
-                  -
-                </td>
-              }
               <td>
                 @if (userBackendInfo.systemConnectionOpened) {
                   {{ userBackendInfo.systemConnectionOpened | date:'dd.MM.yyyy HH:mm:ss' }}
@@ -79,6 +71,9 @@
                 {{ userBackendInfo.name }}
               </td>
               <td>
+                {{ userBackendInfo.callSign }}
+              </td>
+              <td>
                 {{ userBackendInfo.levelNumber }}
               </td>
               <td>
@@ -88,12 +83,6 @@
                 {{ userBackendInfo.email }}
               </td>
               <td>
-                @if (!userBackendInfo.email) {
-                  <p-checkbox
-                    [ngModel]="selectedUserIds.has(userBackendInfo.userId)"
-                    (onChange)="onSelectionChanged($event.checked, userBackendInfo)"
-                    [binary]="true"/>
-                }
                 <p-button icon="pi pi-trash"
                   styleClass="p-button-rounded p-button-text p-button-sm"
                   severity="danger"
@@ -101,6 +90,7 @@
                   (onClick)="askDeleteUser(userBackendInfo)"/>
               </td>
             </tr>
+          }
           </ng-template>
           <ng-template pTemplate="expandedrow" let-userBackendInfo>
             <tr>
@@ -115,7 +105,7 @@
                 <div class="grid grid-cols-12 gap-4">
                   <span class="col-span-5">Registered</span>
                   <div class="col-span-7">
-                    {{ userBackendInfo.registerDate | date:'dd.MM.yyyy HH:mm:ss' }}
+                    {{ userBackendInfo.verificationStartedDate | date:'dd.MM.yyyy HH:mm:ss' }}
                   </div>
                 </div>
                 <div class="grid grid-cols-12 gap-4">

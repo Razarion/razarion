@@ -25,6 +25,13 @@ export class CompactLayoutService {
 
   readonly compact = signal(false);
   readonly openPanel = signal<CompactPanel | null>(null);
+  /**
+   * The chat has something the player has not seen - a dot on its icon. On a phone the chat is a
+   * closed overlay, and without this nobody learnt there was anything in it: 97 % of the players
+   * are on a phone, and in the first two days of the open chat one of them wrote. Never set while
+   * the chat is open, so the player's own messages (they are sent from the open chat) never set it.
+   */
+  readonly chatUnread = signal(false);
 
   constructor() {
     if (typeof window === 'undefined' || !window.matchMedia) {
@@ -37,6 +44,20 @@ export class CompactLayoutService {
 
   toggle(panel: CompactPanel): void {
     this.openPanel.update(current => (current === panel ? null : panel));
+    this.seenIfChatOpen();
+  }
+
+  /** Something new arrived in the chat. A no-op outside compact mode, where the chat is always open. */
+  markChatUnread(): void {
+    if (this.compact() && this.openPanel() !== 'chat') {
+      this.chatUnread.set(true);
+    }
+  }
+
+  private seenIfChatOpen(): void {
+    if (this.openPanel() === 'chat') {
+      this.chatUnread.set(false);
+    }
   }
 
   /**
@@ -48,6 +69,7 @@ export class CompactLayoutService {
   open(panel: CompactPanel): void {
     if (this.compact()) {
       this.openPanel.set(panel);
+      this.seenIfChatOpen();
     }
   }
 
@@ -72,6 +94,8 @@ export class CompactLayoutService {
       // Leaving compact mode with an overlay open would leave that panel positioned as an overlay
       // on a desktop layout that has a fixed place for it.
       this.openPanel.set(null);
+      // The chat is a fixed panel there, always in view.
+      this.chatUnread.set(false);
     }
   }
 }

@@ -132,12 +132,13 @@ public class RecorderController {
     }
 
     /**
-     * A player's moment filmed for the chat (an mp4 of a few MB): kept and announced under
-     * {@link ChatService#NEWS_NAME}, played only when a player clicks it.
+     * A crossing that the social pipeline has posted as a reel on our Instagram, the reel's link as
+     * text/plain. Announced in the chat under {@link ChatService#NEWS_NAME}; true if it was new, false
+     * for a reel announced before (the pipeline may retry).
      */
-    @PostMapping(value = "chat/video", consumes = "video/mp4")
-    public int chatVideo(@RequestParam String userId, @RequestBody byte[] data) {
-        return chatService.video(userId, data);
+    @PostMapping(value = "chat/reel", consumes = MediaType.TEXT_PLAIN_VALUE)
+    public boolean chatReel(@RequestBody String url) {
+        return chatService.reel(url);
     }
 
     @GetMapping(value = "config", produces = MediaType.APPLICATION_JSON_VALUE)
