@@ -481,9 +481,13 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
     if (baseItemPlacer.isPlayBuildSound()) {
       this.babylonAudioService.speakCommand('Building');
     }
-    // glb=0: the builder this base spawns will finish spawning with no model to draw. See MODELS_READY.
+    // glb=0: not every glb had landed (see MODELS_READY). unit=0: the model of what is placed - the
+    // builder this base spawns - was not there either, so it will finish spawning with nothing to
+    // draw. The two were the same question while one glb carried every model; since the start
+    // models have a glb of their own (2026-11-13) only unit= says what the player sees.
     this.rendererService.reportFirstInteraction(this.buildPlacer ? 'BUILD_PLACER_CONFIRMED' : 'PLACER_CONFIRMED',
-      this.buildPlacer ? this.buildTypeDetail : 'glb=' + (this.babylonModelService.areModelsLoaded() ? 1 : 0));
+      this.buildPlacer ? this.buildTypeDetail : 'glb=' + (this.babylonModelService.areModelsLoaded() ? 1 : 0)
+        + ' unit=' + (this.babylonModelService.isModel3DReady(baseItemPlacer.getModel3DId()!) ? 1 : 0));
     // The ghost goes away with the placer, and the construction site only appears once the engine
     // has created it - the rings bridge that gap on the green disc the player just confirmed.
     this.rendererService.showGroundCommandMarker(position.x, position.z, this.discRadius, 'build', position.y);

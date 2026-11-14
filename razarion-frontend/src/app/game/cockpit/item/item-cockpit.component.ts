@@ -88,6 +88,7 @@ export class ItemCockpitComponent implements AfterViewInit, DoCheck, OnDestroy {
 
   private static readonly BLOCKED_MESSAGE_MILLIS = 5000;
   private static readonly SELL_ARM_MILLIS = 3000;
+  static readonly UNLOAD_HELD_MESSAGE = 'Sail to the coast first - unload there';
 
   /** Why the last tapped buildup button did nothing, or null. */
   protected buildBlockedMessage: string | null = null;
@@ -570,9 +571,16 @@ export class ItemCockpitComponent implements AfterViewInit, DoCheck, OnDestroy {
 
   onUnloadClick() {
     const containerId = this.itemCockpitService.ownItemCockpit?.containerId;
-    if (containerId != null) {
-      this.itemCockpitService.onUnload(containerId);
+    if (containerId == null) {
+      return;
     }
+    if (this.tipService.holdsUnload()) {
+      // Sailing quest: the cargo has to arrive in the ship (see TipGuide#holdsUnload).
+      this.firstInteractionTracker.report('UNLOAD_HELD');
+      this.showBlockedMessage(ItemCockpitComponent.UNLOAD_HELD_MESSAGE);
+      return;
+    }
+    this.itemCockpitService.onUnload(containerId);
   }
 
 }

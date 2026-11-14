@@ -225,6 +225,8 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   private interpolationListeners: BabylonBaseItemImpl[] = [];
   /** How far beside an item a finger may land and still mean it: about 7 mm on a phone. */
   private static readonly TOUCH_SLOP_CSS_PX = 28;
+  /** How far outside the picture a spawn may be and still be heard, as a share of its size - see startSpawn. */
+  private static readonly SPAWN_SOUND_PICTURE_MARGIN = 0.2;
   private readonly outOfViewJump = new OutOfViewJump(() => this.canvas ?? null);
   private babylonBaseItems: BabylonBaseItemImpl[] = [];
   /** Where the shooting is, for a camera that would rather film a battle than a factory. */
@@ -735,18 +737,34 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     // target - a move to there overrode the attack and the units stopped short of it (quest 379,
     // local, 2026-10-21: ORDER attack and ORDER move in the same second, the move marker showing).
     let terrainDownPick: any = null;
+    // The item the cursor was showing as hovered when the mouse went down - see fireTerrainClick.
+    let terrainDownHoveredItem: BabylonItemImpl | null = null;
     let terrainClickTimer: ReturnType<typeof setTimeout> | null = null;
     let terrainDragDetected = false;
     const DRAG_THRESHOLD = 5; // pixels
     const CLICK_DELAY = 150; // ms
 
-    const fireTerrainClick = (pickResult: any, touch = false) => {
+    const fireTerrainClick = (pickResult: any, touch = false, hoveredItem: BabylonItemImpl | null = null) => {
       if (!pickResult?.hit || !pickResult.pickedMesh || !pickResult.pickedPoint) return;
       const metadataNode = BabylonRenderServiceAccessImpl.findRazarionMetadataNode(pickResult.pickedMesh);
       if (!metadataNode) return;
       const metadata = BabylonRenderServiceAccessImpl.getRazarionMetadata(metadataNode);
       if (!metadata) return;
       if (metadata.type === RazarionMetadataType.GROUND || metadata.type === RazarionMetadataType.BOT_GROUND) {
+        /*
+         * The cursor promised an item, the click ray found the ground: give the click to the item.
+         *
+         * Babylon resolves the hover cursor with a pick that only looks at meshes carrying an
+         * ActionManager, so it sees an item straight through the ground or the water in front of it.
+         * The click ray stops at whatever is nearest. The dockyard's fence posts reach 1.44 m below
+         * its origin, under the water surface - which is GROUND too: the pointing hand came up
+         * around the dockyard, a click there selected nothing, and with a unit selected it sent the
+         * unit into the water instead (2026-11-13). What the player was shown wins.
+         */
+        if (hoveredItem && !touch && this.isItemInScene(hoveredItem)) {
+          hoveredItem.triggerClick();
+          return;
+        }
         // The ground inside a resource's or box's footprint belongs to that item. Routing the click
         // there sends harvest or pick, the same as hitting the mesh - and matches the cursor the
         // player was just shown.
@@ -780,10 +798,12 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
       // Fire after short delay if no drag detected
       const savedPickResult = pickResult;
       terrainDownPick = pickResult;
+      const savedHoveredItem = this.findItemOwningMesh(this.scene.meshUnderPointer);
+      terrainDownHoveredItem = savedHoveredItem;
       terrainClickTimer = setTimeout(() => {
         terrainClickTimer = null;
         if (!terrainDragDetected) {
-          fireTerrainClick(savedPickResult);
+          fireTerrainClick(savedPickResult, false, savedHoveredItem);
         }
       }, CLICK_DELAY);
     };
@@ -826,7 +846,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
       if (terrainClickTimer && !terrainDragDetected) {
         clearTimeout(terrainClickTimer);
         terrainClickTimer = null;
-        fireTerrainClick(terrainDownPick);
+        fireTerrainClick(terrainDownPick, false, terrainDownHoveredItem);
       }
     };
 
@@ -2141,6 +2161,24 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     return best;
   }
 
+  /** The item one of whose meshes this is, or null - see fireTerrainClick for why that is asked. */
+  private findItemOwningMesh(mesh: AbstractMesh | null | undefined): BabylonItemImpl | null {
+    if (!mesh || !mesh.actionManager) {
+      return null;
+    }
+    return this.babylonBaseItems.find(item => item.ownsMesh(mesh))
+      ?? this.babylonResourceItems.find(item => item.ownsMesh(mesh))
+      ?? this.babylonBoxItems.find(item => item.ownsMesh(mesh))
+      ?? null;
+  }
+
+  /** Still streamed in: between the press and the delayed click the item may have died or scrolled away. */
+  private isItemInScene(item: BabylonItemImpl): boolean {
+    return this.babylonBaseItems.includes(item as BabylonBaseItemImpl)
+      || this.babylonResourceItems.includes(item as BabylonResourceItemImpl)
+      || this.babylonBoxItems.includes(item as BabylonBoxItemImpl);
+  }
+
   private findActionableItemUnderGroundPoint(x: number, z: number): BabylonItemImpl | null {
     let best: BabylonItemImpl | null = null;
     let bestDistanceSq = Number.POSITIVE_INFINITY;
@@ -2471,11 +2509,38 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
 
       });
     }
-    if (spawnAudioId != null) {
+    if (spawnAudioId != null && this.isNearPicture(x, y, z)) {
       // Spatial: the server broadcasts every spawn on the planet (bot respawns, other players), so
       // a flat playAudio() rang out for spawns nobody could see.
+      //
+      // And only where the player can see it. Spatial alone still carried up to
+      // SPATIAL_MAX_DISTANCE: a player whose Vipers stood next to a bot extractor kept hearing the
+      // spawn of the bot's rage Tesla while looking elsewhere - the extractor bot steps up to a
+      // Tesla after 5 kills and back down once nobody is in its realm, over and over (2026-11-13).
+      // A spawn is something to watch; the sound belongs to the picture.
       this.babylonAudioService.playAudioAtPosition(spawnAudioId, new Vector3(x, z, y));
     }
+  }
+
+  /**
+   * Whether this world point is in the picture or just outside it - a fifth of the picture on every
+   * side, so a spawn at the edge, half of whose effect is on screen, is not cut off.
+   */
+  private isNearPicture(x: number, y: number, height: number): boolean {
+    const engine = this.scene.getEngine();
+    const width = engine.getRenderWidth();
+    const pictureHeight = engine.getRenderHeight();
+    const camera = this.scene.activeCamera;
+    if (!camera || width <= 0 || pictureHeight <= 0) {
+      return false;
+    }
+    const projected = Vector3.Project(new Vector3(x, height, y), Matrix.Identity(),
+      this.scene.getTransformMatrix(), camera.viewport.toGlobal(width, pictureHeight));
+    const marginX = width * BabylonRenderServiceAccessImpl.SPAWN_SOUND_PICTURE_MARGIN;
+    const marginY = pictureHeight * BabylonRenderServiceAccessImpl.SPAWN_SOUND_PICTURE_MARGIN;
+    return projected.z > 0 && projected.z < 1
+      && projected.x >= -marginX && projected.x <= width + marginX
+      && projected.y >= -marginY && projected.y <= pictureHeight + marginY;
   }
 
   createBabylonBoxItem(id: number, boxItemType: BoxItemType): BabylonBoxItem {

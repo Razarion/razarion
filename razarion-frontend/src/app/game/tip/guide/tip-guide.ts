@@ -232,6 +232,18 @@ export class TipGuide implements ViewFieldListener {
     return this.quest !== null;
   }
 
+  /**
+   * Whether the unload button should explain instead of opening the placer: on the sailing quest the
+   * quest passes when the loaded ship reaches the coast, so nothing it carries may leave it before.
+   * PROD 07.-13.11.2026: 19 of 48 players who failed quest 486 unloaded the builder on the way - on
+   * the island shore, often "Too far from the Transporter" first - and with the builder ashore the
+   * quest could no longer pass. The guide is told in words, the action is not taken away: once the
+   * ship arrives the quest passes and the next one asks for the unload itself.
+   */
+  holdsUnload(): boolean {
+    return this.quest?.tip === 'SAIL';
+  }
+
   private evaluate(): void {
     const quest = this.quest;
     if (!quest) {

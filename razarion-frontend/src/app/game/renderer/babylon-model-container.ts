@@ -311,10 +311,11 @@ export class GlbContainer extends BabylonModelContainer<GltfEntity, AssetContain
     super();
   }
 
-  // glTF parsing (mesh build + animation channels) is the heaviest main-thread work at boot,
-  // so we keep only a couple in flight to leave the render loop room to breathe.
+  // glTF parsing (mesh build + animation channels) is the heaviest main-thread work at boot. One at
+  // a time since the start models have a glb of their own (2026-11-13): two in flight would split
+  // the line between the small start glb and the large one, and the builder would wait for both.
   protected override maxConcurrentLoads(): number {
-    return 2;
+    return 1;
   }
 
   // Coalesce progress-driven change-detection to at most one tick per animation frame: the loaders

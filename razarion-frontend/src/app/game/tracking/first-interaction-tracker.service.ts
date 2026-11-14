@@ -99,8 +99,9 @@ export type InteractionKind =
  * Reported once per session like every other kind, though the condition is re-checked each second.
  */
   | 'PLACER_NO_TERRAIN'
-/** The placement went through. The base exists from here on. Carries `glb=1` when every model had
- *  arrived by then and `glb=0` when the builder it spawns will have none to be drawn with. */
+/** The placement went through. The base exists from here on. Carries `glb=1` when every glb had
+ *  arrived by then, and `unit=0` when the builder it spawns will have no model to be drawn with -
+ *  since the start models have a glb of their own (2026-11-13) the two differ. */
   | 'PLACER_CONFIRMED'
   /** A start base dragged outside the start region was put back where the placer opened, camera and
    *  all (2026-10-14). */
@@ -133,6 +134,9 @@ export type InteractionKind =
   /** A building placer closed without building - cancelled, replaced or the builder lost.
    *  Detail: `type=<id> open=<seconds> by=x|esc|deselect sel=own|resource|enemy|friend|box|none|replaced|other`. */
   | 'BUILD_PLACER_ABANDONED'
+  /** The unload button pressed on the sailing quest, answered with "sail to the coast first"
+   *  instead of the placer (TipGuide#holdsUnload, 2026-11-13). */
+  | 'UNLOAD_HELD'
 /** The camera kinds name the input, not the effect. "The camera moved" is true on a desktop too
  *  and always has been, so it cannot answer whether the touch gesture was discovered. */
   | 'CAMERA_PAN_TOUCH'
@@ -312,7 +316,7 @@ export class FirstInteractionTrackerService {
     'POINTER_DOWN', 'POINTER_DOWN_PAGE', 'CAMERA_PAN_TOUCH', 'CAMERA_PINCH', 'CAMERA_KEYBOARD',
     'CAMERA_WHEEL', 'MINIMAP_JUMP', 'ARROW_JUMP', 'QUEST_JUMP', 'SELECT_ALL', 'SELECT', 'COMMAND', 'SELECT_GROUP', 'COMMAND_GROUP', 'SELECTION_BOX_ARMED',
     'PLACER_CONFIRMED', 'PLACER_REJECTED', 'TECH_TREE_OPENED', 'ORDER', 'BUILD_BUTTON',
-    'BUILD_PLACER_REJECTED', 'BUILD_PLACER_CONFIRMED', 'CLEAR_REGION_SOLD', 'CLEAR_REGION_CARD_CLOSED', 'PROMPT_TAP']);
+    'BUILD_PLACER_REJECTED', 'BUILD_PLACER_CONFIRMED', 'CLEAR_REGION_SOLD', 'CLEAR_REGION_CARD_CLOSED', 'PROMPT_TAP', 'UNLOAD_HELD']);
 
   /** When the player last did anything at all, or 0 if they never have. */
   public get lastPlayerAction(): number {

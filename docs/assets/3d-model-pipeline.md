@@ -293,6 +293,24 @@ Three containers handle lazy loading of binary assets:
 | `BabylonMaterialContainer` | `GET /rest/babylon-material/data/{id}` | `Map<materialId, Material>` |
 | `ParticleSystemSetContainer` | `GET /rest/particle-system/data/{id}` | `Map<particleId, NodeParticleSystemSet>` |
 
+### Start glb (2026-11-13)
+
+The models a first-time player sees in the first minute - Builder, Factory, Harvester, Resource 1 -
+have a glb of their own (`GLTF` "Start models", 1.1 MB) next to the one with every model (3.8 MB).
+Before, the base went down at about 13 s and the models landed at about 19 s, so the builder was
+invisible for its first seconds (an item without its model is an empty node, see `BabylonItemImpl`).
+
+- `BabylonModelService.smallestFirst` orders the glbs by how many models point at them, and
+  `GlbContainer` loads one at a time, so the small one does not share the line with the large one.
+- The large glb still contains the four models; only `MODEL_3D.gltfEntity_id` of those four points
+  at the start glb. Its `GLTF_BABYLON_MATERIAL` rows are a copy of the large glb's, restricted to the
+  materials it actually contains (otherwise "No material in AssetContainer ..." warnings).
+- When the large glb is re-exported, cut the start glb again:
+  `razarion-ai-content/scripts/glb-split-start.mjs` (verifies every kept model against the source),
+  then `razarion-server/docker/start-glb.sql` (idempotent; expects the file at `/tmp/start.glb` in
+  the MariaDB container).
+- `PLACER_CONFIRMED` reports `unit=1` when the builder's model was there at the placement.
+
 ### Rendering (BabylonModelService.cloneModel3D)
 
 When a game item needs to be rendered:

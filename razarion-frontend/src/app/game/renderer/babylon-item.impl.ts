@@ -948,6 +948,11 @@ export class BabylonItemImpl implements BabylonItem {
     this.fireItemClick();
   }
 
+  /** Whether this mesh is one of this item's - every mesh of an item carries its ActionManager. */
+  ownsMesh(mesh: AbstractMesh | null | undefined): boolean {
+    return !!mesh && !!this.actionManager && mesh.actionManager === this.actionManager;
+  }
+
   getRadius(): number {
     if ((<BaseItemType>this.itemType).getPhysicalAreaConfig !== undefined) {
       return (<BaseItemType>this.itemType).getPhysicalAreaConfig().getRadius();

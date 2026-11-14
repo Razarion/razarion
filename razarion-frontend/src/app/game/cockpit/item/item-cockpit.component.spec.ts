@@ -393,3 +393,46 @@ describe('ItemCockpitComponent buildup tip', () => {
     });
   });
 });
+
+describe('ItemCockpitComponent unload on the sailing quest', () => {
+  function createFixture(holdsUnload: boolean) {
+    const unloads: number[] = [];
+    const reports: string[] = [];
+    const ownItemCockpit = {containerId: 77, containerCount: 1} as unknown as OwnItemCockpitModel;
+    TestBed.configureTestingModule({
+      imports: [ItemCockpitComponent],
+      providers: [
+        {
+          provide: ItemCockpitService, useValue: {
+            ownItemCockpit, ownMultipleItems: null, otherItemCockpit: null, count: 1,
+            onUnload: (id: number) => unloads.push(id)
+          }
+        },
+        {provide: UserService, useValue: {isAdmin: () => false}},
+        {provide: TipService, useValue: {setItemCockpit: () => {}, holdsUnload: () => holdsUnload}},
+        {provide: CompactLayoutService, useValue: compactLayoutStub()},
+        {provide: FirstInteractionTrackerService, useValue: {report: (kind: string) => reports.push(kind)}},
+      ]
+    });
+    const fixture = TestBed.createComponent(ItemCockpitComponent);
+    fixture.detectChanges();
+    return {fixture, unloads, reports};
+  }
+
+  it('explains instead of opening the placer while the ship still has to sail', () => {
+    const {fixture, unloads, reports} = createFixture(true);
+    fixture.componentInstance.onUnloadClick();
+    fixture.detectChanges();
+    expect(unloads).toEqual([]);
+    expect(reports).toContain('UNLOAD_HELD');
+    const message = fixture.nativeElement.querySelector('.item-cockpit-blocked-msg') as HTMLElement;
+    expect(message?.textContent).toContain(ItemCockpitComponent.UNLOAD_HELD_MESSAGE);
+  });
+
+  it('unloads as before on any other quest', () => {
+    const {fixture, unloads, reports} = createFixture(false);
+    fixture.componentInstance.onUnloadClick();
+    expect(unloads).toEqual([77]);
+    expect(reports).not.toContain('UNLOAD_HELD');
+  });
+});

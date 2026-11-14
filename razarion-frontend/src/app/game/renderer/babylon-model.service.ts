@@ -16,7 +16,7 @@ import {Node} from "@babylonjs/core/node";
 import {NodeParticleSystemSet} from "@babylonjs/core/Particles/Node/nodeParticleSystemSet";
 import {Scene} from "@babylonjs/core/scene";
 import {GLTFFileLoader} from "@babylonjs/loaders/glTF/glTFFileLoader";
-import {Model3DEntity, ParticleSystemEntity} from "src/app/generated/razarion-share";
+import {GltfEntity, Model3DEntity, ParticleSystemEntity} from "src/app/generated/razarion-share";
 import {SimpleMaterial} from "@babylonjs/materials/simple/simpleMaterial";
 import {UiConfigCollectionService} from "../ui-config-collection.service";
 import {materialsForFirstFrame, materialsForModels} from "./start-gate-materials";
@@ -203,16 +203,17 @@ export class BabylonModelService {
       whenTerrainReady().then(() => {
         this.babylonMaterialContainer.releaseDeferred();
         this.particleSystemContainer.load(uiConfigCollection.particleSystemEntities, this, this.scene);
-        this.gltfIds = uiConfigCollection.gltfs.map(gltf => gltf.id);
-        this.glbContainer.load(uiConfigCollection.gltfs, this, this.scene);
+        const gltfs = this.smallestFirst(uiConfigCollection.gltfs, uiConfigCollection.model3DEntities);
+        this.gltfIds = gltfs.map(gltf => gltf.id);
+        this.glbContainer.load(gltfs, this, this.scene);
       });
     });
   }
 
 
   /**
-   * Whether every glb has landed. One glb carries all the models today, so false means a builder
-   * that finishes spawning has nothing to be drawn with. Reported with PLACER_CONFIRMED.
+   * Whether every glb has landed. Reported with PLACER_CONFIRMED as glb=; since the start models
+   * have a glb of their own (see smallestFirst) whether the builder can be drawn is unit= there.
    */
   areModelsLoaded(): boolean {
     return this.gltfIds !== null && this.glbContainer.isLoaded();
@@ -712,6 +713,26 @@ export class BabylonModelService {
 
   getNodeParticleSystemSet(particleSystemEntityId: number): NodeParticleSystemSet | null {
     return this.particleSystemContainer.getBabylonModel(particleSystemEntityId) ?? null;
+  }
+
+  /**
+   * The glbs with the fewest models first.
+   * <p>
+   * The start models - builder, factory, harvester, crystals - have a glb of their own since
+   * 2026-11-13: 1.1 MB against the 3.8 MB that carried every model. The base used to go down at
+   * about 13 s and the models land at about 19 s, so the builder of a first-time player spent its
+   * first seconds invisible; of 119 players who left quest 358 without ever pressing build, 61% had
+   * no models yet. The small glb only helps if it does not share the line with the large one, so
+   * it goes first and the glb container loads one at a time (GlbContainer#maxConcurrentLoads).
+   * <p>
+   * Model count stands in for the byte size, which the client does not know before the download:
+   * the start glb is small precisely because it holds few models. Whoever asks for a model before
+   * the load starts is still served first (BabylonModelContainer#load).
+   */
+  private smallestFirst(gltfs: GltfEntity[], model3DEntities: Model3DEntity[]): GltfEntity[] {
+    const modelCount = new Map<number, number>();
+    (model3DEntities ?? []).forEach(model => modelCount.set(model.gltfEntityId, (modelCount.get(model.gltfEntityId) ?? 0) + 1));
+    return [...(gltfs ?? [])].sort((a, b) => (modelCount.get(a.id) ?? 0) - (modelCount.get(b.id) ?? 0) || a.id - b.id);
   }
 
   private setupModel3DEntities(model3DEntities: Model3DEntity[]) {

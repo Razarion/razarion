@@ -360,7 +360,7 @@ describe('BaseItemPlacerPresenterImpl touch handling', () => {
 
     expect(places.length).toBe(1);
     expect(reportedInteractions).toContain('PLACER_CONFIRMED');
-    expect(reportedDetails).toContain('PLACER_CONFIRMED|glb=1');
+    expect(reportedDetails).toContain('PLACER_CONFIRMED|glb=1 unit=1');
   });
 
   /**
@@ -375,7 +375,7 @@ describe('BaseItemPlacerPresenterImpl touch handling', () => {
     fire(PointerEventTypes.POINTERUP);
     pressDeploy();
 
-    expect(reportedDetails).toContain('PLACER_CONFIRMED|glb=0');
+    expect(reportedDetails).toContain('PLACER_CONFIRMED|glb=0 unit=1');
   });
 
   /**

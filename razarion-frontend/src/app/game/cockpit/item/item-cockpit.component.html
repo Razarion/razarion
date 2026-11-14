@@ -197,6 +197,11 @@
             (mousedown)="onUnloadClick()"
           [disabled]="!ownItemCockpit.containerCount"></p-button>
         </div>
+        <!-- The unload held back on the sailing quest (TipGuide#holdsUnload). A container has no
+             buildup panel, which carries this message for everything else. -->
+        @if (buildBlockedMessage && !ownItemCockpit.buildupItems) {
+          <div class="item-cockpit-blocked-msg">{{ buildBlockedMessage }}</div>
+        }
       }
     </div>
   }

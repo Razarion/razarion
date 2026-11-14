@@ -86,6 +86,11 @@ export class TipService {
     return this.guide.isActive();
   }
 
+  /** See TipGuide#holdsUnload. */
+  public holdsUnload(): boolean {
+    return this.guide.holdsUnload();
+  }
+
   public setItemCockpit(itemCockpit: ItemCockpitComponent | null) {
     this.itemCockpit = itemCockpit;
   }
