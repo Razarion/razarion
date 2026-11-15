@@ -437,6 +437,7 @@ public class JsonDeserializer {
         r.setDropBoxItemTypeId(json.getNullableInt("dropBoxItemTypeId"));
         r.setDropBoxPossibility(json.getDouble("dropBoxPossibility"));
         r.setBoxPickupRange(json.getDouble("boxPickupRange"));
+        r.setGroundDecalRadius(json.getDouble("groundDecalRadius"));
         r.setUnlockCrystals(json.getNullableInt("unlockCrystals"));
         r.setSpawnDurationMillis(json.getInt("spawnDurationMillis"));
         r.setSpawnParticleSystemId(json.getNullableInt("spawnParticleSystemId"));

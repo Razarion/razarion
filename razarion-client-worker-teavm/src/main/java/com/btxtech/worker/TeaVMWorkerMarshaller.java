@@ -1765,6 +1765,7 @@ public final class TeaVMWorkerMarshaller {
         type.setDropBoxItemTypeId(obj.getNullableInt("dropBoxItemTypeId"));
         type.setDropBoxPossibility(obj.getDouble("dropBoxPossibility"));
         type.setBoxPickupRange(obj.getDouble("boxPickupRange"));
+        type.setGroundDecalRadius(obj.getDouble("groundDecalRadius"));
         type.setUnlockCrystals(obj.getNullableInt("unlockCrystals"));
         type.setSpawnDurationMillis(obj.getInt("spawnDurationMillis"));
         type.setSpawnParticleSystemId(obj.getNullableInt("spawnParticleSystemId"));

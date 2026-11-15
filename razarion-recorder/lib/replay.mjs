@@ -1,7 +1,8 @@
 import { packetPayload } from './connection.mjs';
 
-// One replay is at most this long: an hour of the planet is a few MB of track.
-export const MAX_RANGE_MS = 90 * 60_000;
+// One replay is at most this long: 90 minutes were 2.1 MB of track built in 0.26 s (15.11.2026), so a
+// whole day is some 35 MB and a few seconds - as much as the tape holds (RECORDER_KEEP_HOURS).
+export const MAX_RANGE_MS = 24 * 60 * 60_000;
 
 const round = (v) => Math.round(v * 10) / 10;
 

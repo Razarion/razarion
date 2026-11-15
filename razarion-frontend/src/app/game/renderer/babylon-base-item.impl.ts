@@ -39,6 +39,7 @@ import {BabylonWreckage} from "./babylon-wreckage";
 import {BabylonDamageEffect} from "./babylon-damage-effect";
 import {RenderObject} from "./render-object";
 import {ShipWakeRenderer} from "./ship-wake-renderer";
+import {BabylonGroundDecal} from "./babylon-ground-decal";
 import {BowWaveHalo} from "./bow-wave-halo";
 import {renderBuildLoop, renderDriveLoop, renderServo} from "./procedural-sounds";
 
@@ -120,6 +121,8 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
   // Movable water units get their halo via ShipWakeRenderer instead. Created
   // lazily on first setPosition so it doesn't briefly flash at world origin.
   private bowHalo: BowWaveHalo | null = null;
+  // Ground plate for buildings whose type has a ground decal radius (e.g. bot extractors); created lazily in setPosition.
+  private groundDecal: BabylonGroundDecal | null = null;
   private nameVisibilitySubscription: Subscription | null = null;
   // Drive sound: on while position updates keep coming faster than DRIVE_MIN_SPEED.
   private driveSoundUntil = 0;
@@ -327,6 +330,15 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
       const c = this.getContainer();
       this.bowHalo.setPose(c.position.x, c.position.z, c.rotation.y);
     }
+    const groundDecalRadius = this.baseItemType.getGroundDecalRadius?.() ?? 0;
+    if (position && groundDecalRadius > 0 && !this.cleanedUp
+      && !this.baseItemType.getPhysicalAreaConfig().fulfilledMovable()) {
+      if (!this.groundDecal) {
+        this.groundDecal = new BabylonGroundDecal(this.rendererService.getScene(), groundDecalRadius, this.rendererService);
+      }
+      const c = this.getContainer();
+      this.groundDecal.place(c.position.x, c.position.z, c.rotation.y);
+    }
   }
 
   override removeFromView() {
@@ -358,6 +370,8 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
     this.wakeRenderer = null;
     this.bowHalo?.dispose();
     this.bowHalo = null;
+    this.groundDecal?.dispose();
+    this.groundDecal = null;
     this.cleanedUp = true;
     this.buildupEffect?.cleanup();
     this.buildupEffect = null;

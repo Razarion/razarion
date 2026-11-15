@@ -1,4 +1,5 @@
 import {NodeMaterial} from "@babylonjs/core/Materials/Node/nodeMaterial";
+import {Material} from "@babylonjs/core/Materials/material";
 import {Texture} from "@babylonjs/core/Materials/Textures/texture";
 import {Color3} from "@babylonjs/core/Maths/math.color";
 import {InputBlock} from "@babylonjs/core/Materials/Node/Blocks/Input/inputBlock";
@@ -56,7 +57,7 @@ function color3Input(name: string, r: number, g: number, b_: number): InputBlock
  * `public/renderer/textures/bot-ground-top-{diffuse,norm}.jpg` so they
  * can be edited without affecting the planet's shared asphalt patches.
  */
-export function buildBotGroundTopMaterial(scene: Scene, markings: BotGroundMarkings): NodeMaterial {
+export function buildBotGroundTopMaterial(scene: Scene, markings: BotGroundMarkings, opacityMask?: Texture): NodeMaterial {
   const mat = new NodeMaterial("BotGround top", scene);
 
   // ========== Vertex attributes ==========
@@ -282,6 +283,18 @@ export function buildBotGroundTopMaterial(scene: Scene, markings: BotGroundMarki
   // ========== Fragment output ==========
   const fragmentOutput = new FragmentOutputBlock("FragmentOutput");
   finalColor.output.connectTo(fragmentOutput.rgb);
+
+  // A ground decal (babylon-ground-decal.ts) is this asphalt with a frayed edge: alpha from its mask,
+  // sampled by the decal's own uv (the asphalt itself stays on the world grid like the plates)
+  if (opacityMask) {
+    const uv = new InputBlock("uv");
+    uv.setAsAttribute("uv");
+    const maskTex = new TextureBlock("decal mask");
+    uv.output.connectTo(maskTex.uv);
+    maskTex.texture = opacityMask;
+    maskTex.r.connectTo(fragmentOutput.a);
+    mat.transparencyMode = Material.MATERIAL_ALPHABLEND;
+  }
 
   // ========== Build ==========
   mat.addOutputNode(vertexOutput);

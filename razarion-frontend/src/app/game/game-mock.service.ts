@@ -171,6 +171,7 @@ export class GameMockService {
           getDriveAudioId(): number | null { return null; }
           getHarvestAudioId(): number | null { return null; }
           getBuildAudioId(): number | null { return null; }
+          getGroundDecalRadius(): number { return 0; }
         };
 
         const viperType = new class implements BaseItemType {
@@ -202,6 +203,7 @@ export class GameMockService {
           getDriveAudioId(): number | null { return null; }
           getHarvestAudioId(): number | null { return null; }
           getBuildAudioId(): number | null { return null; }
+          getGroundDecalRadius(): number { return 0; }
         };
 
         {
@@ -870,6 +872,10 @@ export class GameMockService {
 
           getHarvestAudioId(): number | null {
             return null;
+          }
+
+          getGroundDecalRadius(): number {
+            return 0;
           }
 
           getBuildAudioId(): number | null {

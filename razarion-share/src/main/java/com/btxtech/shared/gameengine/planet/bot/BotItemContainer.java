@@ -34,6 +34,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiPredicate;
+import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -45,6 +46,8 @@ import java.util.logging.Logger;
 
 public class BotItemContainer {
     private static final int KILL_ITERATION_MAXIMUM = 100;
+    // Slack on top of weapon range + both radii: a parked unit drifts a bit, and a guard reacts slightly beyond its range
+    private static final double ENEMY_WEAPON_REACH_MARGIN = 3.0;
     private final Logger logger = Logger.getLogger(BotItemContainer.class.getName());
     private final ItemTypeService itemTypeService;
     private final BaseItemService baseItemService;
@@ -200,7 +203,7 @@ public class BotItemContainer {
     private void createItem(BotItemConfig botItemConfig, PlayerBaseFull playerBase) throws ItemLimitExceededException, HouseSpaceExceededException, NoSuchItemTypeException {
         BaseItemType toBeBuilt = itemTypeService.getBaseItemType(botItemConfig.getBaseItemTypeId());
         if (botItemConfig.isCreateDirectly()) {
-            DecimalPosition position = getPosition(botItemConfig.getPlace(), toBeBuilt, botItemConfig.isPlaceNearCenter(), false);
+            DecimalPosition position = getPosition(botItemConfig.getPlace(), toBeBuilt, botItemConfig.isPlaceNearCenter(), false, playerBase);
             SyncBaseItem spawnItem = baseItemService.spawnSyncBaseItem(toBeBuilt, position, botItemConfig.getAngle(), playerBase, botItemConfig.isNoSpawn());
             insertBotItem(spawnItem, botItemConfig);
         } else {
@@ -214,7 +217,7 @@ public class BotItemContainer {
             } else {
                 // botSyncBuilder is builder unit. For a ground-box bot the structure must land on the
                 // raised plateau, otherwise it renders sunken on the low terrain below the bot ground.
-                DecimalPosition position = getPosition(botItemConfig.getPlace(), toBeBuilt, botItemConfig.isPlaceNearCenter(), groundBoxEnabled);
+                DecimalPosition position = getPosition(botItemConfig.getPlace(), toBeBuilt, botItemConfig.isPlaceNearCenter(), groundBoxEnabled, playerBase);
                 try {
                     botSyncBuilder.buildBuilding(position, toBeBuilt);
                 } catch (Exception e) {
@@ -225,18 +228,37 @@ public class BotItemContainer {
         }
     }
 
-    private DecimalPosition getPosition(PlaceConfig placeConfig, BaseItemType toBeBuilt, boolean nearCenter, boolean requireBotGround) {
+    /**
+     * A new bot item goes where no enemy weapon reaches it, if the place has such a spot. Otherwise it
+     * goes anywhere free, as before. Without this, an extractor destroyed by parked vipers came back
+     * right next to them, was shot again, and five kills later the bot raged.
+     */
+    private DecimalPosition getPosition(PlaceConfig placeConfig, BaseItemType toBeBuilt, boolean nearCenter, boolean requireBotGround, PlayerBase playerBase) {
+        if (playerBase != null && !toBeBuilt.getPhysicalAreaConfig().fulfilledMovable()) {
+            try {
+                return findPosition(placeConfig, toBeBuilt, nearCenter, requireBotGround,
+                        syncItemContainerService.outOfEnemyWeaponReach(playerBase, toBeBuilt.getPhysicalAreaConfig().getRadius(), ENEMY_WEAPON_REACH_MARGIN));
+            } catch (PositionCanNotBeFoundException e) {
+                // every free spot is in reach -> fall back to any free spot
+            }
+        }
+        return findPosition(placeConfig, toBeBuilt, nearCenter, requireBotGround, null);
+    }
+
+    private DecimalPosition findPosition(PlaceConfig placeConfig, BaseItemType toBeBuilt, boolean nearCenter, boolean requireBotGround, Function<DecimalPosition, Boolean> extraFree) {
         // The bot-ground plateau is a raised LAND box. Water structures (e.g. the Dockyard) sit on the
         // water surface and can never overlap a land plateau, so gating them on bot ground would make
         // getFreeRandomPosition never find a spot (PositionCanNotBeFoundException). Only require bot
         // ground for land-based items.
         requireBotGround = requireBotGround && isLandTerrainType(toBeBuilt.getPhysicalAreaConfig().getTerrainType());
+        TerrainType terrainType = toBeBuilt.getPhysicalAreaConfig().getTerrainType();
+        double radius = toBeBuilt.getPhysicalAreaConfig().getRadius();
         if (placeConfig == null) {
-            return syncItemContainerService.getFreeRandomPosition(toBeBuilt.getPhysicalAreaConfig().getTerrainType(), toBeBuilt.getPhysicalAreaConfig().getRadius(), false, realm, requireBotGround);
+            return syncItemContainerService.getFreeRandomPosition(terrainType, radius, false, realm, requireBotGround, extraFree);
         } else if (nearCenter) {
-            return syncItemContainerService.getFreeNearestPositionToCenter(toBeBuilt.getPhysicalAreaConfig().getTerrainType(), toBeBuilt.getPhysicalAreaConfig().getRadius(), false, placeConfig, requireBotGround);
+            return syncItemContainerService.getFreeNearestPositionToCenter(terrainType, radius, false, placeConfig, requireBotGround, extraFree);
         } else {
-            return syncItemContainerService.getFreeRandomPosition(toBeBuilt.getPhysicalAreaConfig().getTerrainType(), toBeBuilt.getPhysicalAreaConfig().getRadius(), false, placeConfig, requireBotGround);
+            return syncItemContainerService.getFreeRandomPosition(terrainType, radius, false, placeConfig, requireBotGround, extraFree);
         }
     }
 

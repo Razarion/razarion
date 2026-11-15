@@ -48,6 +48,11 @@
                 Age
                 <p-sortIcon field="createdMillis"></p-sortIcon>
             </th>
+            <th style="white-space: nowrap" pSortableColumn="lastOnlineMillis"
+                title="When the owner was last connected. Registered bases are only removed by hand">
+                Last online
+                <p-sortIcon field="lastOnlineMillis"></p-sortIcon>
+            </th>
             <th style="white-space: nowrap">
                 Money
                 <input type="number" step="10000" [(ngModel)]="moneyAmount"
@@ -89,6 +94,12 @@
             <td style="white-space: nowrap" [title]="row.createdAt">
                 {{row.age}}
             </td>
+            <td style="white-space: nowrap; cursor: help" [title]="row.lastOnlineTitle">
+                @if (row.detail?.registered) {
+                    <i class="pi pi-user" style="margin-right: 4px" title="Registered"></i>
+                }
+                {{row.lastOnline}}
+            </td>
             <td>
                 <p-button label="Add money" icon="pi pi-dollar" styleClass="p-button-text p-button-sm"
                     title="Add Razarion to this base" (onClick)="addMoney(row.base)">
@@ -105,7 +116,7 @@
          template name is silently ignored rather than reported. -->
     <ng-template pTemplate="expandedrow" let-row>
         <tr>
-            <td colspan="9">
+            <td colspan="10">
                 @if (row.detail) {
                     <div class="flex flex-col gap-2 p-3">
                         @if (row.moneyWarning) {

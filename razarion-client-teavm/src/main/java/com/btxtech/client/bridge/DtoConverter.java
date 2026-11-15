@@ -440,6 +440,7 @@ public class DtoConverter {
         setGetterObj(obj, "getDriveAudioId", () -> convertNullableInt(type.getDriveAudioId()));
         setGetterObj(obj, "getHarvestAudioId", () -> convertNullableInt(type.getHarvestAudioId()));
         setGetterObj(obj, "getBuildAudioId", () -> convertNullableInt(type.getBuildAudioId()));
+        setGetterDouble(obj, "getGroundDecalRadius", type::getGroundDecalRadius);
         setGetterInt(obj, "getPrice", type::getPrice);
         setGetterInt(obj, "getConsumingHouseSpace", type::getConsumingHouseSpace);
         return obj;

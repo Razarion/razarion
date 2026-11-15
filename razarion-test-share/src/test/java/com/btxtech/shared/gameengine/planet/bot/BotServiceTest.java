@@ -14,6 +14,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -227,6 +228,58 @@ public class BotServiceTest extends BaseBotServiceTest {
 
         Assert.assertEquals("Rebuilds for ever", 1, countBotItems(FallbackConfig.FACTORY_ITEM_TYPE_ID));
         Assert.assertEquals("Nothing ever fights back", 0, countBotItems(FallbackConfig.ATTACKER_ITEM_TYPE_ID));
+    }
+
+    /**
+     * The extractor case on PROD: vipers parked next to a bot extractor shot every rebuild at once, and
+     * five kills later the bot raged. A building now goes where no enemy weapon reaches it, as long as
+     * its place has such a spot.
+     */
+    @Test
+    public void buildingGoesOutOfEnemyWeaponReach() {
+        setup();
+        SyncBaseItem camper = spawnHumanAttacker(new DecimalPosition(60, 60));
+
+        startBots(List.of(buildingBotConfig(new PlaceConfig().position(new DecimalPosition(60, 60)).radius(40.0))));
+        tickBotRunner();
+
+        SyncBaseItem factory = findBotItemOrNull(FallbackConfig.FACTORY_ITEM_TYPE_ID);
+        Assert.assertNotNull("the bot builds", factory);
+        double reach = camper.getSyncWeapon().getWeaponType().getRange()
+                + camper.getAbstractSyncPhysical().getRadius() + factory.getAbstractSyncPhysical().getRadius();
+        double distance = factory.getAbstractSyncPhysical().getPosition().getDistance(camper.getAbstractSyncPhysical().getPosition());
+        Assert.assertTrue("out of reach: " + distance + " > " + reach, distance > reach);
+        Assert.assertTrue("still nearest to the center it can get: " + distance, distance < reach + 6);
+    }
+
+    /** A place that lies entirely in reach still gets its building - the bot must not stall. */
+    @Test
+    public void buildingInReachWhenThePlaceHasNoOtherSpot() {
+        setup();
+        spawnHumanAttacker(new DecimalPosition(60, 60));
+
+        startBots(List.of(buildingBotConfig(new PlaceConfig().position(new DecimalPosition(60, 60)).radius(8.0))));
+        tickBotRunner();
+
+        Assert.assertEquals(1, countBotItems(FallbackConfig.FACTORY_ITEM_TYPE_ID));
+    }
+
+    private SyncBaseItem spawnHumanAttacker(DecimalPosition position) {
+        UserContext userContext = createLevel1UserContext();
+        PlayerBaseFull playerBase = getBaseItemService().createHumanBase(0, userContext.getLevelId(), Collections.emptyMap(), userContext.getUserId(), userContext.getName());
+        SyncBaseItem attacker = getBaseItemService().spawnSyncBaseItem(getItemTypeService().getBaseItemType(FallbackConfig.ATTACKER_ITEM_TYPE_ID),
+                position, 0, playerBase, true);
+        tickPlanetServiceBaseServiceActive();
+        return attacker;
+    }
+
+    private BotConfig buildingBotConfig(PlaceConfig place) {
+        List<BotItemConfig> items = new ArrayList<>();
+        items.add(new BotItemConfig().baseItemTypeId(FallbackConfig.FACTORY_ITEM_TYPE_ID).count(1).createDirectly(true)
+                .placeNearCenter(true).place(place));
+        List<BotEnragementStateConfig> states = new ArrayList<>();
+        states.add(new BotEnragementStateConfig().name("Normal").botItems(items));
+        return new BotConfig().id(1).actionDelay(1).name("Extractor").npc(false).botEnragementStateConfigs(states);
     }
 
     private List<BotEnragementStateConfig> enragingStates() {

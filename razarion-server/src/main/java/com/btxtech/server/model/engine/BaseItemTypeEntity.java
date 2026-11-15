@@ -73,6 +73,8 @@ public class BaseItemTypeEntity extends BaseEntity {
     @JoinColumn
     private AudioLibraryEntity buildAudio;
     private int spawnDurationMillis;
+    // Nullable so Hibernate can add the column to existing rows; null = no decal
+    private Double groundDecalRadius;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private BoxItemTypeEntity dropBoxItemTypeEntity;
@@ -159,6 +161,7 @@ public class BaseItemTypeEntity extends BaseEntity {
             baseItemType.setBuildAudioId(buildAudio.getId());
         }
         baseItemType.setSpawnDurationMillis(spawnDurationMillis);
+        baseItemType.setGroundDecalRadius(groundDecalRadius != null ? groundDecalRadius : 0);
         if (thumbnail != null) {
             baseItemType.setThumbnail(thumbnail.getId());
         }
@@ -217,6 +220,7 @@ public class BaseItemTypeEntity extends BaseEntity {
         health = baseItemType.getHealth();
         buildup = baseItemType.getBuildup();
         spawnDurationMillis = baseItemType.getSpawnDurationMillis();
+        groundDecalRadius = baseItemType.getGroundDecalRadius() > 0 ? baseItemType.getGroundDecalRadius() : null;
         price = baseItemType.getPrice();
         xpOnKilling = baseItemType.getXpOnKilling();
         consumingHouseSpace = baseItemType.getConsumingHouseSpace();

@@ -44,6 +44,13 @@ interface BaseRow {
    * for without making the reader compare two numbers.
    */
   moneyWarning: string | null;
+  /**
+   * Sortable: epoch millis of the owner's last connection, now for one who is online, null for bots
+   * and until the details arrive. Oldest first finds the bases nobody came back to.
+   */
+  lastOnlineMillis: number | null;
+  lastOnline: string;
+  lastOnlineTitle: string;
 }
 
 @Component({
@@ -148,6 +155,7 @@ export class BaseMgmtComponent extends EditorPanel implements OnInit {
       row.level = detail?.levelNumber ?? null;
       row.levelText = row.level !== null ? String(row.level) : '—';
       row.moneyWarning = BaseMgmtComponent.moneyWarning(detail, row.character);
+      BaseMgmtComponent.applyLastOnline(row, detail);
     }
   }
 
@@ -175,6 +183,37 @@ export class BaseMgmtComponent extends EditorPanel implements OnInit {
     return null;
   }
 
+  /**
+   * Human bases only. Registered bases are never cleaned up automatically, unregistered ones go an hour
+   * after their owner left - the tooltip says which, because that decides whether to delete by hand.
+   */
+  private static applyLastOnline(row: BaseRow, detail: BaseDetail | undefined): void {
+    // The generator types these as always there; the server leaves them out for bots
+    if (!detail || detail.online == null) {
+      row.lastOnlineMillis = null;
+      row.lastOnline = '—';
+      row.lastOnlineTitle = '';
+      return;
+    }
+    const who = detail.registered ? 'Registered - kept until deleted by hand' : 'Unregistered - removed 60 min after leaving';
+    if (detail.online) {
+      row.lastOnlineMillis = Date.now();
+      row.lastOnline = 'online';
+      row.lastOnlineTitle = who;
+      return;
+    }
+    if (!detail.lastOnlineMillis) {
+      row.lastOnlineMillis = 0;
+      row.lastOnline = 'never';
+      row.lastOnlineTitle = who;
+      return;
+    }
+    row.lastOnlineMillis = detail.lastOnlineMillis;
+    const age = BaseMgmtComponent.age(detail.lastOnlineMillis);
+    row.lastOnline = age === 'just now' ? age : `${age} ago`;
+    row.lastOnlineTitle = `${new Date(detail.lastOnlineMillis).toLocaleString()}\n${who}`;
+  }
+
   houseSpaceText(detail: BaseDetail): string {
     return `${detail.usedHouseSpace} / ${detail.houseSpace}`;
   }
@@ -200,6 +239,9 @@ export class BaseMgmtComponent extends EditorPanel implements OnInit {
       createdAt: createdMillis ? new Date(createdMillis).toLocaleString() : 'Created before base ages were recorded',
       detail: null,
       moneyWarning: null,
+      lastOnlineMillis: null,
+      lastOnline: '—',
+      lastOnlineTitle: '',
     };
   }
 

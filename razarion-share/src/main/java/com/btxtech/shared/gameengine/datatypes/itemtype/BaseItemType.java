@@ -44,6 +44,9 @@ public class BaseItemType extends ItemType {
     private Integer harvestAudioId;
     // Building sound: a seamless loop, played while the builder works (between arm out and arm in)
     private Integer buildAudioId;
+    // Ground decal under a building, radius in meters, 0 = none. Purely visual: it comes and goes with
+    // the item and does not touch the terrain (unlike a bot's ground box, which is baked into the tiles).
+    private double groundDecalRadius;
     private List<DemolitionStepEffect> demolitionStepEffects;
     private Integer explosionAudioItemConfigId;
     private Integer explosionParticleId;
@@ -269,6 +272,14 @@ public class BaseItemType extends ItemType {
         this.buildAudioId = buildAudioId;
     }
 
+    public double getGroundDecalRadius() {
+        return groundDecalRadius;
+    }
+
+    public void setGroundDecalRadius(double groundDecalRadius) {
+        this.groundDecalRadius = groundDecalRadius;
+    }
+
     public List<DemolitionStepEffect> getDemolitionStepEffects() {
         return demolitionStepEffects;
     }
@@ -430,6 +441,11 @@ public class BaseItemType extends ItemType {
 
     public BaseItemType buildAudioId(Integer buildAudioId) {
         setBuildAudioId(buildAudioId);
+        return this;
+    }
+
+    public BaseItemType groundDecalRadius(double groundDecalRadius) {
+        setGroundDecalRadius(groundDecalRadius);
         return this;
     }
 

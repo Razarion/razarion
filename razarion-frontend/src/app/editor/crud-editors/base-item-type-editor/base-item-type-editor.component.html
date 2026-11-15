@@ -1,492 +1,505 @@
 <p-scrollPanel [style]="{width: '100%', height: '100%'}">
-  <div style="width: 40em">
-    <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
+  <div class="flex flex-col gap-2 pb-4" style="width: 40em">
+
+    <!-- General -->
+    <div class="grid grid-cols-12 gap-4 items-center grid-razarion-editor">
       <span class="col-span-4">Id</span>
       <div class="col-span-8">
         <p-inputNumber [disabled]="true" [(ngModel)]="baseItemType.id"></p-inputNumber>
       </div>
     </div>
-    <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
+    <div class="grid grid-cols-12 gap-4 items-center grid-razarion-editor">
       <span class="col-span-4">Internal name</span>
       <div class="col-span-8">
         <input [(ngModel)]="baseItemType.internalName" type="text"
-          class="text-base text-color text-primary bg-primary-contrast p-2 border border-solid border-surface rounded-border appearance-none outline-0 focus:border-primary w-full">
-        </div>
+               class="text-base text-color text-primary bg-primary-contrast p-2 border border-solid border-surface rounded-border appearance-none outline-0 focus:border-primary w-full">
       </div>
-      <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
-        <span class="col-span-4">Name</span>
-        <div class="col-span-8">
-          <input [(ngModel)]="baseItemType.name" type="text"
-            class="text-base text-color text-primary bg-primary-contrast p-2 border border-solid border-surface rounded-border appearance-none outline-0 focus:border-primary w-full">
-          </div>
-        </div>
-        <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
-          <span class="col-span-4">Description</span>
-          <div class="col-span-8">
-            <input [(ngModel)]="baseItemType.description" type="text"
-              class="text-base text-color text-primary bg-primary-contrast p-2 border border-solid border-surface rounded-border appearance-none outline-0 focus:border-primary w-full">
-            </div>
-          </div>
-          <p-divider align="left">
-            <div class="inline-flex items-center">
-              <i class="pi pi-video"></i>
-              <b>&nbspVisibility</b>
-            </div>
-          </p-divider>
-          <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
-            <span class="col-span-4">Model 3D</span>
-            <div class="col-span-8">
-              <model3d [(model3DId)]="baseItemType.model3DId"></model3d>
-            </div>
-          </div>
-          <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
-            <span class="col-span-4">Thumbnail</span>
-            <div class="col-span-8">
-              <image-item [(imageId)]="baseItemType.thumbnail"></image-item>
-            </div>
-          </div>
-          <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
-            <span class="col-span-4">Explosion particle system</span>
-            <div class="col-span-8">
-              <particle-system [(particleSystemId)]="baseItemType.explosionParticleId"></particle-system>
-            </div>
-          </div>
-          <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
-            <span class="col-span-4">Spawn particle</span>
-            <div class="col-span-8">
-              <particle-system [(particleSystemId)]="baseItemType.spawnParticleSystemId"></particle-system>
-            </div>
-          </div>
-          <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
-            <span class="col-span-4">Spawn audio</span>
-            <div class="col-span-8">
-              <audio-editor [(audioId)]="baseItemType.spawnAudioId"></audio-editor>
-            </div>
-          </div>
-          <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
-            <span class="col-span-4">Build arm audio (loop)</span>
-            <div class="col-span-8">
-              <audio-editor [(audioId)]="baseItemType.buildArmAudioId"></audio-editor>
-            </div>
-          </div>
-          <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
-            <span class="col-span-4">Drive audio (loop)</span>
-            <div class="col-span-8">
-              <audio-editor [(audioId)]="baseItemType.driveAudioId"></audio-editor>
-            </div>
-          </div>
-          <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
-            <span class="col-span-4">Harvest audio (loop)</span>
-            <div class="col-span-8">
-              <audio-editor [(audioId)]="baseItemType.harvestAudioId"></audio-editor>
-            </div>
-          </div>
-          <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
-            <span class="col-span-4">Build audio (loop)</span>
-            <div class="col-span-8">
-              <audio-editor [(audioId)]="baseItemType.buildAudioId"></audio-editor>
-            </div>
-          </div>
+    </div>
+    <div class="grid grid-cols-12 gap-4 items-center grid-razarion-editor">
+      <span class="col-span-4">Name</span>
+      <div class="col-span-8">
+        <input [(ngModel)]="baseItemType.name" type="text"
+               class="text-base text-color text-primary bg-primary-contrast p-2 border border-solid border-surface rounded-border appearance-none outline-0 focus:border-primary w-full">
+      </div>
+    </div>
+    <div class="grid grid-cols-12 gap-4 items-center grid-razarion-editor">
+      <span class="col-span-4">Description</span>
+      <div class="col-span-8">
+        <input [(ngModel)]="baseItemType.description" type="text"
+               class="text-base text-color text-primary bg-primary-contrast p-2 border border-solid border-surface rounded-border appearance-none outline-0 focus:border-primary w-full">
+      </div>
+    </div>
 
-          <p-divider align="left">
-            <div class="inline-flex items-center">
-              <i class="pi pi-car"></i>
-              <b>&nbsp;Physical area / moving</b>
-            </div>
-          </p-divider>
-          <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
-            <span class="col-span-4">Radius [m]</span>
-            <div class="col-span-8">
-              <p-inputNumber [(ngModel)]="baseItemType.physicalAreaConfig.radius" [minFractionDigits]="3"
-              [maxFractionDigits]="3"></p-inputNumber>
-            </div>
-          </div>
-          <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
-            <span class="col-span-4">Fix vertical norm</span>
-            <div class="col-span-8">
-              <p-checkbox [(ngModel)]="baseItemType.physicalAreaConfig.fixVerticalNorm" [binary]="true"></p-checkbox>
+    <!-- Visibility -->
+    <p-divider align="left">
+      <div class="inline-flex items-center gap-2">
+        <i class="pi pi-video"></i>
+        <b>Visibility</b>
+      </div>
+    </p-divider>
+    <div class="grid grid-cols-12 gap-4 items-center grid-razarion-editor">
+      <span class="col-span-4">Model 3D</span>
+      <div class="col-span-8">
+        <model3d [(model3DId)]="baseItemType.model3DId"></model3d>
+      </div>
+    </div>
+    <div class="grid grid-cols-12 gap-4 items-center grid-razarion-editor">
+      <span class="col-span-4">Thumbnail</span>
+      <div class="col-span-8">
+        <image-item [(imageId)]="baseItemType.thumbnail"></image-item>
+      </div>
+    </div>
+    <div class="grid grid-cols-12 gap-4 items-center grid-razarion-editor">
+      <span class="col-span-4">Ground decal radius [m]<br><small class="text-muted-color">0 = none</small></span>
+      <div class="col-span-8">
+        <p-inputNumber [(ngModel)]="baseItemType.groundDecalRadius" [min]="0" [minFractionDigits]="1"
+                       [maxFractionDigits]="2"></p-inputNumber>
+      </div>
+    </div>
+    <div class="grid grid-cols-12 gap-4 items-center grid-razarion-editor">
+      <span class="col-span-4">Explosion particle</span>
+      <div class="col-span-8">
+        <particle-system [(particleSystemId)]="baseItemType.explosionParticleId"></particle-system>
+      </div>
+    </div>
+    <div class="grid grid-cols-12 gap-4 items-center grid-razarion-editor">
+      <span class="col-span-4">Spawn particle</span>
+      <div class="col-span-8">
+        <particle-system [(particleSystemId)]="baseItemType.spawnParticleSystemId"></particle-system>
+      </div>
+    </div>
 
-            </div>
-          </div>
-          <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
-            <span class="col-span-4">Terrain type</span>
-            <div class="col-span-8">
-              <terrain-type [(terrainType)]="baseItemType.physicalAreaConfig.terrainType"></terrain-type>
-            </div>
-          </div>
-          <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
-            <span class="col-span-4">Spawn duration [ms]</span>
-            <div class="col-span-8">
-              <p-inputNumber [(ngModel)]="baseItemType.spawnDurationMillis"></p-inputNumber>
-            </div>
-          </div>
-          <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
-            <span class="col-span-4">Speed [km/h]</span>
-            <div class="col-span-8">
-              <velocity [(velocity)]="baseItemType.physicalAreaConfig.speed"></velocity>
-            </div>
-          </div>
-          <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
-            <span class="col-span-4">Acceleration [s 0-100 km/h]</span>
-            <div class="col-span-8">
-              <acceleration [(acceleration)]="baseItemType.physicalAreaConfig.acceleration"></acceleration>
-            </div>
-          </div>
-          <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
-            <span class="col-span-4">Angular velocity [&deg;/s]</span>
-            <div class="col-span-8">
-              <p-inputNumber [(ngModel)]="baseItemType.physicalAreaConfig.angularVelocity" [minFractionDigits]="2"
-              [maxFractionDigits]="2"></p-inputNumber>
-            </div>
-          </div>
+    <!-- Audio -->
+    <p-divider align="left">
+      <div class="inline-flex items-center gap-2">
+        <i class="pi pi-volume-up"></i>
+        <b>Audio</b>
+      </div>
+    </p-divider>
+    <div class="grid grid-cols-12 gap-4 items-center grid-razarion-editor">
+      <span class="col-span-4">Spawn</span>
+      <div class="col-span-8">
+        <audio-editor [(audioId)]="baseItemType.spawnAudioId"></audio-editor>
+      </div>
+    </div>
+    <div class="grid grid-cols-12 gap-4 items-center grid-razarion-editor">
+      <span class="col-span-4">Drive (loop)</span>
+      <div class="col-span-8">
+        <audio-editor [(audioId)]="baseItemType.driveAudioId"></audio-editor>
+      </div>
+    </div>
+    <div class="grid grid-cols-12 gap-4 items-center grid-razarion-editor">
+      <span class="col-span-4">Build (loop)</span>
+      <div class="col-span-8">
+        <audio-editor [(audioId)]="baseItemType.buildAudioId"></audio-editor>
+      </div>
+    </div>
+    <div class="grid grid-cols-12 gap-4 items-center grid-razarion-editor">
+      <span class="col-span-4">Build arm (loop)</span>
+      <div class="col-span-8">
+        <audio-editor [(audioId)]="baseItemType.buildArmAudioId"></audio-editor>
+      </div>
+    </div>
+    <div class="grid grid-cols-12 gap-4 items-center grid-razarion-editor">
+      <span class="col-span-4">Harvest (loop)</span>
+      <div class="col-span-8">
+        <audio-editor [(audioId)]="baseItemType.harvestAudioId"></audio-editor>
+      </div>
+    </div>
 
-          <p-divider align="left">
-            <div class="inline-flex items-center">
-              <i class="pi pi-cog"></i>
-              <b>&nbsp;Game engine</b>
-            </div>
-          </p-divider>
-          <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
-            <span class="col-span-4">Health</span>
-            <div class="col-span-8">
-              <p-inputNumber [(ngModel)]="baseItemType.health"></p-inputNumber>
-            </div>
-          </div>
-          <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
-            <span class="col-span-4">Price</span>
-            <div class="col-span-8">
-              <p-inputNumber [(ngModel)]="baseItemType.price"></p-inputNumber>
-            </div>
-          </div>
-          <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
-            <span class="col-span-4">Buildup</span>
-            <div class="col-span-8">
-              <p-inputNumber [(ngModel)]="baseItemType.buildup"></p-inputNumber>
-            </div>
-          </div>
-          <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
-            <span class="col-span-4">XP on killed</span>
-            <div class="col-span-8">
-              <p-inputNumber [(ngModel)]="baseItemType.xpOnKilling"></p-inputNumber>
-            </div>
-          </div>
-          <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
-            <span class="col-span-4">Consuming house space</span>
-            <div class="col-span-8">
-              <p-inputNumber [(ngModel)]="baseItemType.consumingHouseSpace"></p-inputNumber>
-            </div>
-          </div>
-          <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
-            <span class="col-span-4">Box pickup range [m]</span>
-            <div class="col-span-8">
-              <p-inputNumber [(ngModel)]="baseItemType.boxPickupRange" [minFractionDigits]="2"></p-inputNumber>
-            </div>
-          </div>
+    <!-- Physical area / moving -->
+    <p-divider align="left">
+      <div class="inline-flex items-center gap-2">
+        <i class="pi pi-car"></i>
+        <b>Physical area / moving</b>
+      </div>
+    </p-divider>
+    <div class="grid grid-cols-12 gap-4 items-center grid-razarion-editor">
+      <span class="col-span-4">Radius [m]</span>
+      <div class="col-span-8">
+        <p-inputNumber [(ngModel)]="baseItemType.physicalAreaConfig.radius" [minFractionDigits]="3"
+                       [maxFractionDigits]="3"></p-inputNumber>
+      </div>
+    </div>
+    <div class="grid grid-cols-12 gap-4 items-center grid-razarion-editor">
+      <span class="col-span-4">Fix vertical norm</span>
+      <div class="col-span-8">
+        <p-checkbox [(ngModel)]="baseItemType.physicalAreaConfig.fixVerticalNorm" [binary]="true"></p-checkbox>
+      </div>
+    </div>
+    <div class="grid grid-cols-12 gap-4 items-center grid-razarion-editor">
+      <span class="col-span-4">Terrain type</span>
+      <div class="col-span-8">
+        <terrain-type [(terrainType)]="baseItemType.physicalAreaConfig.terrainType"></terrain-type>
+      </div>
+    </div>
+    <div class="grid grid-cols-12 gap-4 items-center grid-razarion-editor">
+      <span class="col-span-4">Speed [km/h]</span>
+      <div class="col-span-8">
+        <velocity [(velocity)]="baseItemType.physicalAreaConfig.speed"></velocity>
+      </div>
+    </div>
+    <div class="grid grid-cols-12 gap-4 items-center grid-razarion-editor">
+      <span class="col-span-4">Acceleration [s 0-100 km/h]</span>
+      <div class="col-span-8">
+        <acceleration [(acceleration)]="baseItemType.physicalAreaConfig.acceleration"></acceleration>
+      </div>
+    </div>
+    <div class="grid grid-cols-12 gap-4 items-center grid-razarion-editor">
+      <span class="col-span-4">Angular velocity [&deg;/s]</span>
+      <div class="col-span-8">
+        <p-inputNumber [(ngModel)]="baseItemType.physicalAreaConfig.angularVelocity" [minFractionDigits]="2"
+                       [maxFractionDigits]="2"></p-inputNumber>
+      </div>
+    </div>
 
-          <p-divider align="left">
-            <div class="inline-flex items-center">
-              <i class="pi pi-th-large"></i>
-              <b>&nbsp;Abilities</b>
+    <!-- Game engine -->
+    <p-divider align="left">
+      <div class="inline-flex items-center gap-2">
+        <i class="pi pi-cog"></i>
+        <b>Game engine</b>
+      </div>
+    </p-divider>
+    <div class="grid grid-cols-12 gap-4 items-center grid-razarion-editor">
+      <span class="col-span-4">Health</span>
+      <div class="col-span-8">
+        <p-inputNumber [(ngModel)]="baseItemType.health"></p-inputNumber>
+      </div>
+    </div>
+    <div class="grid grid-cols-12 gap-4 items-center grid-razarion-editor">
+      <span class="col-span-4">Price</span>
+      <div class="col-span-8">
+        <p-inputNumber [(ngModel)]="baseItemType.price"></p-inputNumber>
+      </div>
+    </div>
+    <div class="grid grid-cols-12 gap-4 items-center grid-razarion-editor">
+      <span class="col-span-4">Buildup</span>
+      <div class="col-span-8">
+        <p-inputNumber [(ngModel)]="baseItemType.buildup"></p-inputNumber>
+      </div>
+    </div>
+    <div class="grid grid-cols-12 gap-4 items-center grid-razarion-editor">
+      <span class="col-span-4">Spawn duration [ms]</span>
+      <div class="col-span-8">
+        <p-inputNumber [(ngModel)]="baseItemType.spawnDurationMillis"></p-inputNumber>
+      </div>
+    </div>
+    <div class="grid grid-cols-12 gap-4 items-center grid-razarion-editor">
+      <span class="col-span-4">XP on killed</span>
+      <div class="col-span-8">
+        <p-inputNumber [(ngModel)]="baseItemType.xpOnKilling"></p-inputNumber>
+      </div>
+    </div>
+    <div class="grid grid-cols-12 gap-4 items-center grid-razarion-editor">
+      <span class="col-span-4">Consuming house space</span>
+      <div class="col-span-8">
+        <p-inputNumber [(ngModel)]="baseItemType.consumingHouseSpace"></p-inputNumber>
+      </div>
+    </div>
+    <div class="grid grid-cols-12 gap-4 items-center grid-razarion-editor">
+      <span class="col-span-4">Box pickup range [m]</span>
+      <div class="col-span-8">
+        <p-inputNumber [(ngModel)]="baseItemType.boxPickupRange" [minFractionDigits]="2"
+                       [maxFractionDigits]="2"></p-inputNumber>
+      </div>
+    </div>
+
+    <!-- Abilities -->
+    <p-divider align="left">
+      <div class="inline-flex items-center gap-2">
+        <i class="pi pi-th-large"></i>
+        <b>Abilities</b>
+      </div>
+    </p-divider>
+    <div class="flex flex-col gap-2">
+
+      <p-panel header="Builder" [toggleable]="true" [collapsed]="!baseItemType.builderType"
+               (collapsedChange)="onBuilderTypeChange(!$event)">
+        @if (baseItemType.builderType) {
+          <div class="flex flex-col gap-2">
+            <div class="grid grid-cols-12 gap-4 items-center grid-razarion-editor">
+              <span class="col-span-4">Range [m]</span>
+              <div class="col-span-8">
+                <p-inputNumber [(ngModel)]="baseItemType.builderType.range" [minFractionDigits]="2"
+                               [maxFractionDigits]="2"></p-inputNumber>
+              </div>
             </div>
-          </p-divider>
-          <p-panel header="Builder" [toggleable]="true" [collapsed]="!baseItemType.builderType"
-            (collapsedChange)="onBuilderTypeChange(!$event)">
-            @if (baseItemType.builderType) {
-              <div>
-                <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
-                  <span class="col-span-4">Range [m]</span>
-                  <div class="col-span-8">
-                    <p-inputNumber [(ngModel)]="baseItemType.builderType.range" [minFractionDigits]="2"
-                    [maxFractionDigits]="2"></p-inputNumber>
-                  </div>
-                </div>
-                <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
-                  <span class="col-span-4">Range other terrain [m]</span>
-                  <div class="col-span-8">
-                    <p-inputNumber [(ngModel)]="baseItemType.builderType.rangeOtherTerrain" [minFractionDigits]="2"
-                    [maxFractionDigits]="2"></p-inputNumber>
-                  </div>
-                </div>
-                <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
-                  <span class="col-span-4">Progress</span>
-                  <div class="col-span-8">
-                    <p-inputNumber [(ngModel)]="baseItemType.builderType.progress" [minFractionDigits]="2"
-                    [maxFractionDigits]="2"></p-inputNumber>
-                  </div>
-                </div>
-                <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
-                  <span class="col-span-4">Build animation warmup [s]</span>
-                  <div class="col-span-8">
-                    <p-inputNumber [(ngModel)]="baseItemType.builderType.buildAnimationWarmupSeconds" [minFractionDigits]="2"
-                    [maxFractionDigits]="2"></p-inputNumber>
-                  </div>
-                </div>
-                <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
-                  <span class="col-span-4">Build animation cooldown [s]</span>
-                  <div class="col-span-8">
-                    <p-inputNumber [(ngModel)]="baseItemType.builderType.buildAnimationCooldownSeconds" [minFractionDigits]="2"
-                    [maxFractionDigits]="2"></p-inputNumber>
-                  </div>
-                </div>
-                <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
-                  <span class="col-span-4">Able to build</span>
-                  <div class="col-span-8">
-                    <base-item-types
-                    [(baseItemTypeIds)]="baseItemType.builderType.ableToBuildIds"></base-item-types>
-                  </div>
+            <div class="grid grid-cols-12 gap-4 items-center grid-razarion-editor">
+              <span class="col-span-4">Range other terrain [m]</span>
+              <div class="col-span-8">
+                <p-inputNumber [(ngModel)]="baseItemType.builderType.rangeOtherTerrain" [minFractionDigits]="2"
+                               [maxFractionDigits]="2"></p-inputNumber>
+              </div>
+            </div>
+            <div class="grid grid-cols-12 gap-4 items-center grid-razarion-editor">
+              <span class="col-span-4">Progress</span>
+              <div class="col-span-8">
+                <p-inputNumber [(ngModel)]="baseItemType.builderType.progress" [minFractionDigits]="2"
+                               [maxFractionDigits]="2"></p-inputNumber>
+              </div>
+            </div>
+            <div class="grid grid-cols-12 gap-4 items-center grid-razarion-editor">
+              <span class="col-span-4">Build animation warmup [s]</span>
+              <div class="col-span-8">
+                <p-inputNumber [(ngModel)]="baseItemType.builderType.buildAnimationWarmupSeconds"
+                               [minFractionDigits]="2" [maxFractionDigits]="2"></p-inputNumber>
+              </div>
+            </div>
+            <div class="grid grid-cols-12 gap-4 items-center grid-razarion-editor">
+              <span class="col-span-4">Build animation cooldown [s]</span>
+              <div class="col-span-8">
+                <p-inputNumber [(ngModel)]="baseItemType.builderType.buildAnimationCooldownSeconds"
+                               [minFractionDigits]="2" [maxFractionDigits]="2"></p-inputNumber>
+              </div>
+            </div>
+            <div class="grid grid-cols-12 gap-4 items-center grid-razarion-editor">
+              <span class="col-span-4">Able to build</span>
+              <div class="col-span-8">
+                <base-item-types [(baseItemTypeIds)]="baseItemType.builderType.ableToBuildIds"></base-item-types>
+              </div>
+            </div>
+          </div>
+        }
+      </p-panel>
+
+      <p-panel header="Factory" [toggleable]="true" [collapsed]="!baseItemType.factoryType"
+               (collapsedChange)="onFactoryTypeChange(!$event)">
+        @if (baseItemType.factoryType) {
+          <div class="flex flex-col gap-2">
+            <div class="grid grid-cols-12 gap-4 items-center grid-razarion-editor">
+              <span class="col-span-4">Progress</span>
+              <div class="col-span-8">
+                <p-inputNumber [(ngModel)]="baseItemType.factoryType.progress" [minFractionDigits]="2"
+                               [maxFractionDigits]="2"></p-inputNumber>
+              </div>
+            </div>
+            <div class="grid grid-cols-12 gap-4 items-center grid-razarion-editor">
+              <span class="col-span-4">Animation intro [s]</span>
+              <div class="col-span-8">
+                <p-inputNumber [(ngModel)]="baseItemType.factoryType.animationIntroSeconds" [minFractionDigits]="2"
+                               [maxFractionDigits]="2"></p-inputNumber>
+              </div>
+            </div>
+            <div class="grid grid-cols-12 gap-4 items-center grid-razarion-editor">
+              <span class="col-span-4">Animation outro [s]</span>
+              <div class="col-span-8">
+                <p-inputNumber [(ngModel)]="baseItemType.factoryType.animationOutroSeconds" [minFractionDigits]="2"
+                               [maxFractionDigits]="2"></p-inputNumber>
+              </div>
+            </div>
+            <div class="grid grid-cols-12 gap-4 items-center grid-razarion-editor">
+              <span class="col-span-4">Rally offset X [m]</span>
+              <div class="col-span-8">
+                <p-inputNumber [(ngModel)]="baseItemType.factoryType.rallyOffsetX" [minFractionDigits]="2"
+                               [maxFractionDigits]="2"></p-inputNumber>
+              </div>
+            </div>
+            <div class="grid grid-cols-12 gap-4 items-center grid-razarion-editor">
+              <span class="col-span-4">Rally offset Y [m]</span>
+              <div class="col-span-8">
+                <p-inputNumber [(ngModel)]="baseItemType.factoryType.rallyOffsetY" [minFractionDigits]="2"
+                               [maxFractionDigits]="2"></p-inputNumber>
+              </div>
+            </div>
+            <div class="grid grid-cols-12 gap-4 items-center grid-razarion-editor">
+              <span class="col-span-4">Able to build</span>
+              <div class="col-span-8">
+                <base-item-types [(baseItemTypeIds)]="baseItemType.factoryType.ableToBuildIds"></base-item-types>
+              </div>
+            </div>
+          </div>
+        }
+      </p-panel>
+
+      <p-panel header="Harvester" [toggleable]="true" [collapsed]="!baseItemType.harvesterType"
+               (collapsedChange)="onHarvesterTypeChange(!$event)">
+        @if (baseItemType.harvesterType) {
+          <div class="flex flex-col gap-2">
+            <div class="grid grid-cols-12 gap-4 items-center grid-razarion-editor">
+              <span class="col-span-4">Range [m]</span>
+              <div class="col-span-8">
+                <p-inputNumber [(ngModel)]="baseItemType.harvesterType.range" [minFractionDigits]="2"
+                               [maxFractionDigits]="2"></p-inputNumber>
+              </div>
+            </div>
+            <div class="grid grid-cols-12 gap-4 items-center grid-razarion-editor">
+              <span class="col-span-4">Progress</span>
+              <div class="col-span-8">
+                <p-inputNumber [(ngModel)]="baseItemType.harvesterType.progress" [minFractionDigits]="2"
+                               [maxFractionDigits]="2"></p-inputNumber>
+              </div>
+            </div>
+          </div>
+        }
+      </p-panel>
+
+      <p-panel header="Weapon" [toggleable]="true" [collapsed]="!baseItemType.weaponType"
+               (collapsedChange)="onWeaponTypeChange(!$event)">
+        @if (baseItemType.weaponType) {
+          <div class="flex flex-col gap-2">
+            <div class="grid grid-cols-12 gap-4 items-center grid-razarion-editor">
+              <span class="col-span-4">Weapon kind</span>
+              <div class="col-span-8">
+                <p-select [options]="weaponKindOptions"
+                          [(ngModel)]="baseItemType.weaponType.weaponKind"
+                          optionLabel="label"
+                          optionValue="value">
+                </p-select>
+              </div>
+            </div>
+            @if (baseItemType.weaponType.weaponKind === LIGHTNING || baseItemType.weaponType.weaponKind === ENERGY_BEAM) {
+              <div class="grid grid-cols-12 gap-4 items-center grid-razarion-editor">
+                <span class="col-span-4">Bolt/beam duration [ms]</span>
+                <div class="col-span-8">
+                  <p-inputNumber [(ngModel)]="baseItemType.weaponType.lightningDurationMs"></p-inputNumber>
                 </div>
               </div>
             }
-          </p-panel>
-
-          <p-panel header="Factory" [toggleable]="true" [collapsed]="!baseItemType.factoryType"
-            (collapsedChange)="onFactoryTypeChange(!$event)">
-            @if (baseItemType.factoryType) {
-              <div>
-                <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
-                  <span class="col-span-4">Progress</span>
-                  <div class="col-span-8">
-                    <p-inputNumber [(ngModel)]="baseItemType.factoryType.progress" [minFractionDigits]="2"
-                    [maxFractionDigits]="2"></p-inputNumber>
-                  </div>
-                </div>
-                <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
-                  <span class="col-span-4">Animation intro [s]</span>
-                  <div class="col-span-8">
-                    <p-inputNumber [(ngModel)]="baseItemType.factoryType.animationIntroSeconds" [minFractionDigits]="2"
-                    [maxFractionDigits]="2"></p-inputNumber>
-                  </div>
-                </div>
-                <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
-                  <span class="col-span-4">Animation outro [s]</span>
-                  <div class="col-span-8">
-                    <p-inputNumber [(ngModel)]="baseItemType.factoryType.animationOutroSeconds" [minFractionDigits]="2"
-                    [maxFractionDigits]="2"></p-inputNumber>
-                  </div>
-                </div>
-                <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
-                  <span class="col-span-4">Rally offset X</span>
-                  <div class="col-span-8">
-                    <p-inputNumber [(ngModel)]="baseItemType.factoryType.rallyOffsetX" [minFractionDigits]="2"
-                    [maxFractionDigits]="2"></p-inputNumber>
-                  </div>
-                </div>
-                <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
-                  <span class="col-span-4">Rally offset Y</span>
-                  <div class="col-span-8">
-                    <p-inputNumber [(ngModel)]="baseItemType.factoryType.rallyOffsetY" [minFractionDigits]="2"
-                    [maxFractionDigits]="2"></p-inputNumber>
-                  </div>
-                </div>
-                <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
-                  <span class="col-span-4">Able to build</span>
-                  <div class="col-span-8">
-                    <base-item-types
-                    [(baseItemTypeIds)]="baseItemType.factoryType.ableToBuildIds"></base-item-types>
-                  </div>
-                </div>
+            <div class="grid grid-cols-12 gap-4 items-center grid-razarion-editor">
+              <span class="col-span-4">Range [m]</span>
+              <div class="col-span-8">
+                <p-inputNumber [(ngModel)]="baseItemType.weaponType.range" [minFractionDigits]="2"
+                               [maxFractionDigits]="2"></p-inputNumber>
               </div>
-            }
-          </p-panel>
-
-          <p-panel header="Harvester" [toggleable]="true" [collapsed]="!baseItemType.harvesterType"
-            (collapsedChange)="onHarvesterTypeChange(!$event)">
-            @if (baseItemType.harvesterType) {
-              <div>
-                <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
-                  <span class="col-span-4">Range [m]</span>
-                  <div class="col-span-8">
-                    <p-inputNumber [(ngModel)]="baseItemType.harvesterType.range" [minFractionDigits]="2"
-                    [maxFractionDigits]="2"></p-inputNumber>
-                  </div>
-                </div>
-                <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
-                  <span class="col-span-4">Progress</span>
-                  <div class="col-span-8">
-                    <p-inputNumber [(ngModel)]="baseItemType.harvesterType.progress" [minFractionDigits]="2"
-                    [maxFractionDigits]="2"></p-inputNumber>
-                  </div>
-                </div>
+            </div>
+            <div class="grid grid-cols-12 gap-4 items-center grid-razarion-editor">
+              <span class="col-span-4">Damage</span>
+              <div class="col-span-8">
+                <p-inputNumber [(ngModel)]="baseItemType.weaponType.damage"></p-inputNumber>
               </div>
-            }
-          </p-panel>
-
-          <p-panel header="Weapon" [toggleable]="true" [collapsed]="!baseItemType.weaponType"
-            (collapsedChange)="onWeaponTypeChange(!$event)">
-            @if (baseItemType.weaponType) {
-              <div>
-                <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
-                  <span class="col-span-4">Weapon kind</span>
-                  <div class="col-span-8">
-                    <p-select [options]="weaponKindOptions"
-                              [(ngModel)]="baseItemType.weaponType.weaponKind"
-                              optionLabel="label"
-                              optionValue="value">
-                    </p-select>
-                  </div>
-                </div>
-                @if (baseItemType.weaponType.weaponKind === LIGHTNING || baseItemType.weaponType.weaponKind === ENERGY_BEAM) {
-                  <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
-                    <span class="col-span-4">Bolt/beam duration [ms]</span>
-                    <div class="col-span-8">
-                      <p-inputNumber [(ngModel)]="baseItemType.weaponType.lightningDurationMs"></p-inputNumber>
-                    </div>
-                  </div>
-                }
-                <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
-                  <span class="col-span-4">Range [m]</span>
-                  <div class="col-span-8">
-                    <p-inputNumber [(ngModel)]="baseItemType.weaponType.range" [minFractionDigits]="2"
-                    [maxFractionDigits]="2"></p-inputNumber>
-                  </div>
-                </div>
-                <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
-                  <span class="col-span-4">Damge</span>
-                  <div class="col-span-8">
-                    <p-inputNumber [(ngModel)]="baseItemType.weaponType.damage"></p-inputNumber>
-                  </div>
-                </div>
-                <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
-                  <span class="col-span-4">Detonation radius [m]</span>
-                  <div class="col-span-8">
-                    <p-inputNumber [(ngModel)]="baseItemType.weaponType.detonationRadius" [minFractionDigits]="2"
-                    [maxFractionDigits]="2"></p-inputNumber>
-                  </div>
-                </div>
-                <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
-                  <span class="col-span-4">Reload time [s]</span>
-                  <div class="col-span-8">
-                    <p-inputNumber [(ngModel)]="baseItemType.weaponType.reloadTime" [minFractionDigits]="3"
-                    [maxFractionDigits]="3"></p-inputNumber>
-                  </div>
-                </div>
-                <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
-                  <span class="col-span-4">Turret angle velocity [&deg;/s]</span>
-                  <div class="col-span-8">
-                    <angle [(angle)]="baseItemType.weaponType.turretAngleVelocity" [maxDegreeAngle]="720"></angle>
-                  </div>
-                </div>
-                <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
-                  <span class="col-span-4">Disallowed item types</span>
-                  <div class="col-span-8">
-                    <base-item-types
-                    [(baseItemTypeIds)]="baseItemType.weaponType.disallowedItemTypes"></base-item-types>
-                  </div>
-                </div>
-                <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
-                  <span class="col-span-4">Projectile speed [km/h]</span>
-                  <div class="col-span-8">
-                    <velocity [(velocity)]="baseItemType.weaponType.projectileSpeed"></velocity>
-                  </div>
-                </div>
-                <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
-                  <span class="col-span-4">Impact particle system</span>
-                  <div class="col-span-8">
-                    <particle-system
-                    [(particleSystemId)]="baseItemType.weaponType.impactParticleSystemId"></particle-system>
-                  </div>
-                </div>
-                <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
-                  <span class="col-span-4">Trail particle system</span>
-                  <div class="col-span-8">
-                    <particle-system
-                    [(particleSystemId)]="baseItemType.weaponType.trailParticleSystemConfigId"></particle-system>
-                  </div>
-                </div>
-                <p-divider align="left">
-                  <b>Muzzle flash audio</b>
-                </p-divider>
-                <audio-config-editor [(audioConfig)]="baseItemType.weaponType.muzzleFlashAudioConfig"></audio-config-editor>
-                <p-divider align="left">
-                  <b>Impact audio</b>
-                </p-divider>
-                <audio-config-editor [(audioConfig)]="baseItemType.weaponType.impactAudioConfig"></audio-config-editor>
+            </div>
+            <div class="grid grid-cols-12 gap-4 items-center grid-razarion-editor">
+              <span class="col-span-4">Detonation radius [m]</span>
+              <div class="col-span-8">
+                <p-inputNumber [(ngModel)]="baseItemType.weaponType.detonationRadius" [minFractionDigits]="2"
+                               [maxFractionDigits]="2"></p-inputNumber>
               </div>
-            }
-          </p-panel>
-
-          <p-panel header="Generator" [toggleable]="true" [collapsed]="!baseItemType.generatorType"
-            (collapsedChange)="onGeneratorTypeChange(!$event)">
-            @if (baseItemType.generatorType) {
-              <div>
-                <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
-                  <span class="col-span-4">Wattage [w]</span>
-                  <div class="col-span-8">
-                    <p-inputNumber [(ngModel)]="baseItemType.generatorType.wattage"></p-inputNumber>
-                  </div>
-                </div>
+            </div>
+            <div class="grid grid-cols-12 gap-4 items-center grid-razarion-editor">
+              <span class="col-span-4">Reload time [s]</span>
+              <div class="col-span-8">
+                <p-inputNumber [(ngModel)]="baseItemType.weaponType.reloadTime" [minFractionDigits]="3"
+                               [maxFractionDigits]="3"></p-inputNumber>
               </div>
-            }
-          </p-panel>
-
-          <p-panel header="Consumer" [toggleable]="true" [collapsed]="!baseItemType.consumerType"
-            (collapsedChange)="onConsumerTypeChange(!$event)">
-            @if (baseItemType.consumerType) {
-              <div>
-                <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
-                  <span class="col-span-4">Wattage [w]</span>
-                  <div class="col-span-8">
-                    <p-inputNumber [(ngModel)]="baseItemType.consumerType.wattage"></p-inputNumber>
-                  </div>
-                </div>
+            </div>
+            <div class="grid grid-cols-12 gap-4 items-center grid-razarion-editor">
+              <span class="col-span-4">Turret angle velocity [&deg;/s]</span>
+              <div class="col-span-8">
+                <angle [(angle)]="baseItemType.weaponType.turretAngleVelocity" [maxDegreeAngle]="720"></angle>
               </div>
-            }
-          </p-panel>
-
-          <p-panel header="Item container" [toggleable]="true" [collapsed]="!baseItemType.itemContainerType"
-            (collapsedChange)="onItemContainerTypeChange(!$event)">
-            @if (baseItemType.itemContainerType) {
-              <div>
-                <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
-                  <span class="col-span-4">Range [m]</span>
-                  <div class="col-span-8">
-                    <p-inputNumber [(ngModel)]="baseItemType.itemContainerType.range" [minFractionDigits]="2"
-                    [maxFractionDigits]="2"></p-inputNumber>
-                  </div>
-                </div>
-                <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
-                  <span class="col-span-4">Max count</span>
-                  <div class="col-span-8">
-                    <p-inputNumber [(ngModel)]="baseItemType.itemContainerType.maxCount"></p-inputNumber>
-                  </div>
-                </div>
-                <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
-                  <span class="col-span-4">Able to contain</span>
-                  <div class="col-span-8">
-                    <base-item-types
-                    [(baseItemTypeIds)]="baseItemType.itemContainerType.ableToContain"></base-item-types>
-                  </div>
-                </div>
+            </div>
+            <div class="grid grid-cols-12 gap-4 items-center grid-razarion-editor">
+              <span class="col-span-4">Disallowed item types</span>
+              <div class="col-span-8">
+                <base-item-types [(baseItemTypeIds)]="baseItemType.weaponType.disallowedItemTypes"></base-item-types>
               </div>
-            }
-          </p-panel>
-
-          <p-panel header="House" [toggleable]="true" [collapsed]="!baseItemType.houseType"
-            (collapsedChange)="onHouseTypeChange(!$event)">
-            @if (baseItemType.houseType) {
-              <div>
-                <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
-                  <span class="col-span-4">Space</span>
-                  <div class="col-span-8">
-                    <p-inputNumber [(ngModel)]="baseItemType.houseType.space"></p-inputNumber>
-                  </div>
-                </div>
+            </div>
+            <div class="grid grid-cols-12 gap-4 items-center grid-razarion-editor">
+              <span class="col-span-4">Projectile speed [km/h]</span>
+              <div class="col-span-8">
+                <velocity [(velocity)]="baseItemType.weaponType.projectileSpeed"></velocity>
               </div>
-            }
-          </p-panel>
-
-          <p-panel header="Special" [toggleable]="true" [collapsed]="!baseItemType.specialType"
-            (collapsedChange)="onSpecialTypeChange(!$event)">
-            @if (baseItemType.specialType) {
-              <div>
-                <div class="grid grid-cols-12 gap-4 grid-razarion-editor">
-                  <span class="col-span-4">Mini terrain</span>
-                  <div class="col-span-8">
-                    <p-checkbox [(ngModel)]="baseItemType.specialType.miniTerrain" [binary]="true"></p-checkbox>
-                  </div>
-                </div>
+            </div>
+            <div class="grid grid-cols-12 gap-4 items-center grid-razarion-editor">
+              <span class="col-span-4">Impact particle</span>
+              <div class="col-span-8">
+                <particle-system [(particleSystemId)]="baseItemType.weaponType.impactParticleSystemId"></particle-system>
               </div>
-            }
-          </p-panel>
-        </div>
-      </p-scrollPanel>
+            </div>
+            <div class="grid grid-cols-12 gap-4 items-center grid-razarion-editor">
+              <span class="col-span-4">Trail particle</span>
+              <div class="col-span-8">
+                <particle-system
+                  [(particleSystemId)]="baseItemType.weaponType.trailParticleSystemConfigId"></particle-system>
+              </div>
+            </div>
+            <p-divider align="left">
+              <b>Muzzle flash audio</b>
+            </p-divider>
+            <audio-config-editor [(audioConfig)]="baseItemType.weaponType.muzzleFlashAudioConfig"></audio-config-editor>
+            <p-divider align="left">
+              <b>Impact audio</b>
+            </p-divider>
+            <audio-config-editor [(audioConfig)]="baseItemType.weaponType.impactAudioConfig"></audio-config-editor>
+          </div>
+        }
+      </p-panel>
+
+      <p-panel header="Generator" [toggleable]="true" [collapsed]="!baseItemType.generatorType"
+               (collapsedChange)="onGeneratorTypeChange(!$event)">
+        @if (baseItemType.generatorType) {
+          <div class="grid grid-cols-12 gap-4 items-center grid-razarion-editor">
+            <span class="col-span-4">Wattage [W]</span>
+            <div class="col-span-8">
+              <p-inputNumber [(ngModel)]="baseItemType.generatorType.wattage"></p-inputNumber>
+            </div>
+          </div>
+        }
+      </p-panel>
+
+      <p-panel header="Consumer" [toggleable]="true" [collapsed]="!baseItemType.consumerType"
+               (collapsedChange)="onConsumerTypeChange(!$event)">
+        @if (baseItemType.consumerType) {
+          <div class="grid grid-cols-12 gap-4 items-center grid-razarion-editor">
+            <span class="col-span-4">Wattage [W]</span>
+            <div class="col-span-8">
+              <p-inputNumber [(ngModel)]="baseItemType.consumerType.wattage"></p-inputNumber>
+            </div>
+          </div>
+        }
+      </p-panel>
+
+      <p-panel header="Item container" [toggleable]="true" [collapsed]="!baseItemType.itemContainerType"
+               (collapsedChange)="onItemContainerTypeChange(!$event)">
+        @if (baseItemType.itemContainerType) {
+          <div class="flex flex-col gap-2">
+            <div class="grid grid-cols-12 gap-4 items-center grid-razarion-editor">
+              <span class="col-span-4">Range [m]</span>
+              <div class="col-span-8">
+                <p-inputNumber [(ngModel)]="baseItemType.itemContainerType.range" [minFractionDigits]="2"
+                               [maxFractionDigits]="2"></p-inputNumber>
+              </div>
+            </div>
+            <div class="grid grid-cols-12 gap-4 items-center grid-razarion-editor">
+              <span class="col-span-4">Max count</span>
+              <div class="col-span-8">
+                <p-inputNumber [(ngModel)]="baseItemType.itemContainerType.maxCount"></p-inputNumber>
+              </div>
+            </div>
+            <div class="grid grid-cols-12 gap-4 items-center grid-razarion-editor">
+              <span class="col-span-4">Able to contain</span>
+              <div class="col-span-8">
+                <base-item-types [(baseItemTypeIds)]="baseItemType.itemContainerType.ableToContain"></base-item-types>
+              </div>
+            </div>
+          </div>
+        }
+      </p-panel>
+
+      <p-panel header="House" [toggleable]="true" [collapsed]="!baseItemType.houseType"
+               (collapsedChange)="onHouseTypeChange(!$event)">
+        @if (baseItemType.houseType) {
+          <div class="grid grid-cols-12 gap-4 items-center grid-razarion-editor">
+            <span class="col-span-4">Space</span>
+            <div class="col-span-8">
+              <p-inputNumber [(ngModel)]="baseItemType.houseType.space"></p-inputNumber>
+            </div>
+          </div>
+        }
+      </p-panel>
+
+      <p-panel header="Special" [toggleable]="true" [collapsed]="!baseItemType.specialType"
+               (collapsedChange)="onSpecialTypeChange(!$event)">
+        @if (baseItemType.specialType) {
+          <div class="grid grid-cols-12 gap-4 items-center grid-razarion-editor">
+            <span class="col-span-4">Mini terrain</span>
+            <div class="col-span-8">
+              <p-checkbox [(ngModel)]="baseItemType.specialType.miniTerrain" [binary]="true"></p-checkbox>
+            </div>
+          </div>
+        }
+      </p-panel>
+
+    </div>
+  </div>
+</p-scrollPanel>

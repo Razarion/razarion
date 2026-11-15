@@ -46,8 +46,9 @@ const number = (key, fallback) => (env[key] ? Number(env[key]) : fallback);
 export const settings = {
   baseUrl: (env.RAZARION_BASE_URL || 'https://www.razarion.com').replace(/\/$/, ''),
   // How much of the past is held. Whatever is older, or over the budget, is dropped oldest first.
-  keepHours: number('RECORDER_KEEP_HOURS', 6),
-  maxMegabytes: number('RECORDER_MAX_MB', 512),
+  // A day: some 14 MB an hour with the keyframes (15.11.2026), 20 on a busy one.
+  keepHours: number('RECORDER_KEEP_HOURS', 24),
+  maxMegabytes: number('RECORDER_MAX_MB', 1024),
   // A fresh picture of the whole world, so a replay can start anywhere and not only at a connect.
   keyframeMinutes: number('RECORDER_KEYFRAME_MINUTES', 5),
   feedSeconds: number('RECORDER_FEED_SECONDS', 5),

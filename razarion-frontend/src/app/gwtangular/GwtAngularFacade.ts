@@ -397,6 +397,8 @@ export interface BaseItemType extends ItemType {
   getHarvestAudioId(): number | null;
   getBuildAudioId(): number | null;
 
+  getGroundDecalRadius(): number;
+
   getPrice(): number;
 
   getConsumingHouseSpace(): number;

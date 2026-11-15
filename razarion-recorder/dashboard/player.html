@@ -59,6 +59,10 @@
       <option value="30" selected>last 30 min</option>
       <option value="60">last 60 min</option>
       <option value="90">last 90 min</option>
+      <option value="180">last 3 h</option>
+      <option value="360">last 6 h</option>
+      <option value="720">last 12 h</option>
+      <option value="1440">last 24 h</option>
     </select>
   </label>
   <label>or player <select id="player"><option value="">–</option></select></label>
@@ -79,6 +83,7 @@
   <select id="speed" title="Speed">
     <option value="1">1×</option><option value="2">2×</option><option value="4">4×</option>
     <option value="8" selected>8×</option><option value="16">16×</option><option value="32">32×</option><option value="64">64×</option>
+    <option value="256">256×</option><option value="1024" title="A day in under a minute and a half">1024×</option>
   </select>
   <div id="timeline"><div id="ticks"></div><input id="scrub" type="range" min="0" max="1" step="100" value="0"></div>
   <div id="clock">–</div>
@@ -276,17 +281,32 @@ let lastPositions = new Map();
 
 // ---------------------------------------------------------------- time
 
-const clock = (t) => new Date(t).toLocaleTimeString();
+// A stretch over midnight needs the day as well, or 01:00 reads as before 23:00
+const clock = (t) => track && new Date(track.from).toDateString() !== new Date(track.to).toDateString()
+  ? new Date(t).toLocaleString([], {weekday: 'short', hour: '2-digit', minute: '2-digit', second: '2-digit'})
+  : new Date(t).toLocaleTimeString();
 const offset = (t) => {
   const s = Math.max(0, Math.round((t - track.from) / 1000));
-  return `+${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+  const h = Math.floor(s / 3600), m = Math.floor(s / 60) % 60;
+  return h ? `+${h}:${String(m).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}` : `+${m}:${String(s % 60).padStart(2, '0')}`;
 };
+
+// How many of the event rows are greyed out as past. A day holds thousands of them: only the rows
+// between the old and the new time are touched, not all of them on every frame.
+let pastCount = 0;
+function markPast() {
+  const rows = $('events').children;
+  let n = pastCount;
+  while (n < rows.length && Number(rows[n].dataset.t) <= now) rows[n++].classList.add('past');
+  while (n > 0 && !(Number(rows[n - 1].dataset.t) <= now)) rows[--n].classList.remove('past');
+  pastCount = n;
+}
 
 function seek(t) {
   now = Math.max(track.from, Math.min(track.to, t));
   $('scrub').value = now - track.from;
   $('clock').textContent = `${clock(now)}  ${offset(now)}`;
-  for (const el of $('events').children) el.classList.toggle('past', Number(el.dataset.t) <= now);
+  markPast();
 }
 
 function setPlaying(on) {
@@ -327,6 +347,7 @@ async function load(query) {
   $('events').innerHTML = track.markers.map((m) =>
     `<div class="ev" data-t="${m.t}"><span class="sw k-${m.kind}"></span><b>${clock(m.t)}</b>${esc(m.what)}${m.base != null ? ` <span style="color:var(--muted)">· base ${m.base}</span>` : ''}</div>`).join('')
     || '<div class="ev past">Nothing recorded in this stretch.</div>';
+  pastCount = 0;
   for (const el of $('events').querySelectorAll('.ev[data-t]')) el.onclick = () => seek(Number(el.dataset.t) - 10_000);
   $('status').textContent = `${track.items.length} items · ${track.shots.length} shots · ${Math.round((track.to - track.from) / 60000)} min`;
   if (track.planet && !image) {

@@ -482,13 +482,20 @@ public class SyncItemContainerServiceImpl implements SyncItemContainerService {
      *                         where they would render sunken (only the top poking above the ground).
      */
     public DecimalPosition getFreeRandomPosition(TerrainType terrainType, double radius, boolean excludeBotRealm, PlaceConfig placeConfig, boolean requireBotGround) {
+        return getFreeRandomPosition(terrainType, radius, excludeBotRealm, placeConfig, requireBotGround, null);
+    }
+
+    /**
+     * @param extraFree optional additional condition a candidate has to meet (checked first, so keep it cheap), may be null
+     */
+    public DecimalPosition getFreeRandomPosition(TerrainType terrainType, double radius, boolean excludeBotRealm, PlaceConfig placeConfig, boolean requireBotGround, Function<DecimalPosition, Boolean> extraFree) {
         if (placeConfig.getPolygon2D() != null) {
             return GeometricUtil.findFreeRandomPosition(placeConfig.getPolygon2D(), decimalPosition ->
-                    isFreeForBot(terrainType, decimalPosition, radius, excludeBotRealm, requireBotGround));
+                    isFreeForBot(terrainType, decimalPosition, radius, excludeBotRealm, requireBotGround, extraFree));
         } else if (placeConfig.getPosition() != null) {
             if (placeConfig.getRadius() != null) {
                 return GeometricUtil.findFreeRandomPosition(placeConfig.getPosition(), placeConfig.getRadius(), decimalPosition ->
-                        isFreeForBot(terrainType, decimalPosition, radius, excludeBotRealm, requireBotGround));
+                        isFreeForBot(terrainType, decimalPosition, radius, excludeBotRealm, requireBotGround, extraFree));
             } else {
                 return placeConfig.getPosition();
             }
@@ -502,16 +509,53 @@ public class SyncItemContainerServiceImpl implements SyncItemContainerService {
     }
 
     public DecimalPosition getFreeNearestPositionToCenter(TerrainType terrainType, double radius, boolean excludeBotRealm, PlaceConfig placeConfig, boolean requireBotGround) {
+        return getFreeNearestPositionToCenter(terrainType, radius, excludeBotRealm, placeConfig, requireBotGround, null);
+    }
+
+    public DecimalPosition getFreeNearestPositionToCenter(TerrainType terrainType, double radius, boolean excludeBotRealm, PlaceConfig placeConfig, boolean requireBotGround, Function<DecimalPosition, Boolean> extraFree) {
         if (placeConfig.getPosition() != null && placeConfig.getRadius() != null) {
             return GeometricUtil.findFreeNearestPosition(placeConfig.getPosition(), placeConfig.getRadius(), decimalPosition ->
-                    isFreeForBot(terrainType, decimalPosition, radius, excludeBotRealm, requireBotGround));
+                    isFreeForBot(terrainType, decimalPosition, radius, excludeBotRealm, requireBotGround, extraFree));
         } else {
             // no center+radius to search around -> fall back to the existing random/position logic
-            return getFreeRandomPosition(terrainType, radius, excludeBotRealm, placeConfig, requireBotGround);
+            return getFreeRandomPosition(terrainType, radius, excludeBotRealm, placeConfig, requireBotGround, extraFree);
         }
     }
 
-    private boolean isFreeForBot(TerrainType terrainType, DecimalPosition position, double radius, boolean excludeBotRealm, boolean requireBotGround) {
+    /**
+     * A condition for the free-position search: the footprint (position, radius) is out of reach of every
+     * enemy weapon - weapon range plus both radii plus margin. The enemy items are taken once, when this is
+     * called, so the check per candidate stays cheap.
+     * <p>
+     * Bots use it to rebuild a destroyed building away from the units that destroyed it. Otherwise the
+     * rebuild lands next to the same parked units, is shot at once, and every kill counts towards the
+     * bot's rage (BotEnragementState).
+     */
+    public Function<DecimalPosition, Boolean> outOfEnemyWeaponReach(PlayerBase playerBase, double radius, double margin) {
+        List<DecimalPosition> positions = new ArrayList<>();
+        List<Double> reaches = new ArrayList<>();
+        iterateOverBaseItems(false, false, null, syncBaseItem -> {
+            if (syncBaseItem.getSyncWeapon() != null && syncBaseItem.isEnemy(playerBase) && syncBaseItem.getAbstractSyncPhysical().getPosition() != null) {
+                positions.add(syncBaseItem.getAbstractSyncPhysical().getPosition());
+                reaches.add(syncBaseItem.getSyncWeapon().getWeaponType().getRange()
+                        + syncBaseItem.getAbstractSyncPhysical().getRadius() + radius + margin);
+            }
+            return null;
+        });
+        return position -> {
+            for (int i = 0; i < positions.size(); i++) {
+                if (positions.get(i).getDistance(position) < reaches.get(i)) {
+                    return false;
+                }
+            }
+            return true;
+        };
+    }
+
+    private boolean isFreeForBot(TerrainType terrainType, DecimalPosition position, double radius, boolean excludeBotRealm, boolean requireBotGround, Function<DecimalPosition, Boolean> extraFree) {
+        if (extraFree != null && !extraFree.apply(position)) {
+            return false;
+        }
         if (!isFree(terrainType, position, radius)) {
             return false;
         }

@@ -5,6 +5,9 @@ import com.btxtech.server.gameengine.ServerGameEngineControl;
 import com.btxtech.server.gameengine.ServerRestartAnnouncementService;
 import com.btxtech.server.model.Roles;
 import com.btxtech.server.model.engine.BackupPlanetOverview;
+import com.btxtech.server.model.UserEntity;
+import com.btxtech.server.repository.UserRepository;
+import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.server.service.engine.PlanetBackupService;
 import com.btxtech.server.service.engine.ServerGameEngineService;
 import com.btxtech.server.service.engine.ServerTerrainShapeService;
@@ -29,6 +32,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,6 +51,7 @@ public class PlanetMgmtController {
     private final BotService botService;
     private final ServerRestartAnnouncementService serverRestartAnnouncementService;
     private final LevelService levelService;
+    private final UserRepository userRepository;
     private final Object reloadLook = new Object();
 
     public PlanetMgmtController(BaseItemService baseItemService,
@@ -55,7 +61,9 @@ public class PlanetMgmtController {
                                 ServerGameEngineService serverGameEngineService,
                                 PlanetBackupService planetBackupService, BotService botService,
                                 ServerRestartAnnouncementService serverRestartAnnouncementService,
-                                LevelService levelService) {
+                                LevelService levelService,
+                                UserRepository userRepository) {
+        this.userRepository = userRepository;
         this.serverRestartAnnouncementService = serverRestartAnnouncementService;
         this.levelService = levelService;
         this.baseItemService = baseItemService;
@@ -175,7 +183,18 @@ public class PlanetMgmtController {
     @PreAuthorize("hasAuthority('ADMIN')")
     public Map<Integer, BaseDetail> baseDetails() {
         Map<Integer, BaseDetail> details = new HashMap<>();
-        for (PlayerBaseInfo playerBaseInfo : baseItemService.getPlayerBaseInfos()) {
+        List<PlayerBaseInfo> playerBaseInfos = baseItemService.getPlayerBaseInfos();
+        // One query for all owners instead of one per base
+        Map<String, UserEntity> owners = new HashMap<>();
+        List<String> ownerIds = playerBaseInfos.stream()
+                .filter(info -> info.getUserId() != null && info.getBotId() == null)
+                .map(PlayerBaseInfo::getUserId)
+                .toList();
+        if (!ownerIds.isEmpty()) {
+            userRepository.findByUserIdIn(ownerIds).forEach(user -> owners.put(user.getUserId(), user));
+        }
+        Map<String, ?> openConnections = clientSystemConnectionService.getOpenConnections();
+        for (PlayerBaseInfo playerBaseInfo : playerBaseInfos) {
             PlayerBase playerBase = baseItemService.getPlayerBase4BaseId(playerBaseInfo.getBaseId());
             if (playerBase == null) {
                 continue;
@@ -189,9 +208,24 @@ public class PlanetMgmtController {
                         .itemCount(playerBaseFull.getItemCount())
                         .levelNumber(levelNumber(playerBaseFull));
             }
+            UserEntity owner = playerBaseInfo.getBotId() == null && playerBaseInfo.getUserId() != null
+                    ? owners.get(playerBaseInfo.getUserId()) : null;
+            if (owner != null) {
+                // The open-connection map is the authority on who is playing; the row's close
+                // timestamp is missing for sockets that died without a close frame
+                detail.online(openConnections.containsKey(owner.getUserId()))
+                        .lastOnlineMillis(lastOnlineMillis(owner))
+                        .registered(owner.createRegisterState() != UserContext.RegisterState.UNREGISTERED);
+            }
             details.put(playerBase.getBaseId(), detail);
         }
         return details;
+    }
+
+    /** The end of the last connection, or its start when no end was recorded; written as server local time. */
+    private static Long lastOnlineMillis(UserEntity user) {
+        LocalDateTime last = user.getSystemConnectionClosed() != null ? user.getSystemConnectionClosed() : user.getSystemConnectionOpened();
+        return last != null ? last.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli() : null;
     }
 
     private Integer levelNumber(PlayerBaseFull playerBaseFull) {

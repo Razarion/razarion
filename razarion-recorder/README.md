@@ -77,7 +77,8 @@ in view.
 `/api/replay` (`lib/replay.mjs`) builds the track: the world at the start from the last keyframe
 before it, then every position the server sent with the path the unit was on. The page walks a
 unit along that path to where it was next seen - the tape knows the future, so nothing is guessed
-but the pace in between. A stretch is at most 90 minutes.
+but the pace in between. A stretch is at most 24 hours - as much as the tape holds (`RECORDER_KEEP_HOURS`, 24 by default, at most
+`RECORDER_MAX_MB`, 1024). A day is some 35 MB of track; 1024× plays it in under a minute and a half.
 
 ## Replay in the real game client
 
