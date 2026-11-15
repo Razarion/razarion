@@ -1,3 +1,4 @@
+import {textureAfterStartModels} from "./start-models-texture";
 import {StandardMaterial} from "@babylonjs/core/Materials/standardMaterial";
 import {Texture} from "@babylonjs/core/Materials/Textures/texture";
 import {Color3, Color4} from "@babylonjs/core/Maths/math.color";
@@ -197,7 +198,7 @@ export class BabylonExplosion {
 
   private static getFireballTexture(scene: Scene): Texture {
     if (BabylonExplosion.fireballTextureCache) return BabylonExplosion.fireballTextureCache;
-    const tex = new Texture(BabylonExplosion.SHEET_URL, scene, true, false, Texture.TRILINEAR_SAMPLINGMODE);
+    const tex = textureAfterStartModels(BabylonExplosion.SHEET_URL, scene, true, false, Texture.TRILINEAR_SAMPLINGMODE);
     tex.hasAlpha = true;
     // ParticleSystem.dispose() defaults to disposeTexture=true. With disposeOnStop=true
     // that kills the cached texture after the first system's particles die — the second
@@ -221,7 +222,7 @@ export class BabylonExplosion {
 
   private static getDebrisTexture(scene: Scene): Texture {
     if (BabylonExplosion.debrisTextureCache) return BabylonExplosion.debrisTextureCache;
-    const tex = new Texture(BabylonExplosion.DEBRIS_URL, scene, true, false, Texture.TRILINEAR_SAMPLINGMODE);
+    const tex = textureAfterStartModels(BabylonExplosion.DEBRIS_URL, scene, true, false, Texture.TRILINEAR_SAMPLINGMODE);
     tex.hasAlpha = true;
     tex.dispose = () => {};
     BabylonExplosion.debrisTextureCache = tex;

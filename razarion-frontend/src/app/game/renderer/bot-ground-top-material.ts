@@ -1,3 +1,4 @@
+import {textureAfterStartModels} from "./start-models-texture";
 import {NodeMaterial} from "@babylonjs/core/Materials/Node/nodeMaterial";
 import {Material} from "@babylonjs/core/Materials/material";
 import {Texture} from "@babylonjs/core/Materials/Textures/texture";
@@ -110,7 +111,7 @@ export function buildBotGroundTopMaterial(scene: Scene, markings: BotGroundMarki
   // ========== Diffuse + bump ==========
   const diffuseTex = new TextureBlock("BotGround top diffuse");
   scaledUv.output.connectTo(diffuseTex.uv);
-  diffuseTex.texture = new Texture(TEX_PATH + "bot-ground-top-diffuse.webp", scene);
+  diffuseTex.texture = textureAfterStartModels(TEX_PATH + "bot-ground-top-diffuse.webp", scene);
 
   // The photo carries large dark smudges, bands and tyre arcs. Repeating every 25 m they landed as
   // dark streaks along the plate edges. High pass: keep the grain (texture minus a blurred mip),
@@ -137,7 +138,7 @@ export function buildBotGroundTopMaterial(scene: Scene, markings: BotGroundMarki
 
   const normalTex = new TextureBlock("BotGround top norm");
   scaledUv.output.connectTo(normalTex.uv);
-  normalTex.texture = new Texture(TEX_PATH + "bot-ground-top-norm.webp", scene);
+  normalTex.texture = textureAfterStartModels(TEX_PATH + "bot-ground-top-norm.webp", scene);
 
   // ========== Painted markings (bot-ground-markings.ts) ==========
   // One baked texture per bot ground over its whole footprint: stripes along the outline of the

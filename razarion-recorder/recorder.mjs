@@ -173,12 +173,21 @@ function replayRange(params) {
   return { from: now - Number(params.get('minutes') || 10) * 60_000, to: now };
 }
 
+// Fetched again after MINIMAP_TTL_MS, so a minimap regenerated in the editor shows up without
+// restarting the recorder (and losing the tape). A failed refresh keeps serving the old image.
+const MINIMAP_TTL_MS = 10 * 60_000;
 let minimap = null;
 async function minimapImage() {
-  if (minimap?.planetId === world.planet?.id) return minimap;
-  const res = await fetch(`${settings.baseUrl}/rest/image/minimap/${world.planet.id}`);
-  if (!res.ok) throw new Error(`minimap: HTTP ${res.status}`);
-  minimap = { planetId: world.planet.id, type: res.headers.get('content-type'), data: Buffer.from(await res.arrayBuffer()) };
+  const planetId = world.planet?.id;
+  if (minimap?.planetId === planetId && Date.now() - minimap.fetchedAt < MINIMAP_TTL_MS) return minimap;
+  try {
+    const res = await fetch(`${settings.baseUrl}/rest/image/minimap/${planetId}`);
+    if (!res.ok) throw new Error(`minimap: HTTP ${res.status}`);
+    minimap = { planetId, fetchedAt: Date.now(), type: res.headers.get('content-type'), data: Buffer.from(await res.arrayBuffer()) };
+  } catch (error) {
+    if (minimap?.planetId !== planetId) throw error;
+    minimap.fetchedAt = Date.now();
+  }
   return minimap;
 }
 
@@ -263,7 +272,7 @@ const server = createServer((req, res) => {
     if (!world.planet) return send(res, 404, { error: 'planet not known yet' });
     minimapImage()
       .then((image) => {
-        res.writeHead(200, { 'Content-Type': image.type, 'Cache-Control': 'max-age=3600' });
+        res.writeHead(200, { 'Content-Type': image.type, 'Cache-Control': 'max-age=300' });
         res.end(image.data);
       })
       .catch((error) => send(res, 502, { error: error.message }));

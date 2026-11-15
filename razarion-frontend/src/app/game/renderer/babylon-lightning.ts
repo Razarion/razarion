@@ -1,3 +1,4 @@
+import {textureAfterStartModels} from "./start-models-texture";
 import {Constants} from "@babylonjs/core/Engines/constants";
 import {PointLight} from "@babylonjs/core/Lights/pointLight";
 import {StandardMaterial} from "@babylonjs/core/Materials/standardMaterial";
@@ -277,7 +278,7 @@ export class BabylonLightning {
     if (BabylonLightning.textureCache) {
       return BabylonLightning.textureCache;
     }
-    const tex = new Texture(BabylonLightning.SHEET_URL, scene, true, false, Texture.TRILINEAR_SAMPLINGMODE);
+    const tex = textureAfterStartModels(BabylonLightning.SHEET_URL, scene, true, false, Texture.TRILINEAR_SAMPLINGMODE);
     tex.hasAlpha = true;
     tex.uScale = 0.5;
     tex.vScale = 0.5;

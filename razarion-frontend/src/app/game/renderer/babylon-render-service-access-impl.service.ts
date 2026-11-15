@@ -26,6 +26,7 @@ import {VertexBuffer} from "@babylonjs/core/Buffers/buffer";
 import {FreeCamera} from "@babylonjs/core/Cameras/freeCamera";
 import {Ray} from "@babylonjs/core/Culling/ray.core";
 import {Effect} from "@babylonjs/core/Materials/effect";
+import {CubeTexture} from "@babylonjs/core/Materials/Textures/cubeTexture";
 import {Engine} from "@babylonjs/core/Engines/engine";
 import {EngineInstrumentation} from "@babylonjs/core/Instrumentation/engineInstrumentation";
 import {SceneInstrumentation} from "@babylonjs/core/Instrumentation/sceneInstrumentation";
@@ -81,7 +82,7 @@ import {RenderTelemetry, RenderTelemetrySceneStats} from "./render-telemetry";
 import {AdaptiveResolution} from "./adaptive-resolution";
 import {ParkedMeshFilter} from "./parked-mesh-filter";
 import {OutOfViewJump, TIP_OVERLAY_ATTRIBUTE} from './out-of-view-jump';
-import {whenTerrainReady} from './boot-gate';
+import {whenStartModelsReady} from './boot-gate';
 import {ShadowQuality} from "./shadow-quality";
 import {TextureMemory} from "./texture-memory";
 import {BabylonResourceItemImpl} from "./babylon-resource-item.impl";
@@ -1242,17 +1243,27 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     Effect.PersistentMode = true;
     this.engine = new Engine(this.canvas)
     this.scene = new Scene(this.engine);
-    // 1 MB the start does not wait for, fetched once the terrain is in (boot-gate.ts); until then
-    // the scene has no image-based lighting, for a second or two after the first frame.
+    // 1 MB the start does not wait for, fetched once the start models are in (boot-gate.ts); until
+    // then the scene has no image-based lighting, for a few seconds after the first frame.
+    // Handed to the scene only once it has loaded: a scene environment texture that is still on the
+    // wire keeps every PBR material from being ready, so nothing with one is drawn. Measured on a
+    // Pixel 7 at 5 Mbit/s (2026-11-15): the builder ghost loaded at 11 s and appeared at 19-20 s,
+    // when the .env had arrived. Darker for a moment beats invisible.
     const scene = this.scene;
-    whenTerrainReady().then(() => {
+    whenStartModelsReady().then(() => {
       if (scene.isDisposed) {
         return;
       }
-      scene.createDefaultEnvironment({
-        createSkybox: false,
-        createGround: false,
-        environmentTexture: "renderer/env/sanGiuseppeBridge.env"
+      const environmentTexture = CubeTexture.CreateFromPrefilteredData("renderer/env/sanGiuseppeBridge.env", scene);
+      environmentTexture.onLoadObservable.addOnce(() => {
+        if (scene.isDisposed) {
+          return;
+        }
+        scene.createDefaultEnvironment({
+          createSkybox: false,
+          createGround: false,
+          environmentTexture: environmentTexture
+        });
       });
     });
     this.scene.environmentIntensity = 1.2;   // units read dark against the brighter, tone-mapped ground

@@ -26,7 +26,7 @@ import {WindPlugin} from "./wind-plugin";
 import {RockMaterials} from "./rock-material";
 import {BabylonRenderServiceAccessImpl} from './babylon-render-service-access-impl.service';
 import {BuildAnimationPhase, RenderObject} from './render-object';
-import {whenTerrainReady} from './boot-gate';
+import {markStartModelsReady, whenStartModelsReady, whenTerrainReady} from './boot-gate';
 
 type AnimationGroupClassification = BuildAnimationPhase | 'legacy';
 
@@ -202,14 +202,29 @@ export class BabylonModelService {
       // needs - see boot-gate.ts. Whoever asks for a model before then is served first once they come.
       whenTerrainReady().then(() => {
         this.babylonMaterialContainer.releaseDeferred();
-        this.particleSystemContainer.load(uiConfigCollection.particleSystemEntities, this, this.scene);
         const gltfs = this.smallestFirst(uiConfigCollection.gltfs, uiConfigCollection.model3DEntities);
         this.gltfIds = gltfs.map(gltf => gltf.id);
         this.glbContainer.load(gltfs, this, this.scene);
+        this.reportStartModels(gltfs);
       });
+      // 615 KB of smoke and spawn bursts, after the builder rather than beside it (boot-gate.ts)
+      whenStartModelsReady().then(() =>
+        this.particleSystemContainer.load(uiConfigCollection.particleSystemEntities, this, this.scene));
     });
   }
 
+
+  /**
+   * Opens the start-models gate (boot-gate.ts) once the first glb - the start models, see
+   * {@link smallestFirst} - is usable, its materials included. A failed load opens it as well.
+   */
+  private reportStartModels(gltfs: GltfEntity[]): void {
+    if (gltfs.length === 0 || this.glbContainer.isEntityLoaded(gltfs[0].id)) {
+      markStartModelsReady();
+      return;
+    }
+    this.glbContainer.whenEntityLoaded(gltfs[0].id, () => markStartModelsReady());
+  }
 
   /**
    * Whether every glb has landed. Reported with PLACER_CONFIRMED as glb=; since the start models

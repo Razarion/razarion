@@ -1,8 +1,8 @@
+import {textureAfterStartModels} from "./start-models-texture";
 import {Effect} from "@babylonjs/core/Materials/effect";
 import {Material} from "@babylonjs/core/Materials/material";
 import {ShaderMaterial} from "@babylonjs/core/Materials/shaderMaterial";
 import {DynamicTexture} from "@babylonjs/core/Materials/Textures/dynamicTexture";
-import {Texture} from "@babylonjs/core/Materials/Textures/texture";
 import {Mesh} from "@babylonjs/core/Meshes/mesh";
 import {MeshBuilder} from "@babylonjs/core/Meshes/meshBuilder";
 import {Scene} from "@babylonjs/core/scene";
@@ -103,11 +103,11 @@ export class BowWaveHalo {
         needAlphaBlending: true,
       });
 
-      const foamTex = new Texture("renderer/textures/foam-cells.webp", scene);
+      const foamTex = textureAfterStartModels("renderer/textures/foam-cells.webp", scene);
       foamTex.hasAlpha = true;
       foamTex.dispose = () => {};
 
-      const noiseTex = new Texture("renderer/textures/foam-noise.webp", scene);
+      const noiseTex = textureAfterStartModels("renderer/textures/foam-noise.webp", scene);
       noiseTex.dispose = () => {};
 
       mat.setTexture("foamSampler", foamTex);

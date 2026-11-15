@@ -1,5 +1,5 @@
+import {textureAfterStartModels} from "./start-models-texture";
 import {NodeMaterial} from "@babylonjs/core/Materials/Node/nodeMaterial";
-import {Texture} from "@babylonjs/core/Materials/Textures/texture";
 import {Color3} from "@babylonjs/core/Maths/math.color";
 import {InputBlock} from "@babylonjs/core/Materials/Node/Blocks/Input/inputBlock";
 import {NodeMaterialBlockConnectionPointTypes} from "@babylonjs/core/Materials/Node/Enums/nodeMaterialBlockConnectionPointTypes";
@@ -85,11 +85,11 @@ export function buildBotGroundSideMaterial(scene: Scene): NodeMaterial {
   // ========== Diffuse + bump ==========
   const diffuseTex = new TextureBlock("BotGround side diffuse");
   scaledUv.output.connectTo(diffuseTex.uv);
-  diffuseTex.texture = new Texture(TEX_PATH + "bot-ground-side-diffuse.webp", scene);
+  diffuseTex.texture = textureAfterStartModels(TEX_PATH + "bot-ground-side-diffuse.webp", scene);
 
   const normalTex = new TextureBlock("BotGround side norm");
   scaledUv.output.connectTo(normalTex.uv);
-  normalTex.texture = new Texture(TEX_PATH + "bot-ground-side-norm.webp", scene);
+  normalTex.texture = textureAfterStartModels(TEX_PATH + "bot-ground-side-norm.webp", scene);
 
   // ========== PerturbNormal ==========
   // invertY flips the green channel of the normal map. The source PNG is

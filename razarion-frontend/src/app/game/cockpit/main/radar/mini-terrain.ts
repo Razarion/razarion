@@ -4,6 +4,7 @@ import { BabylonRenderServiceAccessImpl } from 'src/app/game/renderer/babylon-re
 import { GameUiControl } from 'src/app/gwtangular/GwtAngularFacade';
 import { RadarComponent } from './radar.component';
 import { AbstractGameCoordinates } from './abstract-game-coordinates';
+import { whenStartModelsReady } from 'src/app/game/renderer/boot-gate';
 
 export class MiniTerrain extends AbstractMiniMap {
     private imageElement?: HTMLImageElement;
@@ -13,6 +14,11 @@ export class MiniTerrain extends AbstractMiniMap {
     }
 
     public show(imageLoaderCallback: () => void): void {
+        // 288 KB, after the builder rather than beside it (boot-gate.ts whenStartModelsReady)
+        whenStartModelsReady().then(() => this.loadImage(imageLoaderCallback));
+    }
+
+    private loadImage(imageLoaderCallback: () => void): void {
         let imageUrl: string = getMiniMapPlanetUrl(this.gameUiControl.getPlanetConfig().getId());
         let image = new Image();
         image.onload = () => {

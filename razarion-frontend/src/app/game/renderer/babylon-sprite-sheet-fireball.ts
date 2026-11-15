@@ -1,3 +1,4 @@
+import {textureAfterStartModels} from "./start-models-texture";
 import {Texture} from "@babylonjs/core/Materials/Textures/texture";
 import {Color4} from "@babylonjs/core/Maths/math.color";
 import {Vector3} from "@babylonjs/core/Maths/math.vector";
@@ -116,7 +117,7 @@ export class BabylonSpriteSheetFireball {
 
   private static getTexture(scene: Scene): Texture {
     if (BabylonSpriteSheetFireball.textureCache) return BabylonSpriteSheetFireball.textureCache;
-    const tex = new Texture(BabylonSpriteSheetFireball.SHEET_URL, scene, true, false, Texture.TRILINEAR_SAMPLINGMODE);
+    const tex = textureAfterStartModels(BabylonSpriteSheetFireball.SHEET_URL, scene, true, false, Texture.TRILINEAR_SAMPLINGMODE);
     tex.hasAlpha = true;
     // ParticleSystem.dispose() defaults to disposeTexture=true with disposeOnStop=true —
     // would kill this cache after the first fireball finishes. Keep the cached texture
