@@ -220,6 +220,14 @@ public class DtoConverter {
         setGetterObj(obj, "getCount", () -> convertNullableInt(config.getCount()));
         setGetterObj(obj, "getTimeSeconds", () -> convertNullableInt(config.getTimeSeconds()));
         setGetterObj(obj, "getPlaceConfig", () -> convertPlaceConfig(config.getPlaceConfig()));
+        setGetterObj(obj, "getBotIdsAngular", () -> {
+            if (config.getBotIds() == null) return null;
+            JsArray<JSObject> arr = JsArray.create();
+            for (Integer botId : config.getBotIds()) {
+                arr.push((int) botId);
+            }
+            return arr;
+        });
         setGetterObj(obj, "toTypeCountAngular", () -> {
             Integer[][] typeCount = config.toTypeCountAngular();
             if (typeCount == null) return null;
@@ -876,6 +884,7 @@ public class DtoConverter {
                 }
             }
             obj.set("cargo", cargo);
+            obj.set("botId", state.botId);
             obj.set("harvesting", state.harvesting);
             if (state.harvesting) {
                 obj.set("harvestX", state.harvestX);

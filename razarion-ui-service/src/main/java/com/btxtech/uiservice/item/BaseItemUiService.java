@@ -582,6 +582,10 @@ public class BaseItemUiService {
             state.id = info.id;
             state.itemTypeId = info.itemTypeId;
             state.own = own;
+            if (!own) {
+                Integer botId = botIdOfBase(info.baseId);
+                state.botId = botId != null ? botId : 0;
+            }
             state.x = info.x;
             state.y = info.y;
             state.idle = info.idle;

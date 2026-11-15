@@ -23,6 +23,8 @@ export interface TipQuestSpec {
   actorTypeId: number;
   /** BUILD: the building; FABRICATE: the unit; ATTACK: the enemy type, null for any. */
   targetTypeId: number | null;
+  /** ATTACK: only items of these bots count (the quest's bot list), absent for any enemy. */
+  targetBotIds?: number[];
   /** Ask for a group before the attack (TipConfig.group). */
   group: boolean;
   /**
@@ -189,7 +191,8 @@ function decideAttack(input: DecisionInput): Decision {
     return quiet(TipTaskName.IDLE_ITEM, TipStallReason.AWAIT_IDLE);
   }
   const targets = input.items.filter(item => !item.own
-    && (quest.targetTypeId === null || item.itemTypeId === quest.targetTypeId));
+    && (quest.targetTypeId === null || item.itemTypeId === quest.targetTypeId)
+    && (!quest.targetBotIds || quest.targetBotIds.includes(item.botId ?? 0)));
   if (targets.length === 0) {
     return quiet(TipTaskName.SEND_ATTACK_COMMAND, TipStallReason.NO_ENEMY); // Q7
   }

@@ -283,6 +283,8 @@ export interface TipItemState {
   harvesting?: boolean;
   harvestX?: number;
   harvestY?: number;
+  /** The bot an enemy item belongs to, 0 for a player base and for own items. */
+  botId?: number;
 }
 
 export interface NativeSyncBaseItemTickInfo {
@@ -552,6 +554,9 @@ export interface ComparisonConfig {
   getTimeSeconds(): number | null;
 
   getPlaceConfig(): PlaceConfig | null;
+
+  /** The bots whose items count (QUEST_COMPARISON_BOT), null for any. */
+  getBotIdsAngular?(): number[] | null;
 }
 
 // ---------- Renderer ----------

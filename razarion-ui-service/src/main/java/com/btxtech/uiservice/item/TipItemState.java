@@ -31,4 +31,6 @@ public class TipItemState {
     public boolean harvesting;
     public double harvestX;
     public double harvestY;
+    /** The bot an enemy item belongs to, 0 for a player base and for own items. */
+    public int botId;
 }

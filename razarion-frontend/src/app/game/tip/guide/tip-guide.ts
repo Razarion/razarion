@@ -101,6 +101,7 @@ export class TipGuide implements ViewFieldListener {
     const tipConfig = questConfig.getTipConfig()!;
     const typeCount = questConfig.getConditionConfig()?.getComparisonConfig().toTypeCountAngular() ?? [];
     const targetTypeId = typeCount.length > 0 ? GwtHelper.gwtIssueNumber(typeCount[0][0]) : null;
+    const botIds = questConfig.getConditionConfig()?.getComparisonConfig().getBotIdsAngular?.() ?? null;
     const tip = tipConfig.getTipString() as TipKind;
     this.placeConfig = questConfig.getConditionConfig()?.getComparisonConfig().getPlaceConfig() ?? null;
     // SYNC_ITEM_POSITION counts the finished buildings in the region (a start region comes as one),
@@ -113,6 +114,7 @@ export class TipGuide implements ViewFieldListener {
       tip,
       actorTypeId: GwtHelper.gwtIssueNumber(tipConfig.getActorItemTypeId()),
       targetTypeId,
+      targetBotIds: botIds && botIds.length > 0 ? botIds.map(botId => GwtHelper.gwtIssueNumber(botId)) : undefined,
       group: !!tipConfig.isGroup?.(),
       buildTargets: countsTheBase
         ? typeCount.map(entry => ({typeId: GwtHelper.gwtIssueNumber(entry[0]), count: GwtHelper.gwtIssueNumber(entry[1])}))
