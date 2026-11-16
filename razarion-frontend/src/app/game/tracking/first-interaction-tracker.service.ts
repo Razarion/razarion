@@ -163,10 +163,12 @@ export type InteractionKind =
   /** The player moved the camera during such a follow and so ended it, `kind=<order> after=0-2|3-9|10+`
    *  seconds. Taken over at once, again and again, would say the follow is in the way. */
   | 'ORDER_FOLLOW_TAKEOVER'
-  /** The "sell everything there" button of a region-clearing quest - the card, the phone's quest line or the quest panel, `count=<items> from=card|strip|panel` (2026-10-14). */
+  /** The "sell everything there" button of a region-clearing quest - the phone's quest line or the quest panel, `count=<items> from=strip|panel` (2026-10-14; until 2026-11-15 also `from=card`). */
   | 'CLEAR_REGION_SOLD'
-  /** The card offering that sale was closed without selling. */
+  /** The card offering that sale was closed without selling (until 2026-11-15, when the card gave way to the automatic sale). */
   | 'CLEAR_REGION_CARD_CLOSED'
+  /** The game sold what was left in the region by itself, `count=<items>` (2026-11-15, ClearRegionService). Not a player action. */
+  | 'CLEAR_REGION_AUTO_SOLD'
   /** A unit or building was picked. On a phone this can only come from a tap: the marquee ignores
    *  touch pointers and there is no keyboard, so it doubles as proof the tap path works. */
   | 'SELECT'

@@ -92,10 +92,14 @@ public class ItemVelocityCalculator {
         DecimalPosition position = orca.getSyncPhysicalMovable().getPosition();
         List<ObstacleSlope> sortedObstacleSlope = new ArrayList<>();
         List<ObstacleTerrainObject> sortedObstacleTerrainObject = new ArrayList<>();
+        boolean plantPassage = orca.getSyncPhysicalMovable().isPlantPassageOpen();
         pathingAccess.getObstacles(position, lookAheadTerrainDistance).forEach(obstacle -> {
             if (obstacle instanceof ObstacleSlope) {
                 sortedObstacleSlope.add((ObstacleSlope) obstacle);
             } else if (obstacle instanceof ObstacleTerrainObject) {
+                if (plantPassage && ((ObstacleTerrainObject) obstacle).isPlant()) {
+                    return; // a stuck unit brushes through plants, see SyncPhysicalMovable.openPlantPassage()
+                }
                 sortedObstacleTerrainObject.add((ObstacleTerrainObject) obstacle);
             } else {
                 throw new IllegalArgumentException("Can not handle: " + obstacle);

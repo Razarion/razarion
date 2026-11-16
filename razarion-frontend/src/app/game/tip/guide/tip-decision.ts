@@ -567,9 +567,9 @@ function sailStep(input: DecisionInput, ship: TipItemState, selected: boolean): 
 
 /**
  * Clearing a region of everything the player owns there - level 9 clears the noob island (2026-10-14).
- * The quest panel has the button that sells it all, and that button pulses for as long as there is
- * something to sell (ClearRegionService): nothing to point at in the world, so the tip stays quiet
- * and only tells the stall watchdog what it waits for.
+ * Since 2026-11-15 the game sells it by itself (ClearRegionService); the button in the quest panel that
+ * sells it all stays as the fallback and pulses for as long as there is something to sell. Nothing to
+ * point at in the world, so the tip stays quiet and only tells the stall watchdog what it waits for.
  */
 function decideClear(input: DecisionInput): Decision {
   const left = input.items.some(item => item.own && input.regionDistance({x: item.x, y: item.y}) === 0);

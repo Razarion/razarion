@@ -9,6 +9,8 @@ import java.util.Objects;
  * 20.09.2016.
  */
 public class ObstacleTerrainObject extends Obstacle {
+    /** See {@link #isPlant()}. */
+    public static final double PLANT_MAX_RADIUS = 1.0;
     private final Circle2D circle;
 
     public ObstacleTerrainObject(Circle2D circle) {
@@ -17,6 +19,14 @@ public class ObstacleTerrainObject extends Obstacle {
 
     public Circle2D getCircle() {
         return circle;
+    }
+
+    /**
+     * Small enough to be a plant rather than a tree or a rock: ferns, banana plants and palm bushes on
+     * PLANET 117 are 0.4-0.85 m, trees and rocks from 1.5 m on.
+     */
+    public boolean isPlant() {
+        return circle.getRadius() < PLANT_MAX_RADIUS;
     }
 
     @Override

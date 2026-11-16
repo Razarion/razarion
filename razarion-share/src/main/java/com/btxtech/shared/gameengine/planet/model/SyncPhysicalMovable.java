@@ -33,6 +33,8 @@ public class SyncPhysicalMovable extends AbstractSyncPhysical {
     private static final double STUCK_PROGRESS_DISTANCE = 0.05; // meters per tick
     private static final int STUCK_TICK_THRESHOLD = 15;         // 1.5s at 100ms ticks
     private static final int MAX_REPLANS = 3;                   // give up (stop) after this many replans
+    /** How long a stuck unit may drive through plants, see {@link #openPlantPassage()}: 3 s. */
+    private static final int PLANT_PASSAGE_TICKS = 30;
     /**
      * Orbit break-off. On the LAST way point only, the closest distance ever reached to that point
      * is remembered; a tick that does not beat it by at least {@link #APPROACH_PROGRESS_DISTANCE}
@@ -95,6 +97,11 @@ public class SyncPhysicalMovable extends AbstractSyncPhysical {
      * from hasDestination() alone cancelled builds that were about to finish.
      */
     private boolean destinationUnreachable;
+    /**
+     * Ticks left in which ORCA lets this unit through small terrain objects (plants), see
+     * {@link #openPlantPassage()}. MASTER only and not serialized, like {@link #stuckDetector}.
+     */
+    private int plantPassageTicks;
 
     @Inject
     public SyncPhysicalMovable(SyncItemContainerServiceImpl syncItemContainerService, Provider<Path> instancePath) {
@@ -309,9 +316,31 @@ public class SyncPhysicalMovable extends AbstractSyncPhysical {
      * @return true when a replan is due (crowded + no progress for STUCK_TICK_THRESHOLD ticks).
      */
     public boolean detectStuck() {
+        if (plantPassageTicks > 0) {
+            plantPassageTicks--;
+        }
         boolean madeProgress = oldPosition != null
                 && oldPosition.getDistance(getPosition()) >= STUCK_PROGRESS_DISTANCE;
         return stuckDetector.onTick(path != null, crowded, madeProgress);
+    }
+
+    /**
+     * Lets the unit drive through small terrain objects for {@link #PLANT_PASSAGE_TICKS}: called by the
+     * stuck replan when plants are next to it.
+     * <p>
+     * PROD 2026-11-15: six Vipers stood in a cluster of ferns and banana plants (0.4-0.55 m), several of
+     * them a few centimetres inside a plant. A* frees the nodes around a stuck start, so the way out ran
+     * between two plants 1.3 m apart, which a Viper (2 m wide) does not fit through; ORCA kept them off
+     * the plants, and every replan gave the same way. They did not move a metre for minutes. Plants are
+     * decoration a unit may brush through; trees and rocks are not touched by this.
+     */
+    public void openPlantPassage() {
+        plantPassageTicks = PLANT_PASSAGE_TICKS;
+    }
+
+    /** Whether ORCA leaves out the small terrain objects for this unit in the current tick. */
+    public boolean isPlantPassageOpen() {
+        return plantPassageTicks > 0;
     }
 
     public boolean isReplanBudgetExhausted() {

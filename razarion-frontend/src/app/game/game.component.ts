@@ -172,6 +172,8 @@ export class GameComponent implements OnInit {
     this.gwtAngularService.gwtAngularFacade.babylonRenderServiceAccess = this.babylonRenderServiceAccessImpl;
     this.gwtAngularService.gwtAngularFacade.mainCockpit = this.mainCockpitComponent;
     this.gwtAngularService.gwtAngularFacade.questCockpit = this.questCockpitContainer;
+    // The island sale of level 9 waits for the level-up splash, so its notice is not hidden under it.
+    this.questCockpitContainer.clearRegion.setBlocked(() => !!this.modelDialogPresenter.title || this.modelDialogPresenter.showNext);
     this.gwtAngularService.gwtAngularFacade.chatCockpit = this.chatCockpitComponent;
     this.gwtAngularService.gwtAngularFacade.serverRestartPresenter = this.serverRestartComponent;
     this.gwtAngularService.gwtAngularFacade.baseItemPlacerPresenter = this.babylonRenderServiceAccessImpl.createBaseItemPlacerPresenter();

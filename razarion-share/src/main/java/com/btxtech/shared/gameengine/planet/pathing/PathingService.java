@@ -380,6 +380,20 @@ public class PathingService {
         }
     }
 
+    /** A plant within half a unit radius of the unit's edge, see SyncPhysicalMovable.openPlantPassage(). */
+    private boolean isNextToPlants(SyncPhysicalMovable movable) {
+        double reach = movable.getRadius() * 1.5 + ObstacleTerrainObject.PLANT_MAX_RADIUS;
+        for (Obstacle obstacle : terrainService.getTerrainAnalyzer().getObstacles(movable.getPosition(), reach)) {
+            if (obstacle instanceof ObstacleTerrainObject && ((ObstacleTerrainObject) obstacle).isPlant()) {
+                Circle2D plant = ((ObstacleTerrainObject) obstacle).getCircle();
+                if (plant.getCenter().getDistance(movable.getPosition()) - plant.getRadius() - movable.getRadius() < movable.getRadius() * 0.5) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     /**
      * MASTER-only: detect units that ORCA cannot free (crowded with no progress) and replan a fresh,
      * building-aware A* path for them. The new path is pushed to clients through {@code notifier}
@@ -418,6 +432,9 @@ public class PathingService {
             DecimalPosition destination = movable.getFinalDestination();
             if (destination == null) {
                 return;
+            }
+            if (isNextToPlants(movable)) {
+                movable.openPlantPassage();
             }
             try {
                 List<DecimalPosition> oldWay = movable.getPath() != null ? movable.getPath().getWayPositions() : null;

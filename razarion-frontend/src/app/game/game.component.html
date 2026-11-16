@@ -18,23 +18,16 @@
     <div class="director-indicator ok">{{ replayLabel }}</div>
   }
 
-  <!-- Level 9 starts by leaving the noob island: a card in the middle offers to sell all that is still
-       there, because the button in the quest line alone is easily missed (ClearRegionService). -->
-  @if (questCockpitContainer.clearRegion.offer(); as offer) {
-    <!-- After the level-up splash, not under it: both sit in the middle of the screen. -->
-    @if (!questCockpitContainer.clearRegion.cardClosed() && !modelDialogPresenter.title && !modelDialogPresenter.showNext) {
+  <!-- Level 9 starts by leaving the noob island: what is still there is sold by itself once the
+       level-up splash is gone, and this says what it brought (ClearRegionService). A tap or 6 s
+       take it away; it does not stop the game. -->
+  @if (questCockpitContainer.clearRegion.sold(); as sale) {
+    @if (!modelDialogPresenter.title && !modelDialogPresenter.showNext) {
       <div class="fixed inset-0 z-50 flex items-center justify-center pointer-events-none p-4">
-        <div class="pointer-events-auto relative flex flex-col items-center gap-3 rounded-xl border border-emerald-500 bg-black/85 px-6 py-5 text-center max-w-sm">
-          <button type="button" class="absolute top-2 right-3 text-surface-400" aria-label="Close"
-                  (click)="questCockpitContainer.clearRegion.closeCard()">
-            <i class="pi pi-times"></i>
-          </button>
-          <div class="text-lg font-bold text-emerald-300">Leave the Noob Island</div>
-          <div class="text-surface-200">Sell everything you left there: {{ offer.count }} items, +{{ offer.refund }} Razarion for your new base.</div>
-          <button type="button" class="quest-clear-button rounded-lg bg-emerald-600 px-6 py-2 text-lg font-bold text-white"
-                  (click)="questCockpitContainer.clearRegion.sellAll('card')">
-            <i class="pi pi-dollar"></i> Sell all
-          </button>
+        <div class="pointer-events-auto flex flex-col items-center gap-2 rounded-xl border border-emerald-500 bg-black/85 px-6 py-5 text-center max-w-sm"
+             role="status" (click)="questCockpitContainer.clearRegion.dismissNotice()">
+          <div class="text-lg font-bold text-emerald-300"><i class="pi pi-dollar"></i> Island base sold</div>
+          <div class="text-surface-200">{{ sale.count }} items you left on the Noob Island, +{{ sale.refund }} Razarion for your new base.</div>
         </div>
       </div>
     }
