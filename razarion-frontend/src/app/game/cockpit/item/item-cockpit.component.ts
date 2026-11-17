@@ -211,6 +211,7 @@ export class ItemCockpitComponent implements AfterViewInit, DoCheck, OnDestroy {
     const buildupItems = this.itemCockpitService.ownItemCockpit!.buildupItems!;
     this.scrollBuildupCarouselTo(buildupItems.findIndex(item => item.itemTypeId === itemTypeId));
     const button: HTMLElement = this.findBuildupItemDiv(itemTypeId)!.nativeElement;
+    this.scrollBuildupGridTo(button);
     // Re-measured on every call, and the tip tasks call this every second: every selection event
     // rebuilds the cockpit model and the carousel re-renders, so the button this points at is
     // regularly a different element than a moment ago - re-selecting the builder was enough to
@@ -420,6 +421,26 @@ export class ItemCockpitComponent implements AfterViewInit, DoCheck, OnDestroy {
     const page = Math.floor(itemIndex / itemsPerPage);
     if (this.buildupCarousel.page !== page) {
       this.buildupCarousel.page = page;
+    }
+  }
+
+  /**
+   * The desktop grid shows two rows and scrolls past that (max-height in _hud-panels.scss). The
+   * Builder has six buttons, so on a narrow window the sixth - the House of quest 418 - sat below
+   * the fold and the tip pointed at a clipped button the player never saw. Scrolls only the grid,
+   * and only when the button is not fully in it, so a player who scrolls is not fought every second.
+   */
+  private scrollBuildupGridTo(button: HTMLElement): void {
+    const grid = button.closest('.hud-build-grid') as HTMLElement | null;
+    if (!grid || grid.scrollHeight <= grid.clientHeight) {
+      return;
+    }
+    const gridRect = grid.getBoundingClientRect();
+    const rect = button.getBoundingClientRect();
+    if (rect.top < gridRect.top) {
+      grid.scrollTop -= gridRect.top - rect.top;
+    } else if (rect.bottom > gridRect.bottom) {
+      grid.scrollTop += rect.bottom - gridRect.bottom;
     }
   }
 

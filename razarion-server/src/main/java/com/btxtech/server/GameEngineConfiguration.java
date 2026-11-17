@@ -365,12 +365,14 @@ public class GameEngineConfiguration {
                                  GameLogicService gameLogicService,
                                  ItemTypeService itemTypeService,
                                  SyncItemContainerServiceImpl syncItemContainerService,
-                                 InitializeService initializeService) {
+                                 InitializeService initializeService,
+                                 jakarta.inject.Provider<BotService> botService) {
         return new BoxService(inventoryTypeService,
                 gameLogicService,
                 itemTypeService,
                 syncItemContainerService,
-                initializeService);
+                initializeService,
+                botService::get);
     }
 
     @Bean

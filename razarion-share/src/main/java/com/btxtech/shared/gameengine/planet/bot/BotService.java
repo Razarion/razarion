@@ -139,6 +139,21 @@ public class BotService {
         }
     }
 
+    /**
+     * Whether the items of this bot drop boxes (see {@link BotConfig#isNoBoxDrop()}). A bot that is
+     * not running (any more) drops as its item type says.
+     */
+    public boolean isNoBoxDrop(int botId) {
+        synchronized (botRunners) {
+            for (BotRunner botRunner : botRunners) {
+                if (botRunner.getBotConfig().getId() == botId) {
+                    return botRunner.getBotConfig().isNoBoxDrop();
+                }
+            }
+        }
+        return false;
+    }
+
     public BotRunner getBotRunner(int botId) {
         synchronized (botRunners) {
             for (BotRunner botRunner : botRunners) {

@@ -169,6 +169,10 @@ export type InteractionKind =
   | 'CLEAR_REGION_CARD_CLOSED'
   /** The game sold what was left in the region by itself, `count=<items>` (2026-11-15, ClearRegionService). Not a player action. */
   | 'CLEAR_REGION_AUTO_SOLD'
+  /** The image-based lighting (.env) did not load, `attempt=<n> error=<message>|timeout=30s|throw=<e>`; it is retried up to 5 times. Without it metal units are drawn black (2026-11-17). Not a player action. */
+  | 'ENV_FAILED'
+  /** A retry of the .env brought the lighting back, `attempt=<n> ms=<duration of that attempt>` (2026-11-17). */
+  | 'ENV_RECOVERED'
   /** A unit or building was picked. On a phone this can only come from a tap: the marquee ignores
    *  touch pointers and there is no keyboard, so it doubles as proof the tap path works. */
   | 'SELECT'

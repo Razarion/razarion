@@ -24,6 +24,7 @@ public class BotConfig implements Config {
     private Integer maxActiveMs;
     private List<BotEnragementStateConfig> botEnragementStateConfigs;
     private boolean groundBoxEnabled;
+    private boolean noBoxDrop;
     private Double groundBoxHeight;
     private List<DecimalPosition> groundBoxPositions;
     private List<BotGroundSlopeBox> botGroundSlopeBoxes;
@@ -144,6 +145,19 @@ public class BotConfig implements Config {
         this.groundBoxEnabled = groundBoxEnabled;
     }
 
+    /**
+     * The items of this bot drop no boxes, whatever their item type says. The drop belongs to the
+     * item type, which several bots share: without this the bots of the low levels would be camped
+     * by high-level players for their boxes.
+     */
+    public boolean isNoBoxDrop() {
+        return noBoxDrop;
+    }
+
+    public void setNoBoxDrop(boolean noBoxDrop) {
+        this.noBoxDrop = noBoxDrop;
+    }
+
     public @Nullable Double getGroundBoxHeight() {
         return groundBoxHeight;
     }
@@ -235,6 +249,11 @@ public class BotConfig implements Config {
 
     public BotConfig groundBoxEnabled(boolean groundBoxEnabled) {
         setGroundBoxEnabled(groundBoxEnabled);
+        return this;
+    }
+
+    public BotConfig noBoxDrop(boolean noBoxDrop) {
+        setNoBoxDrop(noBoxDrop);
         return this;
     }
 

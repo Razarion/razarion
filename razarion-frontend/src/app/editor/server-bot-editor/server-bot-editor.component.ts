@@ -114,6 +114,7 @@ export class ServerBotEditorComponent extends EditorPanel implements OnInit, OnD
       realm: null,
       groundBoxHeight: null,
       groundBoxEnabled: false,
+      noBoxDrop: false,
       groundBoxPositions: [],
       botGroundSlopeBoxes: [],
     }

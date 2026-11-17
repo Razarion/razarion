@@ -1250,22 +1250,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     // Pixel 7 at 5 Mbit/s (2026-11-15): the builder ghost loaded at 11 s and appeared at 19-20 s,
     // when the .env had arrived. Darker for a moment beats invisible.
     const scene = this.scene;
-    whenStartModelsReady().then(() => {
-      if (scene.isDisposed) {
-        return;
-      }
-      const environmentTexture = CubeTexture.CreateFromPrefilteredData("renderer/env/sanGiuseppeBridge.env", scene);
-      environmentTexture.onLoadObservable.addOnce(() => {
-        if (scene.isDisposed) {
-          return;
-        }
-        scene.createDefaultEnvironment({
-          createSkybox: false,
-          createGround: false,
-          environmentTexture: environmentTexture
-        });
-      });
-    });
+    whenStartModelsReady().then(() => this.loadEnvironment(scene, 1));
     this.scene.environmentIntensity = 1.2;   // units read dark against the brighter, tone-mapped ground
     // A few kB, long arrived by the time the first tile wants it (tiles wait for it otherwise)
     GroundPaths.load();
@@ -1931,10 +1916,14 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     return direction;
   }
 
-  /** Where the ray meets zero level, but never farther than the camera draws. */
-  private setupViewFieldZeroLevelPosition(direction: Vector3): Vector3 {
-    const distanceToNullLevel = Math.min(-this.camera.position.y / direction.y, this.camera.maxZ);
-    return this.camera.position.add(direction.scale(distanceToNullLevel));
+  /** Where the ray meets the plane at the given height, but never farther than the camera draws. */
+  private setupViewFieldPlanePosition(direction: Vector3, height: number): Vector3 {
+    let distance = (height - this.camera.position.y) / direction.y;
+    if (!(distance > 0)) {
+      // The camera is below that plane (it never is above ground it follows); take zero level.
+      distance = -this.camera.position.y / direction.y;
+    }
+    return this.camera.position.add(direction.scale(Math.min(distance, this.camera.maxZ)));
   }
 
   private setupViewField(): ViewField {
@@ -1947,15 +1936,24 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     const directions = [[-1, -1], [1, -1], [1, 1], [-1, 1], [0, 0]]
       .map(([ndcX, ndcY]) => this.setupViewFieldDirection(ndcX, ndcY, invertCameraViewProj));
 
-    let [bottomLeft, bottomRight, topRight, topLeft, screenCenter] =
-      directions.map(direction => this.setupTerrainPosition(direction));
-
-    // console.info(`ViewField BL ${bottomLeft.x}:${bottomLeft.z}:${bottomLeft.y} BR ${bottomRight.x}:${bottomRight.z}:${bottomRight.y} TR ${topRight.x}:${topRight.z}:${topRight.y} TL ${topLeft.x}:${topLeft.z}:${topLeft.y}`)
-
-    if (!bottomLeft || !bottomRight || !topRight || !topLeft || !screenCenter) {
-      [bottomLeft, bottomRight, topRight, topLeft, screenCenter] =
-        directions.map(direction => this.setupViewFieldZeroLevelPosition(direction));
-    }
+    // Each corner on its own: a ray that finds no loaded tile (off the map edge, or a tile not built
+    // yet) falls back alone, the others keep the ground they found. It used to drop all five to zero
+    // level together, and on high ground that pushes the whole field away from the camera: on the
+    // Badger's hill (50 m, 100 m from the west edge of the map) the left corners looked past the edge
+    // at a certain zoom, the field slid off the near half of the screen, the server stopped sending
+    // the units standing there and they vanished until the zoom changed again (2026-11-17).
+    // The fallback plane: the ground at the view centre for the near (bottom) corners, so they stay
+    // close; whichever of that and zero level lies farther for the far (top) corners, so the field
+    // covers at least what is shown. A field a little too large only costs a few more items.
+    const centreHeight = this.centerTerrainHeight ?? 0;
+    const [bottomLeft, bottomRight, topRight, topLeft, screenCenter] = directions.map((direction, index) => {
+      const onTerrain = this.setupTerrainPosition(direction);
+      if (onTerrain) {
+        return onTerrain;
+      }
+      const far = index === 2 || index === 3;
+      return this.setupViewFieldPlanePosition(direction, far ? Math.min(centreHeight, 0) : centreHeight);
+    });
 
     if (![bottomLeft, bottomRight, topRight, topLeft, screenCenter].every(corner => this.isValidVector3(corner))) {
       // A corner ray diverges when zooming out far enough that the top screen edge looks past the
@@ -2659,6 +2657,99 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
    * Called by the game engine (Java) once per simulation tick. Authoritative tick signal for the
    * perf overlay — fires every tick regardless of whether anything moved.
    */
+  /**
+   * The image-based lighting (.env, 1 MB). Without it a metal unit has nothing to reflect and is
+   * drawn black (see {@link rebuildNodeMaterialsWithoutReflection}). It used to be fetched once
+   * with no error path, so a failed or stuck download left every unit black until the page was
+   * reloaded.
+   * <p>
+   * Retried after a failure or after 30 s without an answer, with a growing pause. Each retry
+   * carries a query of its own so it cannot pick the broken texture up from Babylon's cache.
+   * ENV_FAILED tells whether this happens out there (the tracker keeps each detail once per
+   * session), ENV_RECOVERED that a retry brought the light back.
+   */
+  private loadEnvironment(scene: Scene, attempt: number): void {
+    if (scene.isDisposed) {
+      return;
+    }
+    const MAX_ATTEMPTS = 5;
+    const TIMEOUT_MILLIS = 30000;
+    const startMillis = Date.now();
+    let settled = false;
+    let texture: CubeTexture | null = null;
+    const fail = (reason: string) => {
+      if (settled) {
+        return;
+      }
+      settled = true;
+      clearTimeout(timeout);
+      texture?.dispose();
+      this.firstInteractionTrackerService.report('ENV_FAILED',
+        `attempt=${attempt} ${reason}`.slice(0, 200));
+      if (attempt < MAX_ATTEMPTS && !scene.isDisposed) {
+        setTimeout(() => this.loadEnvironment(scene, attempt + 1), 2000 * attempt);
+      }
+    };
+    const timeout = setTimeout(() => fail(`timeout=${TIMEOUT_MILLIS / 1000}s`), TIMEOUT_MILLIS);
+    const onLoad = () => {
+      if (settled) {
+        return;
+      }
+      settled = true;
+      clearTimeout(timeout);
+      if (scene.isDisposed) {
+        return;
+      }
+      scene.createDefaultEnvironment({createSkybox: false, createGround: false, environmentTexture: texture!});
+      this.rebuildNodeMaterialsWithoutReflection(scene);
+      if (attempt > 1) {
+        this.firstInteractionTrackerService.report('ENV_RECOVERED', `attempt=${attempt} ms=${Date.now() - startMillis}`);
+      }
+    };
+    const url = "renderer/env/sanGiuseppeBridge.env" + (attempt > 1 ? `?retry=${attempt}` : '');
+    // What CubeTexture.CreateFromPrefilteredData does, with the error callback it does not offer
+    const delayed = scene.useDelayedTextureLoading;
+    scene.useDelayedTextureLoading = false;
+    try {
+      texture = new CubeTexture(url, scene, null, false, null, onLoad,
+        (message?: string) => fail('error=' + (message || 'unknown')), undefined, true, ".env", true);
+    } catch (e) {
+      fail('throw=' + e);
+    } finally {
+      scene.useDelayedTextureLoading = delayed;
+    }
+  }
+
+  /**
+   * A NodeMaterial writes the reflection code into its shader only if its ReflectionBlock has a
+   * texture at build() - the scene's environment, when the block has none of its own. Marking it
+   * dirty later does not add it. Since the .env waits for the start models (d740dc375), the unit
+   * materials (the diplomacy clones of gltf-helper) are built before it arrives and stayed without
+   * image-based light for the whole session: the metal Builder pitch black (2026-11-17, locally,
+   * on prod and in the reels since 15.11.). So build them again once the environment is there.
+   */
+  private rebuildNodeMaterialsWithoutReflection(scene: Scene): void {
+    let rebuilt = 0;
+    scene.materials.forEach(material => {
+      if (!(material instanceof NodeMaterial)) {
+        return;
+      }
+      const usesSceneEnvironment = material.attachedBlocks.some(block =>
+        block.getClassName() === 'ReflectionBlock' && !(<any>block).texture);
+      if (usesSceneEnvironment) {
+        try {
+          material.build();
+          rebuilt++;
+        } catch (e) {
+          console.warn(`Rebuild of ${material.name} after the environment failed`, e);
+        }
+      }
+    });
+    if (rebuilt > 0) {
+      console.info(`Rebuilt ${rebuilt} node materials for the environment`);
+    }
+  }
+
   /**
    * A failure inside the running engine, sent to the server rather than to a console.
    * <p>

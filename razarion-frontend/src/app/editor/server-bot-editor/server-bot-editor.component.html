@@ -78,6 +78,14 @@
                 }
               </div>
             </div>
+            <div class="grid grid-cols-12 gap-4">
+              <span class="col-span-3" title="The items of this bot drop no boxes, whatever their item type says">No box drop</span>
+              <div class="col-span-9">
+                @if (selectedBot) {
+                  <p-checkbox [(ngModel)]="selectedBot!.noBoxDrop" [binary]="true"></p-checkbox>
+                }
+              </div>
+            </div>
             <p-accordion [(value)]="groundBoxPanelValue">
               <p-accordion-panel value="groundBox">
                 <p-accordion-header>

@@ -15,11 +15,13 @@ import com.btxtech.shared.gameengine.datatypes.exception.PositionCanNotBeFoundEx
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemTypePossibility;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBoxItemInfo;
+import com.btxtech.shared.gameengine.planet.bot.BotService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 import com.btxtech.shared.utils.MathHelper;
 
 import jakarta.inject.Inject;
+import jakarta.inject.Provider;
 import jakarta.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -42,6 +44,8 @@ public class BoxService {
     private final ItemTypeService itemTypeService;
     private final GameLogicService gameLogicService;
     private final InventoryTypeService inventoryTypeService;
+    // A provider: the bot service reaches the box service through the base item service
+    private final Provider<BotService> botService;
     private final Map<Integer, SyncBoxItem> boxes = new HashMap<>();
     private GameEngineMode gameEngineMode;
     private Collection<BoxRegion> boxRegion;
@@ -52,7 +56,9 @@ public class BoxService {
                       GameLogicService gameLogicService,
                       ItemTypeService itemTypeService,
                       SyncItemContainerServiceImpl syncItemContainerService,
-                      InitializeService initializeService) {
+                      InitializeService initializeService,
+                      Provider<BotService> botService) {
+        this.botService = botService;
         this.inventoryTypeService = inventoryTypeService;
         this.gameLogicService = gameLogicService;
         this.itemTypeService = itemTypeService;
@@ -291,6 +297,10 @@ public class BoxService {
             return;
         }
         if (!syncBaseItem.isBuildup()) {
+            return;
+        }
+        Integer botId = syncBaseItem.getBase().getBotId();
+        if (botId != null && botService.get().isNoBoxDrop(botId)) {
             return;
         }
         if (MathHelper.isRandomPossibility(syncBaseItem.getDropBoxPossibility())) {

@@ -38,6 +38,7 @@ public class BotConfigEntity extends BaseEntity {
     @JoinColumn(name = "botConfig", nullable = false)
     private List<BotEnragementStateConfigEntity> botEnragementStateConfigs;
     private boolean groundBoxEnabled;
+    private boolean noBoxDrop;
     private Double groundBoxHeight;
     @ElementCollection
     @CollectionTable(name = "BOT_CONFIG_GROUND_BOX_POSITIONS", joinColumns = @JoinColumn(name = "OWNER_ID"))
@@ -81,6 +82,7 @@ public class BotConfigEntity extends BaseEntity {
                 .maxActiveMs(maxActiveMs)
                 .botEnragementStateConfigs(botEnragementStateConfigs)
                 .groundBoxEnabled(groundBoxEnabled)
+                .noBoxDrop(noBoxDrop)
                 .groundBoxHeight(groundBoxHeight)
                 .groundBoxPositions(lazyInitPositions)
                 .botGroundSlopeBoxes(botGroundSlopeBoxes);
@@ -115,6 +117,7 @@ public class BotConfigEntity extends BaseEntity {
             }
         }
         groundBoxEnabled = botConfig.isGroundBoxEnabled();
+        noBoxDrop = botConfig.isNoBoxDrop();
         groundBoxHeight = botConfig.getGroundBoxHeight();
         if (groundBoxPositions == null) {
             groundBoxPositions = new ArrayList<>();
