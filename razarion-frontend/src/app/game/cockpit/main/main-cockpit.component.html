@@ -38,9 +38,9 @@
       </button>
     } @else {
       <button type="button" class="menu-row"
-              (click)="mainCockpitService.showLoginDialog = true; compactLayout.close()">
-        <i class="pi pi-user"></i>
-        <span class="menu-label">Sign in</span>
+              (click)="progressSaveService.open('MENU'); compactLayout.close()">
+        <i class="pi" [ngClass]="progressSaveService.saved ? 'pi-check-circle' : 'pi-save'"></i>
+        <span class="menu-label">{{ progressSaveService.saved ? 'Progress saved' : 'Save progress' }}</span>
         <i class="pi pi-angle-right menu-chevron"></i>
       </button>
     }
@@ -152,9 +152,9 @@
             <i class="pi pi-user-edit"></i>
           </button>
         } @else {
-          <button type="button" class="hud-btn" pTooltip="Sign in"
-                  (click)="mainCockpitService.showLoginDialog = true">
-            <i class="pi pi-user"></i>
+          <button type="button" class="hud-btn" [pTooltip]="progressSaveService.saved ? 'Progress saved' : 'Save progress'"
+                  (click)="progressSaveService.open('TOPBAR')">
+            <i class="pi" [ngClass]="progressSaveService.saved ? 'pi-check-circle' : 'pi-save'"></i>
           </button>
         }
         <button type="button" class="hud-btn" pTooltip="About" (click)="onInfo()">
@@ -248,29 +248,20 @@
      the body puts them outside both. -->
 <p-dialog header="Login" appendTo="body" [(visible)]="mainCockpitService.showLoginDialog">
   @if (mainCockpitService.showLoginDialog) {
-    <login [showRegister]="userService.showRegisterButton()"></login>
+    <login></login>
+  }
+</p-dialog>
+
+<p-dialog [header]="progressSaveService.saved ? 'Progress saved' : 'Save your progress'" appendTo="body" [modal]="true"
+          [(visible)]="mainCockpitService.showSaveProgressDialog">
+  @if (mainCockpitService.showSaveProgressDialog) {
+    <save-progress></save-progress>
   }
 </p-dialog>
 
 <p-dialog header="User account" appendTo="body" [(visible)]="mainCockpitService.showUserDialog">
   @if (mainCockpitService.showUserDialog) {
     <user></user>
-  }
-</p-dialog>
-
-<p-dialog header="Register" appendTo="body" [(visible)]="mainCockpitService.showRegisterDialog">
-  @if (mainCockpitService.showRegisterDialog) {
-    <register></register>
-  }
-</p-dialog>
-
-<p-dialog header="Your registration was successful" appendTo="body" [(visible)]="mainCockpitService.showRegisteredDialog">
-  @if (mainCockpitService.showRegisteredDialog) {
-    <div>
-      <div class="flex flex-col bg-surface-800 p-3 rounded-xl border border-surface-500 w-md max-w-full">
-        <span>An email with the activation link has been sent. Please check your inbox or spam folder.</span>
-      </div>
-    </div>
   }
 </p-dialog>
 

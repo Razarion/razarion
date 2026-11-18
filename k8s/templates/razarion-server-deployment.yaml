@@ -232,6 +232,18 @@ spec:
                   name: x-ads-secrets
                   key: event-level-up
                   optional: true
+            - name: FACEBOOK_LOGIN_APP_ID
+              valueFrom:
+                secretKeyRef:
+                  name: facebook-login-secrets
+                  key: app-id
+                  optional: true
+            - name: FACEBOOK_LOGIN_APP_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: facebook-login-secrets
+                  key: app-secret
+                  optional: true
             - name: META_ADS_PIXEL_ID
               valueFrom:
                 secretKeyRef:

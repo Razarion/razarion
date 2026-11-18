@@ -2,7 +2,6 @@ import {Component, Input} from '@angular/core';
 import {MessageService} from 'primeng/api';
 import {UserService} from '../user.service';
 import {FormsModule} from '@angular/forms';
-import {CockpitDisplayService} from '../../game/cockpit/cockpit-display.service';
 
 import {ButtonModule} from 'primeng/button';
 
@@ -15,8 +14,6 @@ import {ButtonModule} from 'primeng/button';
   templateUrl: './login.component.html'
 })
 export class LoginComponent {
-  @Input("showRegister")
-  showRegister = false;
   @Input("successUrl")
   successUrl: string | null = null;
 
@@ -24,8 +21,7 @@ export class LoginComponent {
   password: string = "";
   message: string = "";
 
-  constructor(private mainCockpitService: CockpitDisplayService,
-              public userService: UserService,
+  constructor(public userService: UserService,
               private messageService: MessageService) {
   }
 
@@ -45,10 +41,5 @@ export class LoginComponent {
           sticky: true
         });
       })
-  }
-
-  onRegister() {
-    this.mainCockpitService.showLoginDialog = false;
-    this.mainCockpitService.showRegisterDialog = true;
   }
 }

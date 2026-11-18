@@ -110,6 +110,23 @@ class UnregisteredUserCleanupTest {
     }
 
     /**
+     * A player who saved his progress stays unregistered, but he is never gone for good - the query
+     * leaves him out, and should it ever hand him over, the loop does not delete him either.
+     */
+    @Test
+    void neverDeletesAPlayerWhoSavedHisProgress() {
+        UserEntity saved = anonymous("saved");
+        saved.setProgressLinkState("fingerprint", null, null, null);
+        saved.setProgressSaved(new java.util.Date(), null);
+        saved.setSystemConnectionClosed(LocalDateTime.now().minusDays(60));
+        when(userRepository.findInactiveForGood(any(), any())).thenReturn(List.of(saved));
+
+        userService.cleanupDisconnectedUnregisteredUsers();
+
+        verify(userRepository, never()).delete(saved);
+    }
+
+    /**
      * The bigger of the two leaks: every game start writes more than one anonymous user, and only
      * one of them ever connects. The rest own nothing and were invisible to every cleanup.
      */

@@ -225,7 +225,13 @@ export class OpenConnectionsComponent extends EditorPanel implements OnInit, OnD
     const lastMessage = OpenConnectionsComponent.latest([
       info.systemLastMessageSent, info.systemLastMessageReceived,
       info.gameLastMessageSent, info.gameLastMessageReceived]);
-    const idleSeconds = lastMessage === null ? -1 : Math.floor((now - lastMessage) / 1000);
+    // Idle is the player, not the socket: the sockets exchange a tick every second whatever the
+    // player does, which made this column 1 s for everybody. Without any action yet it counts from
+    // the moment the game connection opened.
+    const lastAction = OpenConnectionsComponent.latest([info.gameLastPlayerAction]);
+    const idleFrom = lastAction ?? OpenConnectionsComponent.latest([info.gameConnectionOpened]);
+    const idleSeconds = idleFrom === null ? -1 : Math.floor((now - idleFrom) / 1000);
+    const socketText = lastMessage === null ? 'no message on either socket' : `last socket message ${new Date(lastMessage).toLocaleTimeString()}`;
     const hasBase = info.baseId !== null && info.baseId !== undefined;
     return {
       userId: info.userId,
@@ -248,10 +254,10 @@ export class OpenConnectionsComponent extends EditorPanel implements OnInit, OnD
       openedText: opened === null ? '—' : OpenConnectionsComponent.duration(now - opened),
       openedTitle: opened === null ? '' : new Date(opened).toLocaleString(),
       idleSeconds,
-      idleText: idleSeconds < 0 ? 'never' : OpenConnectionsComponent.duration(idleSeconds * 1000),
-      idleTitle: lastMessage === null
-        ? 'No message has crossed either socket since it was opened'
-        : new Date(lastMessage).toLocaleString(),
+      idleText: idleSeconds < 0 ? '—' : (lastAction === null ? 'no action, ' : '') + OpenConnectionsComponent.duration(idleSeconds * 1000),
+      idleTitle: (lastAction === null
+        ? 'No order, build or sale since the game connection opened'
+        : 'Last order, build or sale ' + new Date(lastAction).toLocaleString()) + ' - ' + socketText,
     };
   }
 

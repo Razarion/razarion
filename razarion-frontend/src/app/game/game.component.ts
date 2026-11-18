@@ -43,6 +43,7 @@ import {StartBuilderSelectService} from './start-builder-select.service';
 import {CommunityTickerComponent} from './cockpit/community-ticker/community-ticker.component';
 
 
+import {ProgressSaveService} from './progress/progress-save.service';
 @Component({
   templateUrl: 'game.component.html',
   imports: [
@@ -159,6 +160,10 @@ export class GameComponent implements OnInit {
     this.userService.checkToken()
       .then(() => {
         this.initAndStart();
+        // After a save or sign-in link: say how it went. Then whether this player is saved at all.
+        const progressSaveService = this.injector.get(ProgressSaveService);
+        progressSaveService.announceLinkOutcome();
+        progressSaveService.loadState();
       });
   }
 

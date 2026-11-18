@@ -33,6 +33,8 @@ import java.util.List;
  */
 public class SyncFactory extends SyncBaseAbility {
     private static final double GIVE_UP_RELAY_MIN = Math.toRadians(5);
+    /** How many rings around the rally point a displaced unit may be sent to before giving up. */
+    private static final int DISPLACEMENT_RINGS = 4;
     private static final double RELAY_POINT_DISTANCE = 2;
     /** Radius around a rally point candidate in which buildings are looked at: covers the largest
      * building radius (PROD 09/2026: 3.45) with room to spare. */
@@ -466,23 +468,52 @@ public class SyncFactory extends SyncBaseAbility {
         // Start by trying the direction occupant is already pushed to (away from rally), then sweep.
         // If occupant sits exactly on the rally point, fall back to +X.
         double baseAngle = rallyPoint.equals(occupantPos) ? 0 : rallyPoint.getAngle(occupantPos);
-        double delta = MathHelper.QUARTER_RADIANT;
-        while (delta > GIVE_UP_RELAY_MIN) {
-            for (double angle = 0; angle <= MathHelper.ONE_RADIANT; angle += delta) {
-                DecimalPosition candidate = rallyPoint.getPointWithDistance(MathHelper.normaliseAngle(baseAngle + angle), distance);
-                if (terrainService.getTerrainAnalyzer().isTerrainTypeAllowed(terrainType, candidate, occupantRadius)) {
-                    return candidate;
-                }
-                if (angle > 0) {
-                    candidate = rallyPoint.getPointWithDistance(MathHelper.normaliseAngle(baseAngle - angle), distance);
-                    if (terrainService.getTerrainAnalyzer().isTerrainTypeAllowed(terrainType, candidate, occupantRadius)) {
+        // The spot has to be free of units too, and of the spots units are on their way to. Terrain
+        // alone was not enough: a unit fresh off the line sits exactly on the rally point, so every
+        // displaced unit got angle 0 and the same spot - the third Viper drove onto the second, the
+        // fourth onto both. Rings further out when the first one is full.
+        for (int ring = 0; ring < DISPLACEMENT_RINGS; ring++) {
+            double ringDistance = distance + ring * (2.0 * occupantRadius + PathingService.STOP_DETECTION_NEIGHBOUR_DISTANCE);
+            double delta = MathHelper.QUARTER_RADIANT;
+            while (delta > GIVE_UP_RELAY_MIN) {
+                for (double angle = 0; angle <= MathHelper.ONE_RADIANT; angle += delta) {
+                    DecimalPosition candidate = rallyPoint.getPointWithDistance(MathHelper.normaliseAngle(baseAngle + angle), ringDistance);
+                    if (isFreeDisplacementSpot(candidate, occupant, terrainType)) {
                         return candidate;
                     }
+                    if (angle > 0) {
+                        candidate = rallyPoint.getPointWithDistance(MathHelper.normaliseAngle(baseAngle - angle), ringDistance);
+                        if (isFreeDisplacementSpot(candidate, occupant, terrainType)) {
+                            return candidate;
+                        }
+                    }
                 }
+                delta /= 2.0;
             }
-            delta /= 2.0;
         }
         return null;
+    }
+
+    private boolean isFreeDisplacementSpot(DecimalPosition candidate, SyncBaseItem occupant, TerrainType terrainType) {
+        double radius = occupant.getAbstractSyncPhysical().getRadius();
+        if (!terrainService.getTerrainAnalyzer().isTerrainTypeAllowed(terrainType, candidate, radius)) {
+            return false;
+        }
+        if (!syncItemContainerService.findBaseItemsOverlapping(candidate, radius, occupant).isEmpty()) {
+            return false;
+        }
+        // A unit sent away a moment ago is still on its way: its target counts as taken.
+        for (SyncBaseItem other : ((PlayerBaseFull) getSyncBaseItem().getBase()).getItems()) {
+            if (other == occupant || !other.getAbstractSyncPhysical().canMove()) {
+                continue;
+            }
+            DecimalPosition destination = other.getSyncPhysicalMovable().getFinalDestination();
+            if (destination != null
+                    && destination.getDistance(candidate) < radius + other.getAbstractSyncPhysical().getRadius()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private void setupRallyPoint() {

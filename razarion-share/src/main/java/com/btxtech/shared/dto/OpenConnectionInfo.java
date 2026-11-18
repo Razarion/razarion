@@ -21,6 +21,8 @@ public class OpenConnectionInfo {
     private Date gameConnectionOpened;
     private Date gameLastMessageSent;
     private Date gameLastMessageReceived;
+    /** The last order, build, sale ... the player sent - not the heartbeats every socket exchanges each second. */
+    private Date gameLastPlayerAction;
     /**
      * The base this player owns, or null if there is none - which is normal for a client that is
      * still starting up, and telling for one that has been connected for a while.
@@ -109,6 +111,15 @@ public class OpenConnectionInfo {
 
     public OpenConnectionInfo gameLastMessageReceived(Date gameLastMessageReceived) {
         this.gameLastMessageReceived = gameLastMessageReceived;
+        return this;
+    }
+
+    public Date getGameLastPlayerAction() {
+        return gameLastPlayerAction;
+    }
+
+    public OpenConnectionInfo gameLastPlayerAction(Date gameLastPlayerAction) {
+        this.gameLastPlayerAction = gameLastPlayerAction;
         return this;
     }
 

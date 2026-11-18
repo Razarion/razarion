@@ -103,6 +103,32 @@ public class UserEntity {
      */
     @Column(length = 64, unique = true)
     private String anonymousToken;
+    /**
+     * "Save your progress": a fingerprint of the address the player saved it with, never the address
+     * itself - it finds the row again when he asks for a link on another device, and that is all it
+     * can do. Nobody can be written to from it. A saved player stays unregistered in every other
+     * respect (cookie, base taken off after the grace), he is only never deleted. See
+     * {@link com.btxtech.server.user.ProgressSaveService}.
+     */
+    @Column(length = 64, unique = true)
+    private String emailHash;
+    /**
+     * "Continue with Facebook": a fingerprint of the app-scoped id Facebook hands out for this app -
+     * no name, no address, nothing else is asked for. See FacebookLoginService.
+     */
+    @Column(length = 64, unique = true)
+    private String facebookIdHash;
+    /** Set once the player saved his progress, by mail link or Facebook: such a player is never deleted. */
+    @Column(columnDefinition = "DATETIME(3)")
+    private Date progressSavedDate;
+    /** The fingerprint a pending save link will move to {@link #emailHash} once it is opened. */
+    @Column(length = 64)
+    private String pendingEmailHash;
+    /** SHA-256 of the one open link (save or sign-in); the link itself only exists in the mail. */
+    @Column(length = 64, unique = true)
+    private String loginLinkHash;
+    @Column(columnDefinition = "DATETIME(3)")
+    private Date loginLinkExpiry;
 
     public Integer getId() {
         return id;
@@ -352,6 +378,40 @@ public class UserEntity {
 
     public void setAnonymousToken(String anonymousToken) {
         this.anonymousToken = anonymousToken;
+    }
+
+    public String getEmailHash() {
+        return emailHash;
+    }
+
+    public Date getProgressSavedDate() {
+        return progressSavedDate;
+    }
+
+    public String getPendingEmailHash() {
+        return pendingEmailHash;
+    }
+
+    public Date getLoginLinkExpiry() {
+        return loginLinkExpiry;
+    }
+
+    public String getFacebookIdHash() {
+        return facebookIdHash;
+    }
+
+    /** Tests only: the columns are written by targeted updates in UserRepository. */
+    public void setProgressSaved(Date progressSavedDate, String facebookIdHash) {
+        this.progressSavedDate = progressSavedDate;
+        this.facebookIdHash = facebookIdHash;
+    }
+
+    /** Tests only: the columns are written by targeted updates in UserRepository. */
+    public void setProgressLinkState(String emailHash, String pendingEmailHash, String loginLinkHash, Date loginLinkExpiry) {
+        this.emailHash = emailHash;
+        this.pendingEmailHash = pendingEmailHash;
+        this.loginLinkHash = loginLinkHash;
+        this.loginLinkExpiry = loginLinkExpiry;
     }
 
     @Override

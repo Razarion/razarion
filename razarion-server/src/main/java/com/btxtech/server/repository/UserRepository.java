@@ -74,10 +74,12 @@ public interface UserRepository extends JpaRepository<UserEntity, Integer> {
     /**
      * Disconnected players who have nothing left to come back to: no cookie that could find them
      * again, gone past the grace; or a cookie, gone past the retention. Unregistered only - the
-     * caller checks it once more, a wrong delete here costs an account.
+     * caller checks it once more, a wrong delete here costs an account. A player who saved his
+     * progress is never in here, however long he stays away.
      */
     @Query("SELECT u FROM UserEntity u WHERE u.systemConnectionClosed IS NOT NULL "
             + "AND u.verificationStartedDate IS NULL AND u.verificationDoneDate IS NULL "
+            + "AND u.progressSavedDate IS NULL "
             + "AND ((u.anonymousToken IS NULL AND u.systemConnectionClosed < :graceCutoff) "
             + "OR u.systemConnectionClosed < :retentionCutoff)")
     List<UserEntity> findInactiveForGood(@Param("graceCutoff") LocalDateTime graceCutoff,
@@ -148,5 +150,74 @@ public interface UserRepository extends JpaRepository<UserEntity, Integer> {
                           @Param("passwordHash") String passwordHash,
                           @Param("verificationId") String verificationId,
                           @Param("verificationStartedDate") Date verificationStartedDate);
+
+    Optional<UserEntity> findByEmailHash(String emailHash);
+
+    Optional<UserEntity> findByLoginLinkHash(String loginLinkHash);
+
+    Optional<UserEntity> findByFacebookIdHash(String facebookIdHash);
+
+    /** "Continue with Facebook" saved this player: the fingerprint of his app-scoped Facebook id. */
+    @Modifying(clearAutomatically = true)
+    @Transactional
+    @Query("""
+            UPDATE UserEntity u
+               SET u.facebookIdHash = :facebookIdHash,
+                   u.progressSavedDate = :progressSavedDate
+             WHERE u.userId = :userId
+            """)
+    int applyFacebookLink(@Param("userId") String userId,
+                          @Param("facebookIdHash") String facebookIdHash,
+                          @Param("progressSavedDate") Date progressSavedDate);
+
+    /** Facebook's data deletion request: the link goes, the player and his progress stay. */
+    @Modifying(clearAutomatically = true)
+    @Transactional
+    @Query("UPDATE UserEntity u SET u.facebookIdHash = NULL WHERE u.facebookIdHash = :facebookIdHash")
+    int removeFacebookLink(@Param("facebookIdHash") String facebookIdHash);
+
+    /**
+     * Opens a save or sign-in link for this player: the hash of the link, how long it holds, and for a
+     * save the fingerprint it will store. Targeted for the same reason as {@link #applyRegistration}:
+     * the game engine writes level and xp to the same row meanwhile.
+     */
+    @Modifying
+    @Transactional
+    @Query("""
+            UPDATE UserEntity u
+               SET u.loginLinkHash = :loginLinkHash,
+                   u.loginLinkExpiry = :loginLinkExpiry,
+                   u.pendingEmailHash = :pendingEmailHash
+             WHERE u.userId = :userId
+            """)
+    int applyLoginLink(@Param("userId") String userId,
+                       @Param("loginLinkHash") String loginLinkHash,
+                       @Param("loginLinkExpiry") Date loginLinkExpiry,
+                       @Param("pendingEmailHash") String pendingEmailHash);
+
+    /**
+     * The link is used up; for a save link the fingerprint moves over to stay. Clears the persistence
+     * context: the request that opens the link loaded this row before, and the cookie written right
+     * after must see the fingerprint (open-in-view keeps one context per request).
+     */
+    @Modifying(clearAutomatically = true)
+    @Transactional
+    @Query("""
+            UPDATE UserEntity u
+               SET u.emailHash = :emailHash,
+                   u.progressSavedDate = :progressSavedDate,
+                   u.pendingEmailHash = NULL,
+                   u.loginLinkHash = NULL,
+                   u.loginLinkExpiry = NULL
+             WHERE u.userId = :userId
+            """)
+    int applyLinkUsed(@Param("userId") String userId,
+                      @Param("emailHash") String emailHash,
+                      @Param("progressSavedDate") Date progressSavedDate);
+
+    @Modifying(clearAutomatically = true)
+    @Transactional
+    @Query("UPDATE UserEntity u SET u.anonymousToken = :anonymousToken WHERE u.userId = :userId AND u.anonymousToken IS NULL")
+    int applyAnonymousTokenIfMissing(@Param("userId") String userId, @Param("anonymousToken") String anonymousToken);
 
 }

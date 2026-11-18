@@ -114,6 +114,71 @@ public class UserActivityService {
         }
     }
 
+
+    public void onProgressSaveOffered(String userId, String detail) {
+        try {
+            var userActivity = new UserActivity()
+                    .userActivityType(UserActivityType.PROGRESS_SAVE_OFFERED)
+                    .serverTime(new Date())
+                    .userId(userId)
+                    .detail(detail);
+            mongoTemplate.save(userActivity, USER_ACTIVITY);
+        } catch (Exception e) {
+            logger.warn(e.getMessage(), e);
+        }
+    }
+
+    public void onProgressFacebookStarted(String userId) {
+        try {
+            var userActivity = new UserActivity()
+                    .userActivityType(UserActivityType.PROGRESS_FACEBOOK_STARTED)
+                    .serverTime(new Date())
+                    .userId(userId);
+            mongoTemplate.save(userActivity, USER_ACTIVITY);
+        } catch (Exception e) {
+            logger.warn(e.getMessage(), e);
+        }
+    }
+
+    public void onProgressLinkSent(String userId, String detail) {
+        try {
+            var userActivity = new UserActivity()
+                    .userActivityType(UserActivityType.PROGRESS_LINK_SENT)
+                    .serverTime(new Date())
+                    .userId(userId)
+                    .detail(detail);
+            mongoTemplate.save(userActivity, USER_ACTIVITY);
+        } catch (Exception e) {
+            logger.warn(e.getMessage(), e);
+        }
+    }
+
+    public void onProgressSaved(String userId, String detail) {
+        try {
+            var userActivity = new UserActivity()
+                    .userActivityType(UserActivityType.PROGRESS_SAVED)
+                    .serverTime(new Date())
+                    .userId(userId)
+                    .detail(detail);
+            mongoTemplate.save(userActivity, USER_ACTIVITY);
+        } catch (Exception e) {
+            logger.warn(e.getMessage(), e);
+        }
+    }
+
+    public void onProgressSignIn(String userId, String detail) {
+        try {
+            var userActivity = new UserActivity()
+                    .userActivityType(UserActivityType.PROGRESS_SIGN_IN)
+                    .serverTime(new Date())
+                    .userId(userId)
+                    .detail(detail);
+            mongoTemplate.save(userActivity, USER_ACTIVITY);
+        } catch (Exception e) {
+            logger.warn(e.getMessage(), e);
+        }
+    }
+
     public List<UserActivity> loadUserActivities(Date fromDate, Date toDate) {
         Query query = new Query();
         if (fromDate != null && toDate != null) {

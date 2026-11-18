@@ -3,6 +3,7 @@ package com.btxtech.server.gameengine;
 import com.btxtech.server.service.engine.ServerInventoryService;
 import com.btxtech.server.user.UserService;
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.server.rest.CallSign;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.UseInventoryItem;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
@@ -43,6 +44,12 @@ public class ClientGameConnection {
     private Date time;
     private Date lastMessageSent;
     private Date lastMessageReceived;
+    /**
+     * When the player last did something: a command, a base, a sale, an inventory item. The two
+     * timestamps above move every second whatever the player does - the tick broadcast goes out and
+     * the client asks for the tick count - so as "idle" they said 1 s for everybody.
+     */
+    private Date lastPlayerAction;
     /** Taken once at the handshake; see ClientSystemConnection, this is the same header. */
     private String userAgent;
     private String gameSessionUuid; // TODO
@@ -110,6 +117,9 @@ public class ClientGameConnection {
             logger.warn("Read-only connection of {} sent {}, ignored", userId, packet);
             return;
         }
+        if (packet != GameConnectionPacket.TICK_COUNT_REQUEST && packet != GameConnectionPacket.SET_GAME_SESSION_UUID) {
+            lastPlayerAction = new Date();
+        }
         switch (packet) {
             case CREATE_BASE:
                 UserContext userContext = userService.getUserContextTransactional(userId);
@@ -117,7 +127,10 @@ public class ClientGameConnection {
                         userContext.getLevelId(),
                         userContext.getUnlockedItemLimit(),
                         userContext.getUserId(),
-                        userContext.getName(),
+                        // Without a name of his own a player goes by his call sign, as in the chat and
+                        // the ticker - other players see it over his units instead of nothing.
+                        userContext.getName() != null && !userContext.getName().isBlank()
+                                ? userContext.getName() : CallSign.of(userContext.getUserId()),
                         (DecimalPosition) param);
                 break;
             case FACTORY_COMMAND:
@@ -197,6 +210,10 @@ public class ClientGameConnection {
 
     public Date getLastMessageSent() {
         return lastMessageSent;
+    }
+
+    public Date getLastPlayerAction() {
+        return lastPlayerAction;
     }
 
     public Date getLastMessageReceived() {

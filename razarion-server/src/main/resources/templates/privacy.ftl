@@ -34,12 +34,13 @@
 <div class="wrap">
     <div class="lead">
         <h1>Privacy Policy</h1>
-        <p class="updated">Razarion &middot; last updated 4 September 2026</p>
+        <p class="updated">Razarion &middot; last updated 17 November 2026</p>
     </div>
 
     <p>Razarion is a free, nonprofit, open-source browser game. This page says what it stores about
         you, why, and how to have it removed. It is short because there is not much to describe: the
-        site carries no advertising trackers and no third-party analytics.</p>
+        site carries no advertising scripts, pixels or third-party analytics. What it does tell the
+        advertising platforms is described in section 5.</p>
 
     <h2>1. Who is responsible</h2>
     <p>Beat Keller, operator of Razarion (<a href="https://razarion.com">razarion.com</a>).<br>
@@ -53,7 +54,22 @@
         <li>Your password, stored only as a bcrypt hash &mdash; never in readable form</li>
         <li>Your player name, and the dates the account was created and verified</li>
     </ul>
-    <p>You can play without registering. An unregistered visit stores no account data at all.</p>
+    <p>You can play without registering. An unregistered visit stores no account data at all &mdash;
+        only the game data below, found again on your next visit through a cookie (section 4).</p>
+
+    <h3>Saving your progress &mdash; only if you choose to</h3>
+    <p>"Save progress" lets you keep your game without an account and without a password, and
+        continue it on another device:</p>
+    <ul>
+        <li><strong>By email.</strong> The address you type is used once, to send you a link. It is
+            not stored. What is stored is a fingerprint of it (a SHA-256 hash), which lets the same
+            address find your game again and cannot be turned back into the address. The link works
+            once and for 30 minutes; only a hash of it is stored either.</li>
+        <li><strong>With Facebook.</strong> Only Facebook's public profile permission is asked for,
+            and of it only the id Facebook issues for Razarion is read &mdash; no name, no email
+            address, no friends, no posts. That id, too, is stored only as a fingerprint.</li>
+    </ul>
+    <p>We cannot write to you from either fingerprint, and we do not.</p>
 
     <h3>Game data</h3>
     <p>The state of your base and your progress: level, experience, crystals, active and completed
@@ -76,7 +92,9 @@
 
     <div class="note">
         <strong>Your IP address is not stored.</strong> It is not written to the visit record and
-        not kept anywhere else. Neither is anything else that would identify you personally to us,
+        not kept anywhere else. The one exception: so that the save-progress form cannot be used to
+        flood somebody's inbox, the mails asked for from an IP address are counted in the server's
+        memory for one hour &mdash; never written to disk or a database. Neither is anything else that would identify you personally to us,
         if you have not registered.
     </div>
 
@@ -86,6 +104,9 @@
             an email address a lost password cannot be reset.</li>
         <li><strong>Game data</strong> &mdash; to run the game and let you continue where you left
             off.</li>
+        <li><strong>Reports to advertising platforms</strong> &mdash; to measure whether an ad
+            brings players who actually play, and to let the platform show it to more people like
+            them. Razarion is free and nonprofit; the ads are how new players find it.</li>
         <li><strong>Visit data</strong> &mdash; to see where visitors come from and why most of them
             leave before the game has loaded. It is read as counts, not as individual behaviour, and
             it is what tells us which parts of the game are too slow to reach.</li>
@@ -94,6 +115,9 @@
     <h2>4. Cookies and storage on your device</h2>
     <p>One session cookie, set by the web server so that a series of requests is recognised as one
         session. It expires when the browser session ends.</p>
+    <p>One more cookie, <code>raz_anon</code>: a random token that brings you back to your own game
+        when you return without an account. It lasts 30 days from your last visit, or 400 days once
+        you have saved your progress, and holds nothing but that token.</p>
     <p>Two values are kept in your browser's local storage, which &mdash; unlike the session
         cookie &mdash; survives closing the browser:</p>
     <ul>
@@ -113,11 +137,25 @@
     <ul>
         <li><strong>Hosting.</strong> The servers and databases run on Google Cloud Platform, which
             processes the data on our behalf and for no other purpose.</li>
-        <li><strong>Email delivery.</strong> Verification and password-reset messages are sent
-            through an SMTP provider, which sees the recipient address and the message.</li>
+        <li><strong>Email delivery.</strong> Verification, password-reset and save-progress messages
+            are sent through an SMTP provider, which sees the recipient address and the message.</li>
+        <li><strong>Facebook</strong>, only if you choose "Continue with Facebook": Facebook learns
+            that you logged in to Razarion, as described in the
+            <a href="https://www.facebook.com/privacy/policy" target="_blank" rel="noopener">Meta
+            Privacy Policy</a>. You can remove Razarion in your Facebook settings at any time; Facebook
+            then tells us, and we delete the stored fingerprint.</li>
         <li><strong>Advertising platforms.</strong> The campaign parameters above come from links we
-            place on X, Meta and Reddit. We read what the link carries; nothing is sent back to
-            those platforms from this site.</li>
+            place on X, Meta (Facebook, Instagram) and Reddit. <em>Only if you arrived through such
+            an ad</em>, our server reports back to that platform which steps of the game the click
+            led to &mdash; the page was opened, the game started, the first base was placed, a quest
+            was passed, a level was reached &mdash; so that the platform can show the ad to people
+            likely to play. Each report carries the click id the platform itself put into the link
+            (<code>fbclid</code>, <code>twclid</code>, <code>rdt_cid</code>), the step and its time;
+            to Meta also your browser's user-agent string. No name, no email address, no IP address
+            and nothing about your game beyond the step is sent. Which game a click id belongs to is
+            held in the server's memory only and is gone when the server restarts (the click id
+            itself is part of the visit record above). Without an ad click nothing is reported at all. What the platforms do with
+            the reports is governed by their own privacy policies.</li>
     </ul>
     <p>Your data is never sold, never traded, and never used to build an advertising profile.</p>
 
@@ -153,6 +191,8 @@
     <ul>
         <li><strong>Account and game data</strong> &mdash; until you ask for the account to be
             deleted.</li>
+        <li><strong>Game data without an account</strong> &mdash; 14 days after your last visit, unless
+            you saved your progress; then until you ask for it to be deleted.</li>
         <li><strong>Visit data</strong> &mdash; kept as long as it is useful for the traffic
             statistics it was collected for, and deleted once it is not.</li>
     </ul>

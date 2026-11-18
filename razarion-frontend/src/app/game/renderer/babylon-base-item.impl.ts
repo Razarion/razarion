@@ -99,7 +99,12 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
   private buildupCallback: ((buildup: number) => void) | null = null;
   private healthCallback: ((health: number) => void) | null = null;
   private lastHealth: number = 1.0;
-  private readonly uiTexture: AdvancedDynamicTexture;
+  /**
+   * One GUI texture for the names over all units, made when the first name is needed. It used to be
+   * one full-screen texture per unit, name or not: a screen-sized canvas each (~8 MB at 1920x1080) and
+   * one more full-screen layer blended per frame - for a label that only other players' units carry.
+   */
+  private static nameTexture: AdvancedDynamicTexture | null = null;
   private buildupEffect: BabylonBuildupEffect | null = null;
   private cleanedUp = false;
   private isExploding = false;
@@ -157,8 +162,6 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
     this.updateItemCursor();
 
     this.utilLayer = new UtilityLayerRenderer(rendererService.getScene());
-    this.uiTexture = AdvancedDynamicTexture.CreateFullscreenUI(`Base item ui ${baseItemType.getInternalName()}`);
-    this.uiTexture.disablePicking = true; // Prevent mouse down on terrain cursor change
 
     if (baseItemType.getPhysicalAreaConfig().fulfilledMovable()) {
       rendererService.addInterpolationListener(this);
@@ -386,10 +389,10 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
     this.nameVisibilitySubscription?.unsubscribe();
     this.nameVisibilitySubscription = null;
     if (this.nameBlock) {
-      this.uiTexture.removeControl(this.nameBlock)
+      BabylonBaseItemImpl.nameTexture?.removeControl(this.nameBlock);
+      this.nameBlock.dispose();
       this.nameBlock = null;
     }
-    this.uiTexture.dispose();
   }
 
   getBaseItemType(): BaseItemType {
@@ -1493,8 +1496,13 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
     }
   }
 
+  /**
+   * The owner's name over the unit - for other players' units only. Over your own it said your own
+   * name thirty times; over somebody else's it says that this unit is a person's, and whose. Every
+   * human base has a name since the anonymous ones carry their call sign (2026-11-17).
+   */
   private setupName(userName: string) {
-    if (!userName) {
+    if (!userName || GwtHelper.gwtIssueStringEnum(this.diplomacy, Diplomacy) === Diplomacy.OWN) {
       return;
     }
     this.nameBlock = new TextBlock();
@@ -1503,7 +1511,7 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
     this.nameBlock.fontSize = 18;
     this.nameBlock.outlineWidth = 5;
     this.nameBlock.outlineColor = "black";
-    this.uiTexture.addControl(this.nameBlock);
+    BabylonBaseItemImpl.unitNameTexture(this.rendererService.getScene()).addControl(this.nameBlock);
     this.nameBlock.linkWithMesh(this.getContainer());
     this.nameBlock.linkOffsetY = -62 - this.baseItemType.getPhysicalAreaConfig().getRadius() * 2;
     // Honour the user's "Show unit names" preference live.
@@ -1513,6 +1521,18 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
           this.nameBlock.isVisible = visible;
         }
       });
+  }
+
+  private static unitNameTexture(scene: Scene): AdvancedDynamicTexture {
+    const existing = BabylonBaseItemImpl.nameTexture;
+    if (existing && existing.getScene() === scene) {
+      return existing;
+    }
+    existing?.dispose();
+    const texture = AdvancedDynamicTexture.CreateFullscreenUI('Unit names', true, scene);
+    texture.disablePicking = true; // Prevent mouse down on terrain cursor change
+    BabylonBaseItemImpl.nameTexture = texture;
+    return texture;
   }
 
   static interpolateAngleRadians(startAngle: number, endAngle: number, t: number): number {

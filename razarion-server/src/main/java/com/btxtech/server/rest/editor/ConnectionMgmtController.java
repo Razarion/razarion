@@ -80,7 +80,8 @@ public class ConnectionMgmtController {
             if (gameConnection != null) {
                 info.gameConnectionOpened(gameConnection.getTime())
                         .gameLastMessageSent(gameConnection.getLastMessageSent())
-                        .gameLastMessageReceived(gameConnection.getLastMessageReceived());
+                        .gameLastMessageReceived(gameConnection.getLastMessageReceived())
+                        .gameLastPlayerAction(gameConnection.getLastPlayerAction());
                 // The system socket opens first and is the one to believe; the game socket answers
                 // for the rows where it is the only one left.
                 if (info.getUserAgent() == null) {

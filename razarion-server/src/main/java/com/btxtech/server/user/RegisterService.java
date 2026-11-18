@@ -35,6 +35,37 @@ public class RegisterService {
      * registration is written, so there is nothing persistent to hand over yet - see
      * {@link com.btxtech.server.user.UserService#registerByEmail} for why that order matters.
      */
+    /**
+     * The mail of "save your progress": one link that either saves the player's progress under this
+     * address or, when the address already holds a saved player, continues that player on the device
+     * that opens it. The address is used for this one mail and is not kept anywhere.
+     */
+    public void sendProgressLink(String email, String link, boolean signIn) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED, StandardCharsets.UTF_8.name());
+            helper.setFrom(new InternetAddress(NO_REPLY_EMAIL, PERSONAL_NAME));
+            helper.setTo(email);
+            helper.setSubject(signIn ? "Continue your Razarion game" : "Save your Razarion progress");
+
+            Map<String, Object> model = new HashMap<>();
+            model.put("greeting", "Hello,");
+            model.put("main", signIn
+                    ? "Open the link below to continue your saved game on this device:"
+                    : "Open the link below to save your progress. Afterwards you can continue on any device with this address:");
+            model.put("link", link);
+            model.put("closing", "The link works once and for " + ProgressSaveService.LINK_VALID_MINUTES
+                    + " minutes. If you did not ask for it, just ignore this mail. We do not keep your address and will not write to you.");
+            model.put("razarionTeam", "The Razarion Team");
+
+            Template template = freemarkerConfig.getTemplate("registration-confirmation.ftl");
+            helper.setText(FreeMarkerTemplateUtils.processTemplateIntoString(template, model), true);
+            mailSender.send(message);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to send the progress link", e);
+        }
+    }
+
     public void sendEmailVerifyEmail(String email, String verificationId) {
         try {
             MimeMessage message = mailSender.createMimeMessage();

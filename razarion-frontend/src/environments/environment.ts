@@ -5,6 +5,5 @@
 
 export const environment = {
   production: false,
-  facebookAppId: '321838644575219',
   gwtMock: false
 };

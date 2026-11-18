@@ -1,7 +1,6 @@
 import {Injectable} from '@angular/core';
 import {
   HttpClient as HttpClientAdapter,
-  RegisterResult,
   RegisterState,
   RestResponse,
   UserControllerClient
@@ -147,14 +146,6 @@ export class UserService {
   logout() {
     localStorage.removeItem("app.token");
     localStorage.removeItem("app.roles");
-  }
-
-  async register(email: string, password: string): Promise<RegisterResult> {
-    const result = await this.userControllerClient.registerByEmail({email, password});
-    if (result === RegisterResult.OK) {
-      this.registerState = RegisterState.EMAIL_UNVERIFIED;
-    }
-    return result;
   }
 
   async deleteUser(): RestResponse<void> {

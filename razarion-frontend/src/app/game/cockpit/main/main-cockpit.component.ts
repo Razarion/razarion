@@ -13,13 +13,14 @@ import {LoginComponent} from '../../../auth/login/login.component';
 import {UserService} from '../../../auth/user.service';
 import {FirstInteractionTrackerService} from '../../tracking/first-interaction-tracker.service';
 import {UserComponent} from '../../../auth/user/user.component';
-import {RegisterComponent} from '../../../auth/register/register.component';
 import {CockpitDisplayService} from '../cockpit-display.service';
 import {SetNameComponent} from '../../../auth/set-name/set-name.component';
 import {SettingsComponent} from '../settings/settings.component';
 import {TechTreeComponent} from '../techtree/tech-tree.component';
 import {GwtAngularService} from '../../../gwtangular/GwtAngularService';
 import {CompactLayoutService} from '../compact-layout.service';
+import {SaveProgressComponent} from '../../progress/save-progress.component';
+import {ProgressSaveService} from '../../progress/progress-save.service';
 
 
 @Component({
@@ -33,10 +34,10 @@ import {CompactLayoutService} from '../compact-layout.service';
     Dialog,
     LoginComponent,
     UserComponent,
-    RegisterComponent,
     SetNameComponent,
     SettingsComponent,
-    TechTreeComponent
+    TechTreeComponent,
+    SaveProgressComponent
   ],
   styleUrls: ['main-cockpit.component.scss']
 })
@@ -113,7 +114,8 @@ export class MainCockpitComponent implements MainCockpit {
               private gwtAngularService: GwtAngularService,
               public compactLayout: CompactLayoutService,
               public userService: UserService,
-              private firstInteractionTrackerService: FirstInteractionTrackerService) {
+              private firstInteractionTrackerService: FirstInteractionTrackerService,
+              public progressSaveService: ProgressSaveService) {
   }
 
   show(): void {
@@ -200,6 +202,7 @@ export class MainCockpitComponent implements MainCockpit {
     this.zone.run(() => {
       this.levelNumber = levelNumber;
       this.cockpitDisplayService.currentLevelNumber = levelNumber;
+      this.progressSaveService.onLevel(levelNumber);
     });
   }
 

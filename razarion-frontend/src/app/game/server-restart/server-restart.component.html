@@ -8,14 +8,14 @@
           <span class="restart-warning">
             Unregistered players lose their base and have to start over from scratch.
           </span>
-          <span>Register now to keep your base and continue where you left off.</span>
+          <span>Save your progress to continue where you left off.</span>
         } @else {
           Your game continues right where you left off.
         }
       </div>
     </div>
     @if (losesBase) {
-      <p-button label="Register now" size="small" (onClick)="onRegisterClicked()"></p-button>
+      <p-button label="Save progress" size="small" (onClick)="onRegisterClicked()"></p-button>
     }
   </div>
 }

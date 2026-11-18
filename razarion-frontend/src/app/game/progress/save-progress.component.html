@@ -1,0 +1,34 @@
+<div class="flex flex-col gap-2 bg-surface-800 p-3 rounded-xl border border-surface-500 w-md max-w-full">
+  @if (sentTo) {
+    <span>We sent a link to <b>{{ sentTo }}</b>. Open it within 30 minutes - on this device or any other.</span>
+    <span class="text-sm text-surface-400">Nothing there? Check the spam folder.</span>
+  } @else {
+    @if (progressSaveService.saved) {
+      <span><i class="pi pi-check-circle text-green-400"></i> Your progress is saved.</span>
+      <span class="text-sm text-surface-400">To continue on another device, use the same email or Facebook login there.</span>
+    } @else {
+      <span>Keep your base, level and quests - and continue on any device.</span>
+      <span class="text-sm text-surface-400">Already saved on another device? Use the same login to continue here.</span>
+    }
+    @if (progressSaveService.facebook) {
+      <p-button label="Continue with Facebook" icon="pi pi-facebook" styleClass="p-button-sm w-full facebook-button"
+                (onClick)="progressSaveService.continueWithFacebook()"></p-button>
+      <span class="text-xs text-surface-400 text-center">or with your email</span>
+    }
+    <form class="flex flex-col gap-2" (ngSubmit)="send()">
+      <input placeholder="Email"
+             type="email"
+             name="email"
+             autocomplete="email"
+             inputmode="email"
+             class="text-base text-color text-primary bg-primary-contrast p-2 border border-solid border-surface rounded-border appearance-none outline-0 focus:border-primary w-full"
+             [(ngModel)]="email" required>
+      @if (error) {
+        <span class="text-red-400 text-sm">{{ error }}</span>
+      }
+      <p-button type="submit" label="Send me a link" [loading]="sending" styleClass="p-button-sm w-full"></p-button>
+    </form>
+    <span class="text-xs text-surface-400">No password. We keep only a fingerprint of your address or Facebook account - no name, no address, and we will not write to you.</span>
+    <a class="text-xs text-surface-400 underline cursor-pointer self-end" (click)="passwordLogin()">Sign in with password</a>
+  }
+</div>

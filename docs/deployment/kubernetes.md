@@ -191,6 +191,14 @@ kubectl create secret generic grafana-loki-secrets \
 # The account razarion-recorder logs in with (RAZARION_RECORDER_EMAIL, the RECORDER role)
 kubectl create secret generic recorder-secrets \
   --from-literal=email=recorder@example.com
+
+# "Continue with Facebook" in "Save progress" (optional - without it the button is not shown).
+# App id and secret of the Meta app with the Facebook Login product. In the app settings:
+#   Valid OAuth Redirect URI:  https://www.razarion.com/rest/progress/facebook/callback
+#   Data Deletion callback:    https://www.razarion.com/rest/progress/facebook/data-deletion
+kubectl create secret generic facebook-login-secrets \
+  --from-literal=app-id=<app id> \
+  --from-literal=app-secret=<app secret>
 ```
 
 ### Update Secrets

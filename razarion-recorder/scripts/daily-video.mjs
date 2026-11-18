@@ -22,7 +22,7 @@ const logFile = path.join(stateDir, 'daily-video.log');
 const social = path.resolve(recorder, '../../razarion2/razarion-social');
 const ffmpeg = path.join(social, 'pipeline/node_modules/ffmpeg-static/ffmpeg.exe');
 const BASE = 'http://127.0.0.1:4712';
-const MINUTES = 1440, SPEED = 64, MIN_TAPE_HOURS = 23.5;
+const MINUTES = 1440, SPEED = 64, MIN_TAPE_HOURS = 23.5, MAX_WAIT_HOURS = 6;
 const dry = process.argv.includes('--dry');
 
 mkdirSync(videoDir, { recursive: true });
@@ -53,14 +53,23 @@ function dateRange(from, to) {
 }
 
 try {
-  const status = await (await fetch(`${BASE}/api/status`)).json();
-  const oldest = status.tape?.held?.oldest;
-  const now = Date.now();
-  const hours = oldest ? (now - oldest) / 3600000 : 0;
-  if (hours < MIN_TAPE_HOURS) {
-    log(`skip: tape holds only ${hours.toFixed(1)} h (recorder restarted?)`);
-    process.exit(0);
+  // The tape is in memory only: after a restart of the recorder (or the PC) it starts empty. Up to
+  // MAX_WAIT_HOURS short of a full day, wait for it rather than miss the day - the video comes later.
+  let hours = 0;
+  for (;;) {
+    const status = await (await fetch(`${BASE}/api/status`)).json();
+    const oldest = status.tape?.held?.oldest;
+    hours = oldest ? (Date.now() - oldest) / 3600000 : 0;
+    if (hours >= MIN_TAPE_HOURS) break;
+    if (MIN_TAPE_HOURS - hours > MAX_WAIT_HOURS) {
+      log(`skip: tape holds only ${hours.toFixed(1)} h (recorder restarted?)`);
+      process.exit(0);
+    }
+    const waitMs = (MIN_TAPE_HOURS - hours) * 3600000 + 60000;
+    log(`wait: tape holds ${hours.toFixed(1)} h, rendering in ${Math.round(waitMs / 60000)} min`);
+    await new Promise((r) => setTimeout(r, waitMs));
   }
+  const now = Date.now();
 
   const today = dayKey(now);
   const ledger = existsSync(ledgerFile) ? JSON.parse(readFileSync(ledgerFile, 'utf8')) : [];

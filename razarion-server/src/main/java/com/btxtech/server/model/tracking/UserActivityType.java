@@ -12,5 +12,15 @@ public enum UserActivityType {
      * this row the two halves cannot be joined: "how many of the players who tabbed away while
      * loading never placed their base" has no answer.
      */
-    GAME_SESSION_STARTED;
+    GAME_SESSION_STARTED,
+    /** "Save your progress" was put in front of the player; detail says where (e.g. LEVEL_9, MENU). */
+    PROGRESS_SAVE_OFFERED,
+    /** A save or sign-in link was mailed; detail SAVE, RESAVE or SIGN_IN. */
+    PROGRESS_LINK_SENT,
+    /** The player went off to Facebook from "Save progress". */
+    PROGRESS_FACEBOOK_STARTED,
+    /** Progress saved; detail EMAIL (link opened) or FACEBOOK. */
+    PROGRESS_SAVED,
+    /** A saved player continues in another browser; detail EMAIL or FACEBOOK. */
+    PROGRESS_SIGN_IN;
 }

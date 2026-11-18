@@ -102,6 +102,11 @@ public class UserService implements UserDetailsService {
      */
     public static final String ANONYMOUS_COOKIE = "raz_anon";
     private static final Duration ANONYMOUS_COOKIE_MAX_AGE = Duration.ofDays(30);
+    /**
+     * For a player who saved his progress the cookie is the account, so it lives as long as a
+     * browser lets one live (Chrome caps at 400 days). It is renewed on every visit either way.
+     */
+    private static final Duration SAVED_PROGRESS_COOKIE_MAX_AGE = Duration.ofDays(400);
     private static final SecureRandom SECURE_RANDOM = new SecureRandom();
     private final Logger logger = LoggerFactory.getLogger(UserService.class);
     private final Duration checkIntervalRegisteredUser = Duration.ofMinutes(30);
@@ -393,18 +398,40 @@ public class UserService implements UserDetailsService {
         if (response == null || response.isCommitted()) {
             return;
         }
-        String token = userRepository.findByUserId(userId).map(UserEntity::getAnonymousToken).orElse(null);
+        UserEntity userEntity = userRepository.findByUserId(userId).orElse(null);
+        String token = userEntity != null ? userEntity.getAnonymousToken() : null;
         if (token == null) {
             return;
         }
+        Duration maxAge = userEntity.getProgressSavedDate() != null ? SAVED_PROGRESS_COOKIE_MAX_AGE : ANONYMOUS_COOKIE_MAX_AGE;
         response.addHeader(HttpHeaders.SET_COOKIE, ResponseCookie.from(ANONYMOUS_COOKIE, token)
                 .httpOnly(true)
                 .secure(attr.getRequest().isSecure())
                 .sameSite("Lax")
                 .path("/")
-                .maxAge(ANONYMOUS_COOKIE_MAX_AGE)
+                .maxAge(maxAge)
                 .build()
                 .toString());
+    }
+
+    /**
+     * Makes this browser the given unregistered player from the next request on: the http session
+     * points at him and the cookie carries his token - what opening a save or sign-in link does,
+     * see {@link ProgressSaveService#useLink}. Whoever this session was before stays behind and is
+     * cleaned up like any player who left.
+     */
+    @Transactional
+    public void adoptPlayer(String userId) {
+        ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        if (attr == null) {
+            return;
+        }
+        userRepository.applyAnonymousTokenIfMissing(userId, newAnonymousToken());
+        String httpSessionId = attr.getRequest().getSession(true).getId();
+        synchronized (anonymousCreationLocks[Math.floorMod(httpSessionId.hashCode(), anonymousCreationLocks.length)]) {
+            anonymousMap.put(httpSessionId, userId);
+        }
+        writeAnonymousCookie(attr, userId);
     }
 
     /**
@@ -1158,7 +1185,7 @@ public class UserService implements UserDetailsService {
         // timestamp to null, so anyone currently playing is out of both queries by construction.
         removeBasesOfRetainedUsers(cutoff);
         for (UserEntity userEntity : userRepository.findInactiveForGood(cutoff, now.minusDays(UNREGISTERED_RETENTION_DAYS))) {
-            if (userEntity.createRegisterState() != UserContext.RegisterState.UNREGISTERED) {
+            if (userEntity.createRegisterState() != UserContext.RegisterState.UNREGISTERED || userEntity.getProgressSavedDate() != null) {
                 continue;
             }
             logger.info("Removing unregistered user disconnected since {}: {}",

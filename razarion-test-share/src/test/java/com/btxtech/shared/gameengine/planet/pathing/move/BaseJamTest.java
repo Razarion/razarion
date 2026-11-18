@@ -111,6 +111,38 @@ public class BaseJamTest extends ScenarioBaseTest {
         Assert.assertNotEquals(rallyPoint, factory.getSyncFactory().getRallyPoint());
     }
 
+    /**
+     * Each unit off the line pushes the one waiting on the rally point aside. Every waiting unit
+     * stands exactly on the rally point, so each was sent to the same spot: from the third Viper on
+     * they drove onto each other (PROD, 2026-11-17).
+     */
+    @Test
+    public void unitsOffTheLineDoNotStack() {
+        PlayerBaseFull playerBase = createBase();
+        SyncBaseItem factory = spawn(FallbackConfig.FACTORY_ITEM_TYPE_ID, FACTORY, playerBase);
+        int count = 6;
+        java.util.List<SyncBaseItem> units = new java.util.ArrayList<>();
+        for (int i = 0; i < count; i++) {
+            getCommandService().fabricate(factory, getBaseItemType(FallbackConfig.ATTACKER_ITEM_TYPE_ID));
+            tickPlanetServiceBaseServiceActive();
+        }
+        for (int i = 0; i < 300; i++) {
+            tickPlanetService();
+        }
+        units.addAll(playerBase.findItemsOfType(FallbackConfig.ATTACKER_ITEM_TYPE_ID));
+        Assert.assertEquals("units built", count, units.size());
+        for (int a = 0; a < units.size(); a++) {
+            for (int b = a + 1; b < units.size(); b++) {
+                SyncBaseItem ua = units.get(a), ub = units.get(b);
+                double footprint = ua.getAbstractSyncPhysical().getRadius() + ub.getAbstractSyncPhysical().getRadius();
+                double distance = ua.getAbstractSyncPhysical().getPosition().getDistance(ub.getAbstractSyncPhysical().getPosition());
+                Assert.assertTrue("units " + a + " and " + b + " " + distance + " apart, footprint " + footprint
+                        + " at " + ua.getAbstractSyncPhysical().getPosition() + " / " + ub.getAbstractSyncPhysical().getPosition(),
+                        distance >= footprint * 0.9);
+            }
+        }
+    }
+
     private void assertArrives(DecimalPosition start, DecimalPosition destination) {
         assertArrives(start, destination, 0, null);
     }

@@ -3,6 +3,7 @@ import {ButtonModule} from 'primeng/button';
 import {ServerRestartPresenter} from '../../gwtangular/GwtAngularFacade';
 import {CockpitDisplayService} from '../cockpit/cockpit-display.service';
 import {UserService} from '../../auth/user.service';
+import {ProgressSaveService} from '../progress/progress-save.service';
 import {RemoteLogging} from '../../backend/remote-logging';
 
 /**
@@ -45,7 +46,8 @@ export class ServerRestartComponent implements ServerRestartPresenter, OnDestroy
 
   constructor(private zone: NgZone,
               private cockpitDisplayService: CockpitDisplayService,
-              private userService: UserService) {
+              private userService: UserService,
+              private progressSaveService: ProgressSaveService) {
   }
 
   onServerRestartAnnounced(seconds: number): void {
@@ -110,7 +112,7 @@ export class ServerRestartComponent implements ServerRestartPresenter, OnDestroy
   }
 
   onRegisterClicked(): void {
-    this.cockpitDisplayService.showRegisterDialog = true;
+    this.progressSaveService.open('SERVER_RESTART');
   }
 
   private startCountdown(): void {
