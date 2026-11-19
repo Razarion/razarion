@@ -66,6 +66,8 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
   private static readonly HINT_BELOW_OFFSET_PX = 138;
   /** Below this the bubble would hang off the top of the screen, so it moves under the building. */
   private static readonly HINT_ABOVE_MIN_Y_PX = 200;
+  /** Space kept between the bubble and the left or right edge of the screen. */
+  private static readonly HINT_SIDE_MARGIN_PX = 8;
   /**
    * How long the placer may stand on a camera-computed position before that is reported. Three
    * seconds is well past the point where a tile under the camera should have been built, and short
@@ -210,7 +212,17 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
 
     this.uiTexture = AdvancedDynamicTexture.CreateFullscreenUI("Base item placer");
     this.uiTexture.disablePicking = true; // Prevent mouse down on terrain cursor change
+    if (this.uiTexture.layer) {
+      // After the scene's post-processing, not under it: its tone mapping turned the amber of the
+      // button into mustard and the white text into grey - the very colours meant to stand out.
+      this.uiTexture.layer.applyPostProcess = false;
+    }
+    // Redraw it whole: the gesture hands reach out of the boxes they sit in, and redrawing only the
+    // rectangle of what changed painted the pulsing button over the fingertip tapping it.
+    this.uiTexture.useInvalidateRectOptimization = false;
     this.pressMouseVisualization = new PressMouseVisualization(positionValid, this.rendererService);
+    // The start base is deployed; everything after it is built.
+    this.pressMouseVisualization.usePlacerStyle(this.buildPlacer ? "BUILD HERE" : "DEPLOY HERE");
     this.uiTexture.addControl(this.pressMouseVisualization.getContainer());
     this.pressMouseVisualization.getContainer().linkWithMesh(this.disc!);
     this.pressMouseVisualization.getContainer().linkOffsetY = BaseItemPlacerPresenterImpl.HINT_ABOVE_OFFSET_PX;
@@ -290,6 +302,7 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
               && this.startDragOffset()) {
               this.touchDragPointerId = event.pointerId;
             }
+            this.pressMouseVisualization?.setUserDragging(this.touchDragPointerId !== null);
             break;
           }
           this.place(baseItemPlacer);
@@ -301,6 +314,7 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
           }
           const wasDragging = this.touchDragPointerId === event.pointerId;
           this.touchDragPointerId = null;
+          this.pressMouseVisualization?.setUserDragging(false);
           const downScreen = this.touchDownScreen;
           this.touchDownScreen = null;
           if (wasDragging) {
@@ -517,6 +531,10 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
       // The button can only be tapped once the texture picks at all; picking is off for the mouse
       // because it fights with the terrain cursor.
       this.uiTexture.disablePicking = false;
+      // On the building itself, below the panel - see createDragHint.
+      const dragHint = this.pressMouseVisualization.createDragHint();
+      this.uiTexture.addControl(dragHint);
+      dragHint.linkWithMesh(this.disc!);
     }
     // The building also travels across the screen when the camera moves under it, and then nothing
     // calls setPosition - so the bubble is kept on screen from the render loop as well.
@@ -588,6 +606,11 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
    * Keep the hint bubble on screen. It hangs above the building, which is fine until the building
    * is dragged to the top edge - and on touch the bubble carries the deploy button, so letting it
    * leave the screen would leave the player unable to build at all.
+   * <p>
+   * Sideways too. The factory placer of quest 358 opens beside the builder, right of the screen
+   * centre, and on a phone held upright (412px) the 300px bubble centred on it reached 40px past the
+   * right edge: "Drag the building or tap a spo", and only half of the ✕. 2026-11-19, among the
+   * touch players who opened that placer and never built, 45 % had pressed ✕ (passers: 11 %).
    */
   private updateHintSide(): void {
     if (!this.pressMouseVisualization?.isTouchMode()) {
@@ -601,6 +624,30 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
     container.linkOffsetY = ghost.y < BaseItemPlacerPresenterImpl.HINT_ABOVE_MIN_Y_PX
       ? BaseItemPlacerPresenterImpl.HINT_BELOW_OFFSET_PX
       : BaseItemPlacerPresenterImpl.HINT_ABOVE_OFFSET_PX;
+    container.linkOffsetX = BaseItemPlacerPresenterImpl.hintOffsetX(ghost.x, container.widthInPixels,
+      this.canvasWidth());
+  }
+
+  /**
+   * How far to shift a bubble of this width sideways from the building at `ghostX` so it stays
+   * inside a screen `screenWidth` wide. Centred on the screen when it is wider than the screen.
+   */
+  static hintOffsetX(ghostX: number, bubbleWidth: number, screenWidth: number): number {
+    const margin = BaseItemPlacerPresenterImpl.HINT_SIDE_MARGIN_PX;
+    if (!(bubbleWidth > 0) || !(screenWidth > 0)) {
+      return 0;
+    }
+    const half = bubbleWidth / 2;
+    const min = half + margin;
+    const max = screenWidth - half - margin;
+    const center = min > max ? screenWidth / 2 : Math.min(Math.max(ghostX, min), max);
+    return Math.round(center - ghostX);
+  }
+
+  /** The canvas width in the same pixels as {@link projectGhost}. */
+  private canvasWidth(): number {
+    const engine = this.rendererService.getScene().getEngine();
+    return engine.getRenderWidth() * engine.getHardwareScalingLevel();
   }
 
   private setupPickedPoint(): Vector3 | null {
@@ -683,6 +730,7 @@ export class BaseItemPlacerPresenterImpl implements BaseItemPlacerPresenter {
     }
     this.renderObjects = [];
     this.relativeOffsets = [];
+    this.pressMouseVisualization?.dispose();
     if (this.uiTexture) {
       this.uiTexture.dispose();
       this.uiTexture = null;

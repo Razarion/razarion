@@ -716,3 +716,33 @@ describe('BaseItemPlacerPresenterImpl touch handling', () => {
     });
   });
 });
+
+/**
+ * The hint bubble carries DEPLOY and ✕ on a phone. The factory placer opens right of the screen
+ * centre, and on a 412px phone the bubble used to reach past the right edge.
+ */
+describe('BaseItemPlacerPresenterImpl hint bubble sideways', () => {
+  const offset = BaseItemPlacerPresenterImpl.hintOffsetX;
+
+  it('stays centred on a building with room on both sides', () => {
+    expect(offset(206, 300, 412)).toBe(0);
+  });
+
+  it('moves left when the building is near the right edge', () => {
+    // Centre 303 of 412: the right edge would be at 453. It ends 8px inside the screen.
+    expect(303 + offset(303, 300, 412) + 150).toBe(404);
+  });
+
+  it('moves right when the building is near the left edge', () => {
+    expect(40 + offset(40, 300, 412) - 150).toBe(8);
+  });
+
+  it('centres on the screen when the bubble is wider than the screen', () => {
+    expect(100 + offset(100, 300, 280)).toBe(140);
+  });
+
+  it('leaves the bubble alone before anything has a size', () => {
+    expect(offset(100, 0, 412)).toBe(0);
+    expect(offset(100, 300, 0)).toBe(0);
+  });
+});

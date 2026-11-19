@@ -163,6 +163,9 @@ export type InteractionKind =
   /** The player moved the camera during such a follow and so ended it, `kind=<order> after=0-2|3-9|10+`
    *  seconds. Taken over at once, again and again, would say the follow is in the way. */
   | 'ORDER_FOLLOW_TAKEOVER'
+  /** After following a harvester out of the factory, the camera flew back to the selection - the
+   *  factory the next quest's button is on, `kind=autoHarvest` (2026-11-19). Not a player action. */
+  | 'ORDER_FOLLOW_RETURN'
   /** The "sell everything there" button of a region-clearing quest - the phone's quest line or the quest panel, `count=<items> from=strip|panel` (2026-10-14; until 2026-11-15 also `from=card`). */
   | 'CLEAR_REGION_SOLD'
   /** The card offering that sale was closed without selling (until 2026-11-15, when the card gave way to the automatic sale). */

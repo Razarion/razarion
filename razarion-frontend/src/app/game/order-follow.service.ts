@@ -27,6 +27,10 @@ interface Follow {
   /** A harvester the server sent out on its own, see watchAutoHarvest. */
   auto: boolean;
   harvestStartedAt: number | null;
+  /** The camera went along: this follow moved it, not the player. */
+  cameraMoved: boolean;
+  /** The player moved the camera during the follow. */
+  takenOver: boolean;
 }
 
 /**
@@ -46,6 +50,17 @@ interface Follow {
  * server), without an order here. The camera goes along with that too, so the player sees what the
  * new unit does: from when it drives off until it has harvested for a moment. The client learns the
  * crystal only once the harvester works on it, so on the way the camera follows the harvester alone.
+ * <p>
+ * When that is over, the camera goes back to what the player has selected, if the follow took it
+ * away from there: the player made the harvester in the factory and still has the factory selected,
+ * and the next quest (364, build a Viper) is a button on that factory. Left at the harvester, the
+ * player pressed a button for a factory they could not see, and the Viper rolled out off screen
+ * (2026-11-19). This only puts back what the follow itself moved; a player who moved the camera,
+ * a new order, or nothing selected leaves it where it is.
+ * <p>
+ * The auto harvest and the way back move the camera only while guided() - a tip is up, or was until
+ * the step to the next quest - and the order follow only while a tip is up. Tips that later only
+ * offer help rather than guide must keep both shut, so the camera stays the player's.
  */
 @Injectable({
   providedIn: 'root'
@@ -70,7 +85,17 @@ export class OrderFollowService {
   /** Harvester and crystal stay on screen this long once the harvesting has started. */
   private static readonly AUTO_HARVEST_LINGER_MILLIS = 2000;
   private static readonly AUTO_MAX_MILLIS = 30000;
+  /**
+   * The moment between two quests, when one has passed and the next has no tip yet, still counts as
+   * guided. 359 passes as the harvester leaves the factory and 363 as it starts harvesting: exactly
+   * when the harvester is first seen and when its follow ends. Taken as the end of the guidance, the
+   * new harvester counted as one that was there before, and the way back to the factory was dropped
+   * (phone, 2026-11-19).
+   */
+  private static readonly QUEST_GAP_MILLIS = 5000;
   private follow: Follow | null = null;
+  /** When a tip was last seen up, see guided(). */
+  private lastTipActiveAt = Number.NEGATIVE_INFINITY;
   private timer: ReturnType<typeof setInterval> | null = null;
   /** Own harvesters already seen; null until the first look while a tip is up. */
   private knownHarvesterIds: Set<number> | null = null;
@@ -122,7 +147,9 @@ export class OrderFollowService {
       point: this.framePoint(units, target),
       stop: null,
       auto: false,
-      harvestStartedAt: null
+      harvestStartedAt: null,
+      cameraMoved: false,
+      takenOver: false
     };
     this.follow = follow;
     this.startCamera(follow);
@@ -134,7 +161,7 @@ export class OrderFollowService {
    * server sent them to a crystal. Only while a tip is up, like the order follow.
    */
   private watchAutoHarvest(): void {
-    if (!this.tipService.isActive()) {
+    if (!this.guided()) {
       this.knownHarvesterIds = null;
       this.pendingHarvesters.clear();
       this.orderedUnitIds.clear();
@@ -183,17 +210,34 @@ export class OrderFollowService {
       // The camera only comes along once the harvester or its crystal leaves the picture, see pollAuto.
       stop: null,
       auto: true,
-      harvestStartedAt: null
+      harvestStartedAt: null,
+      cameraMoved: false,
+      takenOver: false
     };
     this.follow = follow;
     this.startPolling(follow);
   }
 
+  /**
+   * A tip is up, or was until a moment ago: the step from one quest to the next, see
+   * QUEST_GAP_MILLIS. The one gate for the camera moves that are not the player's own order.
+   */
+  private guided(): boolean {
+    const now = performance.now();
+    if (this.tipService.isActive()) {
+      this.lastTipActiveAt = now;
+      return true;
+    }
+    return now - this.lastTipActiveAt < OrderFollowService.QUEST_GAP_MILLIS;
+  }
+
   private startCamera(follow: Follow): void {
     const kind = follow.auto ? 'autoHarvest' : follow.order.kind;
     this.tracker.report('ORDER_FOLLOW', 'kind=' + kind);
+    follow.cameraMoved = true;
     follow.stop = this.renderService.followViewFieldCenter(() => follow.point, () => {
       follow.stop = null;
+      follow.takenOver = true;
       const seconds = Math.round((performance.now() - follow.startedAt) / 1000);
       this.tracker.report('ORDER_FOLLOW_TAKEOVER', `kind=${kind} after=${seconds < 3 ? '0-2' : seconds < 10 ? '3-9' : '10+'}`);
       this.end(follow);
@@ -307,6 +351,29 @@ export class OrderFollowService {
     }
     current.stop?.();
     current.stop = null;
+    // Ended by itself, not by a new order (end(null)) or by the player taking the camera.
+    if (follow !== null && current.auto && current.cameraMoved && !current.takenOver) {
+      this.returnToSelection(current);
+    }
+  }
+
+  /** Back to the selected own units, when they are out of the picture. See the class comment. */
+  private returnToSelection(follow: Follow): void {
+    if (!this.guided()) {
+      return;
+    }
+    const followed = new Set(follow.order.unitIds);
+    const selected = this.selectionService.getSelectedOwnItemIds().filter(id => !followed.has(id));
+    if (selected.length === 0) {
+      return;
+    }
+    const items = this.safeItemStates(-1);
+    const point = items ? this.centroid(items, selected) : null;
+    if (!point || this.inView(point)) {
+      return;
+    }
+    this.tracker.report('ORDER_FOLLOW_RETURN', 'kind=autoHarvest');
+    this.renderService.flyViewFieldCenter(point.x, point.y);
   }
 
   /**

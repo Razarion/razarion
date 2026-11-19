@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="144" height="144" viewBox="-4 -4 72 72">
+  <!-- A pointing hand: index finger up, the other three curled. Drawn twice, outlined then filled,
+       so only the silhouette carries the dark edge. Tip of the index finger at (24, 4) before rotation. -->
+  <g transform="rotate(-30 32 32)">
+    <g fill="#1d1300" stroke="#1d1300" stroke-width="5" stroke-linejoin="round"><rect x="18" y="4" width="12" height="34" rx="6"/><rect x="29" y="22" width="9" height="16" rx="4.5"/><rect x="37" y="24" width="8" height="15" rx="4"/><rect x="44" y="27" width="7" height="13" rx="3.5"/><rect x="14" y="30" width="37" height="28" rx="11"/><rect x="6" y="33" width="10" height="20" rx="5" transform="rotate(-28 11 43)"/></g>
+    <g fill="#ffffff"><rect x="18" y="4" width="12" height="34" rx="6"/><rect x="29" y="22" width="9" height="16" rx="4.5"/><rect x="37" y="24" width="8" height="15" rx="4"/><rect x="44" y="27" width="7" height="13" rx="3.5"/><rect x="14" y="30" width="37" height="28" rx="11"/><rect x="6" y="33" width="10" height="20" rx="5" transform="rotate(-28 11 43)"/></g>
+    <g fill="none" stroke="#b9c3c8" stroke-width="1.4" stroke-linecap="round">
+      <path d="M30 30 v6"/><path d="M38 31 v6"/><path d="M45 33 v5"/><path d="M21 12 h6"/>
+    </g>
+  </g>
+</svg>

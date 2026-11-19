@@ -4,6 +4,7 @@ import {Rectangle} from '@babylonjs/gui/2D/controls/rectangle';
 import {StackPanel} from '@babylonjs/gui/2D/controls/stackPanel';
 import {TextBlock} from '@babylonjs/gui/2D/controls/textBlock';
 import {Image} from '@babylonjs/gui/2D/controls/image';
+import {Ellipse} from '@babylonjs/gui/2D/controls/ellipse';
 import {BabylonRenderServiceAccessImpl} from './babylon-render-service-access-impl.service';
 import {Animation} from '@babylonjs/core/Animations/animation';
 
@@ -11,8 +12,23 @@ export class PressMouseVisualization {
   static readonly POSITION_VALID_TEXT = "Click left mouse button to deploy";
   static readonly POSITION_IN_VALID_TEXT = "Move mouse to find free position";
   /** A finger has no button to press and no cursor to follow, so the hint names the two gestures. */
-  static readonly TOUCH_POSITION_VALID_TEXT = "Drag the building or tap a spot";
-  static readonly TOUCH_POSITION_IN_VALID_TEXT = "Drag the building to a free spot";
+  static readonly TOUCH_POSITION_VALID_TEXT = "Drag or tap to move it";
+  static readonly TOUCH_POSITION_IN_VALID_TEXT = "Drag it to a free spot";
+  /** Width of the touch panel, in the GUI's pixels - the placer keeps it on screen with this. */
+  static readonly TOUCH_WIDTH = 300;
+  /** The placer panel: the HUD's dark, an amber accent for what is pressed, a red frame for a bad spot. */
+  private static readonly PANEL_BACKGROUND = "rgba(14, 24, 30, 0.92)";
+  private static readonly PANEL_TEXT = "#e8f0f2";
+  private static readonly ACCENT = "#f5a623";
+  private static readonly ACCENT_TEXT = "#1d1300";
+  private static readonly INVALID = "#e5534b";
+  private static readonly INVALID_TEXT = "#ffab91";
+  private static readonly BUTTON_OFF = "#3a4449";
+  private static readonly QUIET_TEXT = "#8d989e";
+  /** The gesture hands are shown until this many buildings were built through the button. */
+  private static readonly HANDS_UNTIL_BUILDS = 2;
+  /** Buildings built through the touch button this session - see updateDeployButton. */
+  private static buildDeploys = 0;
   public readonly container: Rectangle;
   public readonly label: TextBlock;
   private readonly mouse: Image;
@@ -23,6 +39,14 @@ export class PressMouseVisualization {
   private deployCallback: (() => void) | null = null;
   private cancelButton: Button | null = null;
   private cancelCallback: (() => void) | null = null;
+  private handBox: Rectangle | null = null;
+  private tapHand: Image | null = null;
+  private tapRing: Ellipse | null = null;
+  private dragHint: Rectangle | null = null;
+  private dragHand: Image | null = null;
+  private userDragging = false;
+  private placerStyle = false;
+  private deployText = "DEPLOY";
   private touchMode = false;
   /** Whether fitToText was told this is a touch device - see refitWidth. */
   private touchFit = false;
@@ -88,8 +112,17 @@ export class PressMouseVisualization {
    */
   setPositionValid(positionValid: boolean, errorText?: string) {
     this.positionValid = positionValid;
+    if (this.placerStyle) {
+      // The verdict is in the frame and the text, not the panel: a panel flooding red and green
+      // under white text was half the reason the bubble looked like an error box.
+      this.container.background = PressMouseVisualization.PANEL_BACKGROUND;
+      this.container.color = positionValid ? PressMouseVisualization.ACCENT : PressMouseVisualization.INVALID;
+      this.label.color = positionValid ? PressMouseVisualization.PANEL_TEXT : PressMouseVisualization.INVALID_TEXT;
+    }
     if (this.touchMode) {
-      this.container.background = positionValid ? "green" : "red";
+      if (!this.placerStyle) {
+        this.container.background = positionValid ? "green" : "red";
+      }
       this.label.text = positionValid
         ? PressMouseVisualization.TOUCH_POSITION_VALID_TEXT
         : (errorText ? errorText : PressMouseVisualization.TOUCH_POSITION_IN_VALID_TEXT);
@@ -97,14 +130,18 @@ export class PressMouseVisualization {
       return;
     }
     if (positionValid) {
-      this.container.background = "green";
+      if (!this.placerStyle) {
+        this.container.background = "green";
+      }
       this.label.text = PressMouseVisualization.POSITION_VALID_TEXT;
       this.setupMouseButtonAnimation();
       this.mouse.animations = [];
       this.mouse.left = 0;
       this.rendererService.getScene().stopAnimation(this.mouse);
     } else {
-      this.container.background = "red";
+      if (!this.placerStyle) {
+        this.container.background = "red";
+      }
       this.label.text = errorText ? errorText : PressMouseVisualization.POSITION_IN_VALID_TEXT;
       this.setupMouseMoveAnimation();
       this.mouseLeftButton.animations = [];
@@ -140,55 +177,118 @@ export class PressMouseVisualization {
     // read that way round the eye arrives at the button having just been told what it does. It also
     // takes 60px off the width, which on a phone held upright is a seventh of the screen.
     this.stackPanel.isVertical = true;
-    this.container.width = "300px";
+    this.container.width = `${PressMouseVisualization.TOUCH_WIDTH}px`;
     this.container.height = "132px";
-    this.label.width = "280px";
-    this.label.height = "56px";
-    this.label.fontSize = 18;
+    // Narrower than the panel: the ✕ sits in its top right corner.
+    this.label.width = "220px";
+    this.label.height = "48px";
+    this.label.fontSize = 17;
     // Centred over the button rather than ranged left, which only made sense beside the mouse icon.
     this.label.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
     this.label.paddingLeft = "0px";
-    this.stackPanel.spacing = 8;
+    this.stackPanel.spacing = 6;
 
-    const deployButton = Button.CreateSimpleButton("Base Item Placer Deploy", "DEPLOY");
-    deployButton.width = "200px";
+    /*
+     * 2026-11-19, quest 358 on a phone: the touch players who opened the factory placer and never
+     * built had pressed ✕ four times as often as those who built (45 % against 11 %), and almost
+     * none had pressed DEPLOY at all. DEPLOY was a dull green on the green bubble and read as
+     * switched off; ✕ beside it was the one bright thing there. Now the button is the bright thing,
+     * a hand taps it, and ✕ is a quiet corner mark away from it.
+     */
+    const deployButton = Button.CreateSimpleButton("Base Item Placer Deploy", this.deployText);
+    // 48 + 190 + 48 = 286: inside the 300px panel and its 3px frame on both sides.
+    deployButton.width = "190px";
     deployButton.height = "56px";
     deployButton.cornerRadius = 12;
-    deployButton.thickness = 3;
-    deployButton.color = "white";
+    deployButton.thickness = 0;
     deployButton.fontSize = 22;
     deployButton.fontWeight = "bold";
+    deployButton.shadowColor = "rgba(0, 0, 0, 0.5)";
+    deployButton.shadowBlur = 8;
+    deployButton.shadowOffsetY = 3;
     // Kept tappable while the spot is red: the placer answers a press on a red spot with its own
     // explanation, and a dead button would leave the player guessing why nothing happens.
-    deployButton.onPointerClickObservable.add(() => this.deployCallback?.());
+    deployButton.onPointerClickObservable.add(() => {
+      if (this.positionValid && this.cancelCallback) {
+        PressMouseVisualization.buildDeploys++;
+      }
+      this.deployCallback?.();
+    });
     this.deployButton = deployButton;
+
+    // A hand tapping the button from the right, with a ring where the finger lands: it shows the
+    // gesture rather than only the place, and needs no reading. In a box of its own because the row
+    // positions its children through `left`, which the tap animates. Not clipped: the fingertip
+    // reaches onto the button.
+    const handBox = new Rectangle("Base Item Placer Tap Hint");
+    handBox.width = "48px";
+    handBox.height = "56px";
+    handBox.thickness = 0;
+    handBox.clipChildren = false;
+    handBox.clipContent = false;
+    handBox.isPointerBlocker = false;
+    handBox.isHitTestVisible = false;
+    const tapRing = new Ellipse("Base Item Placer Tap Ring");
+    tapRing.width = "36px";
+    tapRing.height = "36px";
+    tapRing.thickness = 3;
+    tapRing.color = "white";
+    tapRing.alpha = 0;
+    tapRing.isHitTestVisible = false;
+    // Where the fingertip is at the bottom of the tap - see startButtonAnimations.
+    tapRing.left = "-30px";
+    tapRing.top = "2px";
+    handBox.addControl(tapRing);
+    const tapHand = PressMouseVisualization.handImage("Base Item Placer Tap Hand", "babylon-gui/hand-tap.svg", 50);
+    handBox.addControl(tapHand);
+    this.handBox = handBox;
+    this.tapHand = tapHand;
+    this.tapRing = tapRing;
+
+    const row = new StackPanel();
+    row.isVertical = false;
+    row.height = "56px";
+    row.spacing = 0;
+    // The hand's box on the right is balanced by an empty one on the left, so the button stays
+    // centred under the text whether the hand is shown or not.
+    const balance = new Rectangle();
+    balance.width = "48px";
+    balance.height = "56px";
+    balance.thickness = 0;
+    balance.isPointerBlocker = false;
+    row.addControl(balance);
+    row.addControl(deployButton);
+    row.addControl(handBox);
+    // The fingertip leaves the hand's box for the button.
+    row.clipChildren = false;
+    row.clipContent = false;
+    this.stackPanel.clipChildren = false;
+    this.stackPanel.clipContent = false;
+    // Up to the panel too: the hand reaches past its frame.
+    this.container.clipChildren = false;
+    this.container.clipContent = false;
+    this.stackPanel.addControl(row);
+
     if (this.cancelCallback) {
       // A building placer on a phone: without a key to press, this is the only way to close it
-      // without building (phone test, 2026-10-05). Beside DEPLOY rather than under it, so the
-      // bubble keeps its height and its distance to the building.
-      deployButton.width = "180px";
+      // without building (phone test, 2026-10-05). In the corner, away from the button it was
+      // being taken for.
       const cancelButton = Button.CreateSimpleButton("Base Item Placer Cancel", "✕");
-      cancelButton.width = "56px";
-      cancelButton.height = "56px";
-      cancelButton.cornerRadius = 12;
-      cancelButton.thickness = 3;
-      cancelButton.color = "white";
-      cancelButton.background = "#8b1a1a";
-      cancelButton.fontSize = 24;
-      cancelButton.fontWeight = "bold";
+      cancelButton.width = "40px";
+      cancelButton.height = "40px";
+      cancelButton.thickness = 0;
+      cancelButton.color = PressMouseVisualization.QUIET_TEXT;
+      cancelButton.fontSize = 20;
+      cancelButton.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_RIGHT;
+      cancelButton.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
+      cancelButton.top = "2px";
+      cancelButton.left = "-2px";
       cancelButton.onPointerClickObservable.add(() => this.cancelCallback?.());
       this.cancelButton = cancelButton;
-      const row = new StackPanel();
-      row.isVertical = false;
-      row.height = "56px";
-      row.spacing = 8;
-      row.addControl(deployButton);
-      row.addControl(cancelButton);
-      this.stackPanel.addControl(row);
-    } else {
-      this.stackPanel.addControl(deployButton);
+      this.container.addControl(cancelButton);
     }
 
+    this.startButtonAnimations();
     this.updateDeployButton();
     // Re-run the current verdict through the touch branch so the hint text matches the new controls.
     this.setPositionValid(this.positionValid);
@@ -325,8 +425,147 @@ export class PressMouseVisualization {
     if (!this.deployButton) {
       return;
     }
-    this.deployButton.background = this.positionValid ? "#2e7d32" : "#555555";
-    this.deployButton.alpha = this.positionValid ? 1 : 0.6;
+    this.deployButton.background = this.positionValid ? PressMouseVisualization.ACCENT : PressMouseVisualization.BUTTON_OFF;
+    this.deployButton.color = this.positionValid ? PressMouseVisualization.ACCENT_TEXT : PressMouseVisualization.QUIET_TEXT;
+    // Only for the first buildings of a session: a player who has built twice knows the gestures,
+    // and a hand on every placer after that is noise. Then the hand that fits the spot: on a free
+    // one the next thing to do is tap the button, on a taken one it is to move the building.
+    const early = PressMouseVisualization.buildDeploys < PressMouseVisualization.HANDS_UNTIL_BUILDS;
+    if (this.handBox) {
+      this.handBox.alpha = this.positionValid && early ? 1 : 0;
+    }
+    if (this.dragHint) {
+      // Not while a finger is on the building: it is doing what the hand shows, and the hand would
+      // sit right under it.
+      this.dragHint.isVisible = !this.positionValid && early && !this.userDragging;
+    }
+  }
+
+  /**
+   * The placer's own look: a dark panel like the HUD around it, with the colour kept for the one
+   * thing to press. The quest tips share this class and keep their green bubble.
+   *
+   * @param deployText what the button says - the start base is deployed, a building is built.
+   */
+  usePlacerStyle(deployText: string): void {
+    this.placerStyle = true;
+    this.deployText = deployText;
+    this.container.thickness = 3;
+    this.container.cornerRadius = 16;
+    this.container.shadowColor = "rgba(0, 0, 0, 0.55)";
+    this.container.shadowBlur = 16;
+    this.container.shadowOffsetY = 4;
+    this.label.fontWeight = "bold";
+    // The one thing to press, in the colour of the touch button.
+    this.mouseLeftButton.source = "babylon-gui/mouse-left-button-accent.svg";
+    this.setPositionValid(this.positionValid);
+  }
+
+  /** The button breathes and the hand taps it - both only in what they move, never in colour. */
+  private startButtonAnimations(): void {
+    const scene = this.rendererService.getScene();
+    if (this.deployButton) {
+      const pulse = (property: string) => {
+        const animation = new Animation("deploy pulse " + property, property, 30, Animation.ANIMATIONTYPE_FLOAT,
+          Animation.ANIMATIONLOOPMODE_CYCLE);
+        animation.setKeys([{frame: 0, value: 1}, {frame: 18, value: 1.06}, {frame: 36, value: 1}]);
+        return animation;
+      };
+      this.deployButton.animations = [pulse("scaleX"), pulse("scaleY")];
+      scene.beginAnimation(this.deployButton, 0, 36, true);
+    }
+    if (this.tapHand && this.tapRing) {
+      // Hover, come down onto the button, hold, lift, rest - 1.6 s a tap. Pressed is a little
+      // smaller, as a finger looks from above when it pushes.
+      this.tapHand.animations = [
+        PressMouseVisualization.keyed("tap left", "left", [[0, -16], [10, -26], [16, -26], [26, -16], [48, -16]]),
+        PressMouseVisualization.keyed("tap top", "top", [[0, 14], [10, 6], [16, 6], [26, 14], [48, 14]]),
+        PressMouseVisualization.keyed("tap scaleX", "scaleX", [[0, 1], [10, 0.9], [16, 0.9], [26, 1], [48, 1]]),
+        PressMouseVisualization.keyed("tap scaleY", "scaleY", [[0, 1], [10, 0.9], [16, 0.9], [26, 1], [48, 1]]),
+      ];
+      scene.beginAnimation(this.tapHand, 0, 48, true);
+      this.tapRing.animations = [
+        PressMouseVisualization.keyed("ring alpha", "alpha", [[0, 0], [10, 0], [11, 0.9], [30, 0], [48, 0]]),
+        PressMouseVisualization.keyed("ring scaleX", "scaleX", [[0, 0.3], [10, 0.3], [30, 1.4], [48, 1.4]]),
+        PressMouseVisualization.keyed("ring scaleY", "scaleY", [[0, 0.3], [10, 0.3], [30, 1.4], [48, 1.4]]),
+      ];
+      scene.beginAnimation(this.tapRing, 0, 48, true);
+    }
+  }
+
+  /**
+   * A hand that presses on the building and carries it a little way, for a spot where it cannot be
+   * built. Linked to the building by the placer, not part of the panel: the gesture is made on the
+   * building, and a hand in the panel would show dragging the panel.
+   * <p>
+   * 2026-11-19, quest 358: of the touch players who opened the factory placer and never built,
+   * 36 % had touched the world while it was open - panned, pinched, tapped a taken spot - against
+   * 7 % of those who built. Nothing told them the building itself can be picked up.
+   */
+  createDragHint(): Rectangle {
+    const hint = new Rectangle("Base Item Placer Drag Hint");
+    hint.width = "200px";
+    hint.height = "100px";
+    hint.thickness = 0;
+    hint.clipChildren = false;
+    hint.clipContent = false;
+    hint.isPointerBlocker = false;
+    hint.isHitTestVisible = false;
+    // Bigger than the tapping hand and with a shadow: it is drawn on a building, not on a plain panel.
+    const hand = PressMouseVisualization.handImage("Base Item Placer Drag Hand", "babylon-gui/hand-drag.svg", 60);
+    hand.shadowColor = "rgba(0, 0, 0, 0.6)";
+    hand.shadowBlur = 10;
+    hand.shadowOffsetY = 4;
+    hint.addControl(hand);
+    // Appear pressed onto the building, carry it to the right, let go and fade, rest - 1.8 s.
+    // top 24 puts the fingertip, at the top of the picture, on the point the hint is linked to.
+    hand.animations = [
+      PressMouseVisualization.keyed("drag left", "left", [[0, -30], [8, -30], [34, 45], [42, 45], [54, -30]]),
+      PressMouseVisualization.keyed("drag top", "top", [[0, 24], [54, 24]]),
+      PressMouseVisualization.keyed("drag alpha", "alpha", [[0, 0], [6, 1], [36, 1], [44, 0], [54, 0]]),
+      PressMouseVisualization.keyed("drag scaleX", "scaleX", [[0, 1.1], [8, 0.9], [34, 0.9], [40, 1.05], [54, 1.1]]),
+      PressMouseVisualization.keyed("drag scaleY", "scaleY", [[0, 1.1], [8, 0.9], [34, 0.9], [40, 1.05], [54, 1.1]]),
+    ];
+    this.rendererService.getScene().beginAnimation(hand, 0, 54, true);
+    this.dragHint = hint;
+    this.dragHand = hand;
+    this.updateDeployButton();
+    return hint;
+  }
+
+  /** A finger is carrying the building - see updateDeployButton. */
+  setUserDragging(dragging: boolean): void {
+    if (this.userDragging === dragging) {
+      return;
+    }
+    this.userDragging = dragging;
+    this.updateDeployButton();
+  }
+
+  private static handImage(name: string, source: string, size = 44): Image {
+    const hand = new Image(name, source);
+    hand.width = `${size}px`;
+    hand.height = `${size}px`;
+    hand.stretch = Image.STRETCH_UNIFORM;
+    hand.isHitTestVisible = false;
+    return hand;
+  }
+
+  private static keyed(name: string, property: string, keys: [number, number][]): Animation {
+    const animation = new Animation(name, property, 30, Animation.ANIMATIONTYPE_FLOAT, Animation.ANIMATIONLOOPMODE_CYCLE);
+    animation.setKeys(keys.map(([frame, value]) => ({frame, value})));
+    return animation;
+  }
+
+  /** Stops what runs from the render loop; the texture disposing the controls does not. */
+  dispose(): void {
+    const scene = this.rendererService.getScene();
+    for (const control of [this.deployButton, this.tapHand, this.tapRing, this.dragHand, this.mouse, this.mouseLeftButton]) {
+      if (control) {
+        scene.stopAnimation(control);
+        control.animations = [];
+      }
+    }
   }
 
   getContainer() {
