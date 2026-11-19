@@ -1,6 +1,5 @@
 import {textureAfterStartModels} from "./start-models-texture";
 import {NodeMaterial} from "@babylonjs/core/Materials/Node/nodeMaterial";
-import {Material} from "@babylonjs/core/Materials/material";
 import {Texture} from "@babylonjs/core/Materials/Textures/texture";
 import {Color3} from "@babylonjs/core/Maths/math.color";
 import {InputBlock} from "@babylonjs/core/Materials/Node/Blocks/Input/inputBlock";
@@ -26,6 +25,7 @@ import {MultiplyBlock} from "@babylonjs/core/Materials/Node/Blocks/multiplyBlock
 import {SubtractBlock} from "@babylonjs/core/Materials/Node/Blocks/subtractBlock";
 import {Vector2, Vector3} from "@babylonjs/core/Maths/math.vector";
 import {NormalizeBlock} from "@babylonjs/core/Materials/Node/Blocks/normalizeBlock";
+import {DiscardBlock} from "@babylonjs/core/Materials/Node/Blocks/Fragment/discardBlock";
 import {Showcase} from "./showcase";
 import type {BotGroundMarkings} from "./bot-ground-markings";
 import type {Scene} from "@babylonjs/core/scene";
@@ -285,21 +285,32 @@ export function buildBotGroundTopMaterial(scene: Scene, markings: BotGroundMarki
   const fragmentOutput = new FragmentOutputBlock("FragmentOutput");
   finalColor.output.connectTo(fragmentOutput.rgb);
 
-  // A ground decal (babylon-ground-decal.ts) is this asphalt with a frayed edge: alpha from its mask,
-  // sampled by the decal's own uv (the asphalt itself stays on the world grid like the plates)
+  // A ground decal (babylon-ground-decal.ts) is this asphalt with a frayed edge: the mask, sampled
+  // by the decal's own uv (the asphalt itself stays on the world grid like the plates), cuts it out.
+  // Alpha test by discard, not alpha blending: a blended decal is drawn after the particle systems,
+  // which write no depth, so it painted over every explosion, smoke and spark on it - a bot
+  // extractor blew up behind its own plate (phone test, 2026-11-19). The gravel edge stays frayed,
+  // as single hard stones.
+  let discard: DiscardBlock | null = null;
   if (opacityMask) {
     const uv = new InputBlock("uv");
     uv.setAsAttribute("uv");
     const maskTex = new TextureBlock("decal mask");
     uv.output.connectTo(maskTex.uv);
     maskTex.texture = opacityMask;
-    maskTex.r.connectTo(fragmentOutput.a);
-    mat.transparencyMode = Material.MATERIAL_ALPHABLEND;
+    discard = new DiscardBlock("decal cut");
+    maskTex.r.connectTo(discard.value);
+    const cutoff = new InputBlock("decal cutoff", undefined, NodeMaterialBlockConnectionPointTypes.Float);
+    cutoff.value = 0.3;
+    cutoff.output.connectTo(discard.cutoff);
   }
 
   // ========== Build ==========
   mat.addOutputNode(vertexOutput);
   mat.addOutputNode(fragmentOutput);
+  if (discard) {
+    mat.addOutputNode(discard);
+  }
   mat.build();
   Showcase.applyToGround(mat);
 

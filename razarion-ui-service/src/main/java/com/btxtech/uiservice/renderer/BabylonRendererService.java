@@ -35,7 +35,16 @@ public class BabylonRendererService {
         return babylonRenderServiceAccess.createBabylonBaseItem(id, baseItemType, baseId, diplomacy, userName);
     }
 
-    public void startSpawn(NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo) {
+    /**
+     * @param playerItem only a player's spawn (own or another one's) is shown and heard: bots
+     *                   respawn over and over next to him (the extractor bot's rage Tesla, a garrison
+     *                   refilling) and the spawn then read as something happening to him (phone test,
+     *                   2026-11-17). A player spawning is news - someone new arrived.
+     */
+    public void startSpawn(NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo, boolean playerItem) {
+        if (!playerItem) {
+            return;
+        }
         BaseItemType baseItemType = itemTypeService.getBaseItemType(nativeSyncBaseItemTickInfo.itemTypeId);
         Integer particleSystemId = baseItemType.getSpawnParticleSystemId();
         Integer spawnAudioId = baseItemType.getSpawnAudioId();

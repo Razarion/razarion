@@ -16,6 +16,19 @@ export class BabylonWreckage {
   private static scorchTextureCache: DynamicTexture | null = null;
   private static readonly WRECKAGE_LIFETIME = 15000; // ms before fade-out starts
   private static readonly FADE_DURATION = 5000; // ms for fade-out
+  /**
+   * Where the boxes lie, in game coordinates (x, y on the ground). Set by the renderer.
+   * <p>
+   * A box drops where its carrier died, which is the middle of the wreck: the debris and the
+   * smoke hid it for the whole 20 s of the wreck - a phone test lost the box of a Spire under
+   * its rubble (2026-11-17). The wreck clears the box's spot instead.
+   */
+  static boxPositions: (() => { x: number, y: number }[]) | null = null;
+  /** Debris pieces this close to a box, on the ground, go at once. */
+  private static readonly BOX_CLEAR_RADIUS = 3;
+  /** Smoke over a box thins out to this rate (it is 25 otherwise). */
+  private static readonly BOX_SMOKE_RATE = 3;
+  private static readonly BOX_CHECK_MS = 250;
 
   // When keepDebrisTransforms is true, survivingMeshes are assumed to have been placed
   // (and rotated) by the caller — typically the tumble-physics pass in BabylonBuildingDebris.
@@ -170,8 +183,42 @@ export class BabylonWreckage {
     const lifetimeMs = options?.lifetimeMs ?? BabylonWreckage.WRECKAGE_LIFETIME;
     const fadeMs = options?.fadeMs ?? BabylonWreckage.FADE_DURATION;
 
+    let boxCleared = false;
+    let lastBoxCheck = -Infinity;
+    const clearForBox = () => {
+      const boxes = BabylonWreckage.boxPositions?.() ?? [];
+      const reach = radius * 1.5 + BabylonWreckage.BOX_CLEAR_RADIUS;
+      const near = boxes.filter(box => Math.hypot(box.x - groundPos.x, box.y - groundPos.z) <= reach);
+      if (near.length === 0) {
+        return;
+      }
+      boxCleared = true;
+      smoke.emitRate = Math.min(smoke.emitRate, BabylonWreckage.BOX_SMOKE_RATE);
+      for (let i = debrisMeshes.length - 1; i >= 0; i--) {
+        const piece = debrisMeshes[i];
+        const at = piece.getAbsolutePosition();
+        if (near.some(box => Math.hypot(box.x - at.x, box.y - at.z) <= BabylonWreckage.BOX_CLEAR_RADIUS)) {
+          piece.dispose();
+          debrisMeshes.splice(i, 1);
+          const v = fadeByVisibility.indexOf(piece);
+          if (v >= 0) {
+            fadeByVisibility.splice(v, 1);
+          }
+          const s = fadeByScale.findIndex(entry => entry.mesh === piece);
+          if (s >= 0) {
+            fadeByScale.splice(s, 1);
+          }
+        }
+      }
+    };
+
     const fadeCallback = () => {
       const elapsed = Date.now() - startTime;
+      // The box may arrive a moment before or after the wreck settles, so keep looking for a while.
+      if (elapsed - lastBoxCheck >= BabylonWreckage.BOX_CHECK_MS && elapsed < lifetimeMs) {
+        lastBoxCheck = elapsed;
+        clearForBox();
+      }
 
       if (elapsed > lifetimeMs) {
         const fadeElapsed = elapsed - lifetimeMs;
@@ -191,7 +238,7 @@ export class BabylonWreckage {
         }
 
         // Reduce smoke as we fade
-        smoke.emitRate = 8 * (1 - fadeT);
+        smoke.emitRate = (boxCleared ? BabylonWreckage.BOX_SMOKE_RATE : 8) * (1 - fadeT);
 
         if (fadeT >= 1.0) {
           // Full cleanup

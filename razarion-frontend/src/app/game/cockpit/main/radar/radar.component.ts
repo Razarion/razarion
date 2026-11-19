@@ -56,6 +56,22 @@ export class RadarComponent implements ViewFieldListener, OnInit, OnChanges, OnD
    */
   private static readonly REVEAL_TEASER_MIN_RUNNING_MS = 10000;
   /**
+   * How long the map glows when a radar comes up. The zoom alone was easy to miss: on a phone the
+   * map is a corner of 104 pixels and the eye is on the building that was just placed (phone test,
+   * 2026-11-17). Four pulses of the CSS animation (radar.component.scss).
+   */
+  private static readonly ATTENTION_MS = 4800;
+  /** A radar that loses and regains power a few times does not keep flashing at the player. */
+  private static readonly ATTENTION_MIN_GAP_MS = 60000;
+  /** Bound to the glow overlay in the template. */
+  attentionActive = false;
+  private attentionTimer: ReturnType<typeof setTimeout> | null = null;
+  private lastAttentionAt = -Infinity;
+  /** When the map last flew in from the whole planet - see drawAttention. */
+  private lastRevealZoomAt = -Infinity;
+  /** A fly-in this recent is still fresh in the player's eye: the glow does not repeat it. */
+  private static readonly ATTENTION_ZOOM_GAP_MS = 30000;
+  /**
    * Edge length of the map in pixels. The cockpit leaves it at the desktop's 200; the phone corner
    * runs it far smaller and swaps the value when the player expands the map, which is why this is
    * an input the component follows rather than a constant.
@@ -190,6 +206,9 @@ export class RadarComponent implements ViewFieldListener, OnInit, OnChanges, OnD
     if (changes['radarWorking'] && !changes['radarWorking'].firstChange) {
       this.miniItemView.setShowForeign(this.radarWorking);
       this.miniItemView.update();
+      if (this.radarWorking && performance.now() - this.startedAt >= RadarComponent.REVEAL_TEASER_MIN_RUNNING_MS) {
+        this.drawAttention();
+      }
     }
     if (changes['mapRevealed'] && !changes['mapRevealed'].firstChange) {
       this.miniFog.setRevealed(this.mapRevealed);
@@ -200,6 +219,12 @@ export class RadarComponent implements ViewFieldListener, OnInit, OnChanges, OnD
       if (this.mapRevealed && performance.now() - this.startedAt >= RadarComponent.REVEAL_TEASER_MIN_RUNNING_MS) {
         this.cancelZoomAnimation();
         this.animateZoomIn(Math.max(this.zoom, RadarComponent.DEFAULT_ZOOM), RadarComponent.REVEAL_ANIMATION_DURATION_MS);
+        this.lastRevealZoomAt = performance.now();
+        // The radar usually stands before its power does (quest 362 before 361): then the glow
+        // waits for the sweep to start, see the radarWorking branch above.
+        if (this.radarWorking) {
+          this.drawAttention();
+        }
       }
     }
     if (changes['size'] && !changes['size'].firstChange) {
@@ -211,6 +236,33 @@ export class RadarComponent implements ViewFieldListener, OnInit, OnChanges, OnD
       this.applyElementSize();
       this.updateMiniMap();
     }
+  }
+
+  /**
+   * Makes the map glow for {@link ATTENTION_MS}: a radar has come up and the map now shows what
+   * is out there. Called from ngOnChanges, so inside the Angular zone.
+   */
+  private drawAttention(): void {
+    const now = performance.now();
+    if (now - this.lastAttentionAt < RadarComponent.ATTENTION_MIN_GAP_MS) {
+      return;
+    }
+    this.lastAttentionAt = now;
+    // The fly-in from the whole planet belongs to the moment too. It used to come only with the
+    // first radar of a player, so a radar built again later just blinked (desktop test, 2026-11-19).
+    if (now - this.lastRevealZoomAt >= RadarComponent.ATTENTION_ZOOM_GAP_MS) {
+      this.cancelZoomAnimation();
+      this.animateZoomIn(Math.max(this.zoom, RadarComponent.DEFAULT_ZOOM), RadarComponent.REVEAL_ANIMATION_DURATION_MS);
+      this.lastRevealZoomAt = now;
+    }
+    if (this.attentionTimer !== null) {
+      clearTimeout(this.attentionTimer);
+    }
+    this.attentionActive = true;
+    this.attentionTimer = setTimeout(() => {
+      this.attentionTimer = null;
+      this.attentionActive = false;
+    }, RadarComponent.ATTENTION_MS);
   }
 
   private applyElementSize(): void {
@@ -227,6 +279,9 @@ export class RadarComponent implements ViewFieldListener, OnInit, OnChanges, OnD
     }
     this.cancelZoomAnimation();
     this.stopPulse();
+    if (this.attentionTimer !== null) {
+      clearTimeout(this.attentionTimer);
+    }
     this.renderService.removeViewFieldListener(this);
     this.questMarkerService.removeListener(this.markerListener);
     this.miniItemView.stopUpdater();

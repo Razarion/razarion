@@ -409,7 +409,8 @@ import java.util.logging.Logger;
                 onTickUpdateFailed();
                 break;
             case SYNC_ITEM_START_SPAWNED:
-                babylonRendererService.startSpawn(castToNativeSyncBaseItemTickInfo(controlPackage.getSingleData()));
+                NativeSyncBaseItemTickInfo spawned = castToNativeSyncBaseItemTickInfo(controlPackage.getSingleData());
+                babylonRendererService.startSpawn(spawned, baseItemUiService.isPlayerProperty(spawned));
                 break;
             case SYNC_ITEM_IDLE:
                 // TODO gameTipService.onSyncBaseItemIdle(castToNativeSyncBaseItemTickInfo(controlPackage.getSingleData()));

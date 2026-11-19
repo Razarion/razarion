@@ -77,6 +77,7 @@ import {PickingInfo} from "@babylonjs/core/Collisions/pickingInfo";
 import {BabylonBaseItemImpl} from "./babylon-base-item.impl";
 import {BabylonLightning} from "./babylon-lightning";
 import {BabylonImpact} from "./babylon-impact";
+import {BabylonWreckage} from "./babylon-wreckage";
 import {BabylonPerfOverlay} from "./babylon-perf-overlay";
 import {RenderTelemetry, RenderTelemetrySceneStats} from "./render-telemetry";
 import {AdaptiveResolution} from "./adaptive-resolution";
@@ -167,6 +168,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   private static readonly PICK_CURSOR = 'url("cursors/pick.png") 15 15, auto';
   private static readonly FINALIZE_BUILD_CURSOR = 'url("cursors/finalize-build.png") 15 15, auto';
   private static readonly LOAD_CURSOR = 'url("cursors/load.png") 15 15, auto';
+  private static readonly ATTACK_CURSOR = 'url("cursors/attack.png") 15 15, auto';
   /** Upper bound for the ground pick behind the no-go cursor: ~16 evaluations per second. */
   private static readonly TERRAIN_CURSOR_THROTTLE_MS = 60;
 
@@ -226,6 +228,12 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   private interpolationListeners: BabylonBaseItemImpl[] = [];
   /** How far beside an item a finger may land and still mean it: about 7 mm on a phone. */
   private static readonly TOUCH_SLOP_CSS_PX = 28;
+  /**
+   * Wider for enemies: a tap near one is almost always meant for it, and the ones a beginner has to
+   * hit are small - the island Tesla is 2 m across. Phone test 2026-11-19: taps meant for it landed
+   * 17-43 px from its axis, most at 30-31, just outside the 28 above.
+   */
+  private static readonly TOUCH_SLOP_ENEMY_CSS_PX = 40;
   /** How far outside the picture a spawn may be and still be heard, as a share of its size - see startSpawn. */
   private static readonly SPAWN_SOUND_PICTURE_MARGIN = 0.2;
   private readonly outOfViewJump = new OutOfViewJump(() => this.canvas ?? null);
@@ -576,8 +584,7 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
       console.warn(`[AdaptiveResolution] scaling=${level} manual`);
     };
     // The scene, for measuring what a part of it costs on a device (remote debugging)
-    (window as any).razScene = () => self.scene;
-    // Where the camera looks, for reporting a spot on the map (x, height, z)
+    (window as any).razScene = () => self.scene;    // Where the camera looks, for reporting a spot on the map (x, height, z)
     (window as any).razWhere = () => {
       const camera = self.scene.activeCamera as any;
       const t = camera?.target ?? camera?.getTarget?.();
@@ -715,6 +722,11 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     // impact don't render blank while Babylon compiles shaders / uploads textures on demand.
     BabylonLightning.preWarm(this.scene);
     BabylonImpact.preWarm(this.scene);
+    // A wreck keeps the spot of a dropped box clear (BabylonWreckage.boxPositions).
+    BabylonWreckage.boxPositions = () => this.babylonBoxItems
+      .map(box => box.getPosition())
+      .filter(position => !!position)
+      .map(position => ({x: position!.getX(), y: position!.getY()}));
 
     // ----- Resize listener -----
     new ResizeObserver(entries => {
@@ -748,10 +760,13 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     const fireTerrainClick = (pickResult: any, touch = false, hoveredItem: BabylonItemImpl | null = null) => {
       if (!pickResult?.hit || !pickResult.pickedMesh || !pickResult.pickedPoint) return;
       const metadataNode = BabylonRenderServiceAccessImpl.findRazarionMetadataNode(pickResult.pickedMesh);
-      if (!metadataNode) return;
-      const metadata = BabylonRenderServiceAccessImpl.getRazarionMetadata(metadataNode);
-      if (!metadata) return;
-      if (metadata.type === RazarionMetadataType.GROUND || metadata.type === RazarionMetadataType.BOT_GROUND) {
+      const metadata = metadataNode ? BabylonRenderServiceAccessImpl.getRazarionMetadata(metadataNode) : null;
+      // A mesh with neither metadata nor an item's ActionManager is decoration lying on the ground -
+      // the gravel of a bot's ground plate. It used to swallow the tap whole: a phone tap right at
+      // the Tesla of quest 379 landed on it and did nothing (2026-11-19).
+      const decoration = !metadata && !pickResult.pickedMesh.actionManager;
+      if (!metadata && !decoration) return;
+      if (decoration || metadata!.type === RazarionMetadataType.GROUND || metadata!.type === RazarionMetadataType.BOT_GROUND) {
         /*
          * The cursor promised an item, the click ray found the ground: give the click to the item.
          *
@@ -2141,26 +2156,31 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     const tapX = pointerX * renderPerCss;
     const tapY = pointerY * renderPerCss;
     const slop = BabylonRenderServiceAccessImpl.TOUCH_SLOP_CSS_PX * renderPerCss;
+    const enemySlop = BabylonRenderServiceAccessImpl.TOUCH_SLOP_ENEMY_CSS_PX * renderPerCss;
     let best: BabylonItemImpl | null = null;
-    let bestDistanceSq = slop * slop;
+    // Distance relative to the item's own slop, so an enemy and an own unit compete fairly.
+    let bestScore = 1;
+    // With nothing of one's own selected a tap can only select, so anything may be meant - also
+    // the Tesla a player wants to look at before sending units (phone test, 2026-11-19).
+    const onlySelecting = !this.tsSelectionService.hasOwnSelection();
     const consider = (item: BabylonItemImpl) => {
       const position = item.getPosition();
       if (!position) {
         return;
       }
-      const own = GwtHelper.gwtIssueStringEnum(item.diplomacy, Diplomacy) === Diplomacy.OWN;
-      if (!own && !this.actionCursorFor(item)) {
+      const diplomacy = GwtHelper.gwtIssueStringEnum(item.diplomacy, Diplomacy);
+      const own = diplomacy === Diplomacy.OWN;
+      if (!own && !onlySelecting && !this.actionCursorFor(item)) {
         return;
       }
-      const screen = this.projectGroundToScreen(position.getX(), position.getY());
-      if (!screen) {
+      const distanceSq = this.tapDistanceSq(item, tapX, tapY);
+      if (distanceSq === null) {
         return;
       }
-      const dx = screen.x - tapX;
-      const dy = screen.y - tapY;
-      const distanceSq = dx * dx + dy * dy;
-      if (distanceSq <= bestDistanceSq) {
-        bestDistanceSq = distanceSq;
+      const itemSlop = diplomacy === Diplomacy.ENEMY ? enemySlop : slop;
+      const score = distanceSq / (itemSlop * itemSlop);
+      if (score <= bestScore) {
+        bestScore = score;
         best = item;
       }
     };
@@ -2168,6 +2188,89 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     this.babylonResourceItems.forEach(consider);
     this.babylonBoxItems.forEach(consider);
     return best;
+  }
+
+  /**
+   * Squared screen distance, in render pixels, from a tap to the item's upright axis - the line
+   * from its foot to the top of its model - or null when the item is not on screen.
+   * <p>
+   * Measured to the foot alone, a tall thin item could only be hit near the ground: a tap on the
+   * upper half of a Tesla that slipped between the bars reached the ground far behind it, well
+   * beyond the slop of the foot. The foot also stands at the item's own height now rather than at
+   * the height of the screen centre, which put items on a hill off by the difference.
+   */
+  private tapDistanceSq(item: BabylonItemImpl, tapX: number, tapY: number): number | null {
+    const position = item.getPosition();
+    if (!position) {
+      return null;
+    }
+    let footY = position.getZ();
+    let topY = footY;
+    try {
+      const bounds = item.getContainer().getHierarchyBoundingVectors(true);
+      if (Number.isFinite(bounds.min.y) && Number.isFinite(bounds.max.y) && bounds.max.y > bounds.min.y) {
+        footY = bounds.min.y;
+        topY = bounds.max.y;
+      }
+    } catch (e) {
+      // No model yet: the foot alone, as before.
+    }
+    const foot = this.projectWorldToScreen(new Vector3(position.getX(), footY, position.getY()));
+    const top = topY > footY ? this.projectWorldToScreen(new Vector3(position.getX(), topY, position.getY())) : null;
+    if (!foot && !top) {
+      return null;
+    }
+    if (!foot || !top) {
+      const point = (foot ?? top)!;
+      return (point.x - tapX) ** 2 + (point.y - tapY) ** 2;
+    }
+    const sx = top.x - foot.x;
+    const sy = top.y - foot.y;
+    const lengthSq = sx * sx + sy * sy;
+    const t = lengthSq > 0 ? Math.max(0, Math.min(1, ((tapX - foot.x) * sx + (tapY - foot.y) * sy) / lengthSq)) : 0;
+    const px = foot.x + t * sx;
+    const py = foot.y + t * sy;
+    // From the item's edge, not its middle: "next to it" is next to what the player sees. A phone
+    // test (2026-11-19) logged half of the taps meant for a harvester or a factory at 28-38 px from
+    // the axis - outside the slop, though right beside a model that is itself 30-40 px wide.
+    // Only half of it, though: measured from the full edge the slop swallowed the ground around a
+    // unit, and a move next to one needed a tap far away (same test, second round).
+    const axisDistance = Math.max(0, Math.sqrt((px - tapX) ** 2 + (py - tapY) ** 2) - 0.5 * this.screenRadius(item, position, footY, foot));
+    return axisDistance * axisDistance;
+  }
+
+  /** The item's radius as it appears on screen at its foot, in render pixels; 0 if unknown. */
+  private screenRadius(item: BabylonItemImpl, position: { getX(): number, getY(): number }, footY: number, foot: { x: number, y: number }): number {
+    let radius = 0;
+    try {
+      radius = item.getRadius() ?? 0;
+    } catch (e) {
+      return 0;
+    }
+    if (!(radius > 0)) {
+      return 0;
+    }
+    // Sideways on screen: the camera looks along z, so a step along x is not foreshortened.
+    const side = this.projectWorldToScreen(new Vector3(position.getX() + radius, footY, position.getY()));
+    return side ? Math.hypot(side.x - foot.x, side.y - foot.y) : 0;
+  }
+
+  /** A world point in render pixels, or null when it is behind the camera or off the canvas. */
+  private projectWorldToScreen(point: Vector3): { x: number, y: number } | null {
+    const engine = this.scene.getEngine();
+    const width = engine.getRenderWidth();
+    const height = engine.getRenderHeight();
+    const camera = this.scene.activeCamera;
+    if (!camera || width <= 0 || height <= 0) {
+      return null;
+    }
+    const projected = Vector3.Project(point, Matrix.Identity(), this.scene.getTransformMatrix(),
+      camera.viewport.toGlobal(width, height));
+    if (projected.z <= 0 || projected.z >= 1
+      || projected.x < 0 || projected.x > width || projected.y < 0 || projected.y > height) {
+      return null;
+    }
+    return {x: projected.x, y: projected.y};
   }
 
   /** The item one of whose meshes this is, or null - see fireTerrainClick for why that is asked. */
@@ -2239,6 +2342,14 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     }
     if (diplomacy === Diplomacy.BOX) {
       return this.moveCursorActive ? BabylonRenderServiceAccessImpl.PICK_CURSOR : null;
+    }
+    if (diplomacy === Diplomacy.ENEMY) {
+      // Left out until 2026-11-19, so a finger that missed an enemy by a hair - or hit the ground
+      // between the bars of a Tesla - sent a move instead of the attack: phone test, quest 379
+      // "Destroy 1 Tower", four Vipers, ORDER kind=move, and the attack tip stayed up.
+      const typeId = (item as BabylonBaseItemImpl).getBaseItemType?.()?.getId();
+      return typeId != null && this.tsSelectionService.getAttackerIds(typeId).length > 0
+        ? BabylonRenderServiceAccessImpl.ATTACK_CURSOR : null;
     }
     return null;
   }

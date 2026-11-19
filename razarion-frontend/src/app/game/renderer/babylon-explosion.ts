@@ -46,6 +46,14 @@ export class BabylonExplosion {
     fire.particleTexture = BabylonExplosion.getFireballTexture(scene);
     fire.emitter = position.clone();
     fire.blendMode = ParticleSystem.BLENDMODE_STANDARD;
+    // Like the debris and the shockwave below. In group 0 the fireball came before the transparent
+    // meshes - Babylon draws particles first - so the ground decal under a bot extractor (alpha-blended
+    // for its gravel edge) was painted over it, and the building blew up behind its own plate
+    // (phone test, 2026-11-17).
+    fire.renderingGroupId = 1;
+    // Group 1 is drawn after the depth is cleared, so the ground no longer hides the lower half of
+    // the puffs: they start a little higher to sit on the ground rather than sink into it.
+    (fire.emitter as Vector3).y += 1.5;
 
     // Small sphere emitter — slight lateral spread so puffs don't stack on a perfect line.
     const emitter = new SphereParticleEmitter(0.6);

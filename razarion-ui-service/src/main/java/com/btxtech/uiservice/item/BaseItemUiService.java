@@ -402,6 +402,18 @@ public class BaseItemUiService {
         return myBase != null && nativeSyncBaseItemTickInfo.baseId == myBase.getBaseId();
     }
 
+    /**
+     * Whether the item belongs to a player, the own or another one, and not to a bot. A base not
+     * known yet counts as a player's: bot bases are there from the start, a new player's base is
+     * the one that can arrive just after its first unit.
+     */
+    public boolean isPlayerProperty(NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo) {
+        synchronized (bases) {
+            PlayerBaseDto base = bases.get(nativeSyncBaseItemTickInfo.baseId);
+            return base == null || base.getCharacter() != Character.BOT;
+        }
+    }
+
     public boolean isMyEnemy(SyncBaseItemSimpleDto syncBaseItem) {
         try {
             return getBase(syncBaseItem).getCharacter() == Character.BOT;

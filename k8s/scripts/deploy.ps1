@@ -135,7 +135,7 @@ if ($applyExit -ne 0) {
 
 # Wait for rollout
 Write-Host "Waiting for rollout to complete..." -ForegroundColor Yellow
-kubectl rollout status deployment/razarion-server --timeout=120s
+kubectl rollout status deployment/razarion-server --timeout=300s
 
 # 6. Invalidate CDN Cache
 Write-Host "`n[6/6] Invalidating CDN cache..." -ForegroundColor Yellow
