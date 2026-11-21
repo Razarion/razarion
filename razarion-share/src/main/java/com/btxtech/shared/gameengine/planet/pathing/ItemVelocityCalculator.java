@@ -159,10 +159,36 @@ public class ItemVelocityCalculator {
 //                        onPathingChanged(syncBaseItem.getSyncPhysicalMovable(), otherSyncPhysicalMovable);
                     }
                 }
-            } else {
+            } else if (!isLeavingOwnFactory(orca.getSyncPhysicalMovable(), otherSyncItem)) {
                 orca.add(other);
             }
         });
+    }
+
+    /**
+     * A unit off the line is created inside its factory and drives out. Against the factory's own
+     * footprint ORCA can only push it out radially - from the centre in no direction at all - so the
+     * factory is left out while the unit overlaps it and heads outwards; the path leads it out of the
+     * door, and other buildings still count. Only an own factory and only outwards: a unit can leave
+     * a factory, never drive into one.
+     *
+     * <p>Pure function of positions and bases, so master and slaves decide alike without a sync.
+     */
+    private boolean isLeavingOwnFactory(SyncPhysicalMovable mover, SyncItem otherSyncItem) {
+        if (!(otherSyncItem instanceof SyncBaseItem) || ((SyncBaseItem) otherSyncItem).getSyncFactory() == null) {
+            return false;
+        }
+        if (!(mover.getSyncItem() instanceof SyncBaseItem)
+                || ((SyncBaseItem) mover.getSyncItem()).getBase() != ((SyncBaseItem) otherSyncItem).getBase()) {
+            return false;
+        }
+        AbstractSyncPhysical factory = otherSyncItem.getAbstractSyncPhysical();
+        if (!factory.overlap(mover.getPosition(), mover.getRadius())) {
+            return false;
+        }
+        DecimalPosition outwards = mover.getPosition().sub(factory.getPosition());
+        return outwards.equalsDeltaZero()
+                || DecimalPosition.zeroIfNull(mover.getPreferredVelocity()).dotProduct(outwards) >= 0;
     }
 
     /**

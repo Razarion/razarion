@@ -143,6 +143,99 @@ public class BaseJamTest extends ScenarioBaseTest {
         }
     }
 
+    /**
+     * A unit off the line is created inside the factory, where the build preview stood, and drives
+     * out to the rally point by itself - a real unit from the first moment, with shadow, sound and
+     * selection, instead of a preview sliding out and the unit set down on the rally point.
+     */
+    @Test
+    public void unitIsCreatedInTheFactoryAndDrivesOut() {
+        PlayerBaseFull playerBase = createBase();
+        SyncBaseItem factory = spawn(FallbackConfig.FACTORY_ITEM_TYPE_ID, FACTORY, playerBase);
+        DecimalPosition rallyPoint = factory.getSyncFactory().getRallyPoint();
+        getCommandService().fabricate(factory, getBaseItemType(FallbackConfig.ATTACKER_ITEM_TYPE_ID));
+        for (int i = 0; i < 2000 && playerBase.findItemsOfType(FallbackConfig.ATTACKER_ITEM_TYPE_ID).isEmpty(); i++) {
+            tickPlanetService();
+        }
+
+        SyncBaseItem unit = findSyncBaseItem(playerBase, FallbackConfig.ATTACKER_ITEM_TYPE_ID);
+        Assert.assertTrue("created at " + unit.getAbstractSyncPhysical().getPosition(),
+                unit.getAbstractSyncPhysical().getPosition().getDistance(FACTORY) < 0.5);
+        for (int i = 0; i < 300; i++) {
+            tickPlanetService();
+        }
+        SyncPhysicalMovable movable = unit.getSyncPhysicalMovable();
+        Assert.assertFalse("still moving at " + movable.getPosition(), movable.hasDestination());
+        Assert.assertFalse("gave up at " + movable.getPosition(), movable.isDestinationUnreachable());
+        double footprint = factory.getAbstractSyncPhysical().getRadius() + movable.getRadius();
+        Assert.assertTrue("still in the factory: " + movable.getPosition(), movable.getPosition().getDistance(FACTORY) >= footprint * 0.95);
+        Assert.assertTrue("not at the rally point: " + movable.getPosition() + " / " + rallyPoint, movable.getPosition().getDistance(rallyPoint) < 1.0);
+    }
+
+    /**
+     * What is told to a new unit the moment it is created - auto harvest, a bot, a quest - wins over
+     * the factory's own "drive out to the rally point". The drive out was queued after it at first
+     * and overwrote the harvest order: the harvester stood idle at the rally point.
+     */
+    @Test
+    public void newHarvesterGoesHarvestingNotToTheRallyPoint() {
+        PlayerBaseFull playerBase = createBase();
+        SyncBaseItem factory = spawn(FallbackConfig.FACTORY_ITEM_TYPE_ID, FACTORY, playerBase);
+        getResourceService().createResource(FallbackConfig.RESOURCE_ITEM_TYPE_ID, FACTORY.add(0, 15), 0);
+        getCommandService().fabricate(factory, getBaseItemType(FallbackConfig.HARVESTER_ITEM_TYPE_ID));
+        for (int i = 0; i < 2000 && playerBase.findItemsOfType(FallbackConfig.HARVESTER_ITEM_TYPE_ID).isEmpty(); i++) {
+            tickPlanetService();
+        }
+        SyncBaseItem harvester = findSyncBaseItem(playerBase, FallbackConfig.HARVESTER_ITEM_TYPE_ID);
+        boolean harvesting = false;
+        for (int i = 0; i < 600 && !harvesting; i++) {
+            tickPlanetService();
+            harvesting = harvester.getSyncHarvester().isHarvesting();
+        }
+        Assert.assertTrue("not harvesting, at " + harvester.getAbstractSyncPhysical().getPosition(), harvesting);
+    }
+
+    /**
+     * A queued unit is created only once the one before has left its spot in the factory - never
+     * into it - and every unit ends up outside the factory.
+     */
+    @Test
+    public void queuedUnitsLeaveTheFactory() {
+        PlayerBaseFull playerBase = createBase();
+        SyncBaseItem factory = spawn(FallbackConfig.FACTORY_ITEM_TYPE_ID, FACTORY, playerBase);
+        int count = 4;
+        for (int i = 0; i < count; i++) {
+            getCommandService().fabricate(factory, getBaseItemType(FallbackConfig.ATTACKER_ITEM_TYPE_ID));
+        }
+        double minGapInFactory = Double.MAX_VALUE;
+        for (int i = 0; i < 2000 && (factory.getSyncFactory().isActive() || i < 10); i++) {
+            tickPlanetService();
+            java.util.List<SyncBaseItem> inside = new java.util.ArrayList<>();
+            for (SyncBaseItem unit : playerBase.findItemsOfType(FallbackConfig.ATTACKER_ITEM_TYPE_ID)) {
+                if (unit.getAbstractSyncPhysical().getPosition().getDistance(FACTORY) < factory.getAbstractSyncPhysical().getRadius()) {
+                    inside.add(unit);
+                }
+            }
+            for (int a = 0; a < inside.size(); a++) {
+                for (int b = a + 1; b < inside.size(); b++) {
+                    minGapInFactory = Math.min(minGapInFactory, inside.get(a).getAbstractSyncPhysical().getPosition().getDistance(inside.get(b).getAbstractSyncPhysical().getPosition()));
+                }
+            }
+        }
+        for (int i = 0; i < 300; i++) {
+            tickPlanetService();
+        }
+        java.util.Collection<SyncBaseItem> units = playerBase.findItemsOfType(FallbackConfig.ATTACKER_ITEM_TYPE_ID);
+        Assert.assertEquals("units built", count, units.size());
+        double unitRadius = units.iterator().next().getAbstractSyncPhysical().getRadius();
+        Assert.assertTrue("two units in the factory " + minGapInFactory + " apart", minGapInFactory >= 2.0 * unitRadius * 0.9);
+        double footprint = factory.getAbstractSyncPhysical().getRadius() + unitRadius;
+        for (SyncBaseItem unit : units) {
+            Assert.assertTrue("still in the factory: " + unit.getAbstractSyncPhysical().getPosition(),
+                    unit.getAbstractSyncPhysical().getPosition().getDistance(FACTORY) >= footprint * 0.95);
+        }
+    }
+
     private void assertArrives(DecimalPosition start, DecimalPosition destination) {
         assertArrives(start, destination, 0, null);
     }

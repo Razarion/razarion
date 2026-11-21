@@ -23,7 +23,6 @@ import com.btxtech.shared.utils.MathHelper;
 
 import jakarta.inject.Inject;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -33,8 +32,8 @@ import java.util.List;
  */
 public class SyncFactory extends SyncBaseAbility {
     private static final double GIVE_UP_RELAY_MIN = Math.toRadians(5);
-    /** How many rings around the rally point a displaced unit may be sent to before giving up. */
-    private static final int DISPLACEMENT_RINGS = 4;
+    /** How many rings around the rally point are searched for a free spot for a unit off the line. */
+    private static final int EXIT_RINGS = 4;
     private static final double RELAY_POINT_DISTANCE = 2;
     /** Radius around a rally point candidate in which buildings are looked at: covers the largest
      * building radius (PROD 09/2026: 3.45) with room to spare. */
@@ -75,17 +74,23 @@ public class SyncFactory extends SyncBaseAbility {
      */
     private boolean inWarmup;
     /**
-     * Master-only: sentinel -1 = not in cooldown. >= 0 = ticks remaining after buildup reaches 1.0
-     * before the produced unit is actually created. Gives the client time to play the exit
-     * animation (preview unit sliding out of the factory).
+     * Master-only: ticks the finished unit has waited for the spawn spot inside the factory. The
+     * unit is created in the factory and drives out by itself; the next one is only created once the
+     * previous one has left the spot it would be created on ("door free"). This replaces the old
+     * fixed cooldown, in which a mere preview slid out and the real unit was set down on the rally
+     * point - without shadow, sound or selection, and on top of whatever stood there.
      */
-    private int cooldownTicksRemaining = -1;
+    private int spawnWaitTicks;
+    /** After this long the unit is created even though the spawn spot is still taken. */
+    private static final int MAX_SPAWN_WAIT_TICKS = 5 * PlanetService.TICKS_PER_SECONDS;
+    /** How often a unit of the own base standing idle on the spawn spot is sent out again. */
+    private static final int SPAWN_BLOCKER_NUDGE_TICKS = 2 * PlanetService.TICKS_PER_SECONDS;
     private DecimalPosition rallyPoint;
     /**
      * Throttle counter for the per-tick progress sync. A building factory used to mark itself dirty
-     * EVERY tick (warmup/build/cooldown), sending a full SyncBaseItemInfo 10x/s just to convey the
+     * EVERY tick (warmup/build), sending a full SyncBaseItemInfo 10x/s just to convey the
      * changing buildup float — the dominant gameConnection traffic when several factories build at
-     * once. The slave runs this same tick() locally and advances buildup itself (the buildup/cooldown
+     * once. The slave runs this same tick() locally and advances buildup itself (the buildup
      * branches below have no MASTER guard), so these syncs are only corrections and can be throttled
      * to every SYNC_THROTTLE_TICKS tick without making the build animation step.
      */
@@ -190,35 +195,15 @@ public class SyncFactory extends SyncBaseAbility {
             buildup += buildFactor;
             gameLogicService.onSyncFactoryProgress(getSyncBaseItem());
             // Throttled correction — the slave advances buildup with the same formula each tick.
-            // Force a send the moment buildup completes so the slave's cooldown starts in lock-step
-            // with the master's (which decides when the produced unit actually spawns).
+            // Force a send the moment buildup completes so the slave holds the finished state in
+            // lock-step with the master (which decides when the produced unit actually spawns).
             throttledNotify(buildup >= 1.0);
         }
         if (buildup >= 1.0) {
-            // Cooldown phase: delay unit creation so the client can play the exit animation
-            // (preview unit sliding out of the factory). Similar to SyncBuilder's cooldown.
-            if (cooldownTicksRemaining < 0) {
-                cooldownTicksRemaining = computeCooldownTicks();
-                // Kick the previous unit off the rally point now (start of cooldown), so it has
-                // the entire outro animation window to walk away. By the time we actually spawn
-                // the new unit at the end of cooldown, the rally point is typically already clear.
-                if (baseItemService.getGameEngineMode() == GameEngineMode.MASTER) {
-                    keepRallyPointClear();
-                    displaceUnitsAtRallyPoint();
-                }
-            }
-            if (cooldownTicksRemaining > 0) {
-                cooldownTicksRemaining--;
-                // No keep-alive during cooldown: progress is the constant buildup=1.0 (already sent on
-                // the forced build-complete tick), the client runs the exit animation on a timer
-                // (outroSeconds), and the slave counts its own cooldown down deterministically. The
-                // factory's final progress=0 is synced when the unit spawns (stop() + idle path).
-                return true;
-            }
-            // Cooldown done (or no cooldown configured) — create the unit.
+            // Built - create the unit inside the factory, it drives out by itself.
             //
-            // MASTER ONLY. The slave advances buildup/cooldown locally for a smooth animation, but it
-            // must NOT terminate the factory on its own local cooldown clock. The player who issued
+            // MASTER ONLY. The slave advances buildup locally for a smooth animation, but it
+            // must NOT terminate the factory on its own local clock. The player who issued
             // the FactoryCommand runs that local simulation ~RTT ahead of the master (executed the
             // command locally without the round-trip). If the slave reached the old `return false`
             // here, BaseItemService.tick() would call stop() on it, flipping the factory to inactive
@@ -228,12 +213,18 @@ public class SyncFactory extends SyncBaseAbility {
             // with the real unit's TickInfo.) Worse, the master's still-in-flight buildup corrections
             // then re-activate the factory and restart the whole build animation on the issuer.
             //
-            // Instead the slave stays active at buildup=1.0 (the client holds its outro/'exiting'
-            // state, preview parked on the rally point) and lets the master's authoritative
+            // Instead the slave stays active at buildup=1.0 (the client holds its 'finished' state,
+            // the solid preview standing in the factory) and lets the master's authoritative
             // stop()+spawn — bundled into a single TickInfo (see BaseItemService.createSyncBaseItem4Factory)
             // — drive termination. When that sync clears toBeBuiltType, isActive() goes false and the
             // ability ends in lock-step with the real unit appearing: an atomic preview->real handoff.
             if (baseItemService.getGameEngineMode() != GameEngineMode.MASTER) {
+                return true;
+            }
+            DecimalPosition spawnPosition = findSpawnPosition();
+            if (spawnPosition == null) {
+                // The previous unit (or another of the own base) still stands where this one is
+                // created. Hold at buildup=1.0 - the client keeps showing the finished preview.
                 return true;
             }
             // Buildability (level limitation + house space) was already checked before this unit's
@@ -241,11 +232,19 @@ public class SyncFactory extends SyncBaseAbility {
             // case the limit filled up DURING the build (e.g. another factory produced the same type):
             // drop the finished unit rather than spawning over-limit or holding forever at buildup=1.0.
             if (canProduce(toBeBuiltType)) {
-                // Spawn the unit directly at the rally point — the client's outro animation already
-                // slid the build preview from the factory center to this area.
+                // Created where the preview stood, facing the rally point, then sent out like any
+                // unit - so it has shadow, sound and selection on the way out, and the pathing
+                // makes it go around what stands in front of the factory.
                 double angle = getSyncBaseItem().getAbstractSyncPhysical().getPosition().getAngle(rallyPoint);
-                baseItemService.createSyncBaseItem4Factory(toBeBuiltType, rallyPoint, angle, (PlayerBaseFull) getSyncBaseItem().getBase(), getSyncBaseItem());
+                // Driving out is only the default: queued before quests, bots and auto harvest hear of
+                // the unit, so an order of theirs (a new harvester sent to a crystal) comes after it
+                // and wins. Queued after, it overwrote the harvest order and the harvester stood at
+                // the rally point.
+                boolean inFactory = spawnPosition.equals(getSyncBaseItem().getAbstractSyncPhysical().getPosition());
+                baseItemService.createSyncBaseItem4Factory(toBeBuiltType, spawnPosition, angle, (PlayerBaseFull) getSyncBaseItem().getBase(), getSyncBaseItem(),
+                        inFactory ? this::driveOut : null);
             }
+            spawnWaitTicks = 0;
             // Advance the queue: startNext() promotes the next unit that can actually be produced
             // (dropping any whose limit is exceeded) and force-syncs the transition — the spawned unit
             // and the next-build state ride the same TickInfo (atomic preview->real handoff). If
@@ -309,7 +308,7 @@ public class SyncFactory extends SyncBaseAbility {
         buildup = 0;
         inWarmup = false;
         warmupTicksRemaining = -1;
-        cooldownTicksRemaining = -1;
+        spawnWaitTicks = 0;
         toBeBuiltType = null;
         buildQueue.clear();
         gameLogicService.onSyncFactoryStopped(getSyncBaseItem());
@@ -340,7 +339,7 @@ public class SyncFactory extends SyncBaseAbility {
 
     /**
      * Promote the head of the build queue to the active build. Master only (called at spawn). Resets
-     * build/warmup/cooldown for the new unit and force-syncs so the slave leaves its held buildup=1.0
+     * build/warmup/spawn wait for the new unit and force-syncs so the slave leaves its held buildup=1.0
      * state and starts the next unit's animation in lock-step with the master.
      */
     private boolean startNext() {
@@ -355,7 +354,7 @@ public class SyncFactory extends SyncBaseAbility {
             }
             toBeBuiltType = next;
             buildup = 0;
-            cooldownTicksRemaining = -1;
+            spawnWaitTicks = 0;
             warmupTicksRemaining = computeWarmupTicks();
             inWarmup = warmupTicksRemaining > 0;
             // Force the first post-transition build tick to sync promptly (mirrors the warmup-exit path).
@@ -405,10 +404,6 @@ public class SyncFactory extends SyncBaseAbility {
         return Math.max(0, (int) Math.round(factoryType.getAnimationIntroSeconds() * PlanetService.TICKS_PER_SECONDS));
     }
 
-    private int computeCooldownTicks() {
-        return Math.max(0, (int) Math.round(factoryType.getAnimationOutroSeconds() * PlanetService.TICKS_PER_SECONDS));
-    }
-
     public double getBuildup() {
         return buildup;
     }
@@ -418,72 +413,86 @@ public class SyncFactory extends SyncBaseAbility {
     }
 
     /**
-     * If a previously-built unit is still parked on the rally point, send it a move command to a
-     * free spot nearby so the just-finished unit can take its place. Without this, two units would
-     * spawn overlapping each other and stay stuck because ORCA only resolves overlap during
-     * movement — two stationary units never push apart.
+     * Where the finished unit is created, or null while it has to wait. Master only.
      *
-     * Buildings can't move and are ignored; units already on the move keep their existing path
-     * (we don't overwrite — they'll clear the rally point on their own as they move out).
+     * <p>Normally the factory centre - where the client shows the preview, so the preview hands over
+     * to the real unit without a jump. The spot must be free: the unit before may still be on its way
+     * out. An own unit standing idle there is sent out (again); after {@link #MAX_SPAWN_WAIT_TICKS}
+     * the unit is created anyway rather than stalling the factory for good.
+     *
+     * <p>A unit the terrain does not allow at the centre - a ship in a dockyard standing on the shore -
+     * is created on a free spot at the rally point instead, as all units were before.
      */
-    private void displaceUnitsAtRallyPoint() {
+    private DecimalPosition findSpawnPosition() {
+        DecimalPosition center = getSyncBaseItem().getAbstractSyncPhysical().getPosition();
         double radius = toBeBuiltType.getPhysicalAreaConfig().getRadius();
-        Collection<SyncBaseItem> overlapping = syncItemContainerService.findBaseItemsOverlapping(rallyPoint, radius, getSyncBaseItem());
-        if (overlapping.isEmpty()) {
-            return;
-        }
         TerrainType terrainType = toBeBuiltType.getPhysicalAreaConfig().getTerrainType();
-        for (SyncBaseItem occupant : overlapping) {
-            if (!occupant.getAbstractSyncPhysical().canMove()) {
-                continue;
+        if (!terrainService.getTerrainAnalyzer().isTerrainTypeAllowed(terrainType, center, radius)) {
+            keepRallyPointClear();
+            DecimalPosition exit = findExitDestination(radius, terrainType, null);
+            return exit != null ? exit : rallyPoint;
+        }
+        List<SyncBaseItem> blockers = new ArrayList<>();
+        for (SyncBaseItem item : syncItemContainerService.findBaseItemsOverlapping(center, radius, getSyncBaseItem())) {
+            if (item.getAbstractSyncPhysical().canMove()) {
+                blockers.add(item);
             }
-            // Only displace genuinely idle units — don't yank attackers, harvesters, or units already
-            // moving somewhere. Active units will clear the rally point on their own (or ORCA resolves
-            // any brief overlap once they move).
-            if (!occupant.isIdle()) {
-                continue;
-            }
-            DecimalPosition freeSpot = findDisplacementSpot(occupant, terrainType);
-            if (freeSpot != null) {
-                try {
-                    commandService.move(occupant, freeSpot);
-                } catch (Exception e) {
-                    // Move command can fail if the path becomes unreachable mid-tick. Not fatal —
-                    // worst case the new unit overlaps the occupant and ORCA sorts it out the next
-                    // time either of them moves.
+        }
+        if (blockers.isEmpty() || spawnWaitTicks >= MAX_SPAWN_WAIT_TICKS) {
+            keepRallyPointClear();
+            return center;
+        }
+        if (spawnWaitTicks % SPAWN_BLOCKER_NUDGE_TICKS == 0) {
+            for (SyncBaseItem blocker : blockers) {
+                if (blocker.getBase() == getSyncBaseItem().getBase() && blocker.isIdle()) {
+                    driveOut(blocker);
                 }
             }
+        }
+        spawnWaitTicks++;
+        return null;
+    }
+
+    /** Sends a unit standing in the factory to a free spot at the rally point. Master only. */
+    private void driveOut(SyncBaseItem unit) {
+        double radius = unit.getAbstractSyncPhysical().getRadius();
+        DecimalPosition destination = findExitDestination(radius, unit.getAbstractSyncPhysical().getTerrainType(), unit);
+        try {
+            commandService.move(unit, destination != null ? destination : rallyPoint);
+        } catch (Exception e) {
+            // No way out found this tick: the unit stays in the factory, the next finished unit waits
+            // for the spot and nudges it again (findSpawnPosition).
         }
     }
 
     /**
-     * Search radial angles around the occupant for a position that's terrain-allowed for its
-     * physical area, far enough from the rally point that it won't be re-displaced next tick.
+     * The rally point if it is free, else the first free spot on rings around it, starting on the
+     * side away from the factory. Free means: terrain allowed, no item on it, and no unit of the own
+     * base on its way there - so units off the line do not drive onto each other.
+     *
+     * @param unit the unit that will go there, ignored when looking at occupants; null for a unit not
+     *             created yet
+     * @return null if nothing free was found
      */
-    private DecimalPosition findDisplacementSpot(SyncBaseItem occupant, TerrainType terrainType) {
-        double occupantRadius = occupant.getAbstractSyncPhysical().getRadius();
-        double newUnitRadius = toBeBuiltType.getPhysicalAreaConfig().getRadius();
-        double distance = newUnitRadius + occupantRadius + 2.0 * PathingService.STOP_DETECTION_NEIGHBOUR_DISTANCE;
-        DecimalPosition occupantPos = occupant.getAbstractSyncPhysical().getPosition();
-        // Start by trying the direction occupant is already pushed to (away from rally), then sweep.
-        // If occupant sits exactly on the rally point, fall back to +X.
-        double baseAngle = rallyPoint.equals(occupantPos) ? 0 : rallyPoint.getAngle(occupantPos);
-        // The spot has to be free of units too, and of the spots units are on their way to. Terrain
-        // alone was not enough: a unit fresh off the line sits exactly on the rally point, so every
-        // displaced unit got angle 0 and the same spot - the third Viper drove onto the second, the
-        // fourth onto both. Rings further out when the first one is full.
-        for (int ring = 0; ring < DISPLACEMENT_RINGS; ring++) {
-            double ringDistance = distance + ring * (2.0 * occupantRadius + PathingService.STOP_DETECTION_NEIGHBOUR_DISTANCE);
+    private DecimalPosition findExitDestination(double radius, TerrainType terrainType, SyncBaseItem unit) {
+        if (isFreeExitSpot(rallyPoint, radius, terrainType, unit)) {
+            return rallyPoint;
+        }
+        DecimalPosition factoryPos = getSyncBaseItem().getAbstractSyncPhysical().getPosition();
+        double baseAngle = factoryPos.equals(rallyPoint) ? 0 : factoryPos.getAngle(rallyPoint);
+        double distance = 2.0 * radius + 2.0 * PathingService.STOP_DETECTION_NEIGHBOUR_DISTANCE;
+        for (int ring = 0; ring < EXIT_RINGS; ring++) {
+            double ringDistance = distance + ring * (2.0 * radius + PathingService.STOP_DETECTION_NEIGHBOUR_DISTANCE);
             double delta = MathHelper.QUARTER_RADIANT;
             while (delta > GIVE_UP_RELAY_MIN) {
-                for (double angle = 0; angle <= MathHelper.ONE_RADIANT; angle += delta) {
+                for (double angle = 0; angle <= MathHelper.HALF_RADIANT; angle += delta) {
                     DecimalPosition candidate = rallyPoint.getPointWithDistance(MathHelper.normaliseAngle(baseAngle + angle), ringDistance);
-                    if (isFreeDisplacementSpot(candidate, occupant, terrainType)) {
+                    if (isFreeExitSpot(candidate, radius, terrainType, unit)) {
                         return candidate;
                     }
                     if (angle > 0) {
                         candidate = rallyPoint.getPointWithDistance(MathHelper.normaliseAngle(baseAngle - angle), ringDistance);
-                        if (isFreeDisplacementSpot(candidate, occupant, terrainType)) {
+                        if (isFreeExitSpot(candidate, radius, terrainType, unit)) {
                             return candidate;
                         }
                     }
@@ -494,17 +503,16 @@ public class SyncFactory extends SyncBaseAbility {
         return null;
     }
 
-    private boolean isFreeDisplacementSpot(DecimalPosition candidate, SyncBaseItem occupant, TerrainType terrainType) {
-        double radius = occupant.getAbstractSyncPhysical().getRadius();
+    private boolean isFreeExitSpot(DecimalPosition candidate, double radius, TerrainType terrainType, SyncBaseItem unit) {
         if (!terrainService.getTerrainAnalyzer().isTerrainTypeAllowed(terrainType, candidate, radius)) {
             return false;
         }
-        if (!syncItemContainerService.findBaseItemsOverlapping(candidate, radius, occupant).isEmpty()) {
+        if (!syncItemContainerService.findBaseItemsOverlapping(candidate, radius, unit).isEmpty()) {
             return false;
         }
-        // A unit sent away a moment ago is still on its way: its target counts as taken.
+        // A unit sent out a moment ago is still on its way: its target counts as taken.
         for (SyncBaseItem other : ((PlayerBaseFull) getSyncBaseItem().getBase()).getItems()) {
-            if (other == occupant || !other.getAbstractSyncPhysical().canMove()) {
+            if (other == unit || !other.getAbstractSyncPhysical().canMove()) {
                 continue;
             }
             DecimalPosition destination = other.getSyncPhysicalMovable().getFinalDestination();

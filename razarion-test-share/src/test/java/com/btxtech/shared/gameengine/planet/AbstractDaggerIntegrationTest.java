@@ -112,7 +112,7 @@ public class AbstractDaggerIntegrationTest {
     }
 
     public ResourceService getResourceService() {
-        return getWeldBean(ResourceService.class);
+        return getTestShareDagger().resourceService();
     }
 
     public QuestService getQuestService() {

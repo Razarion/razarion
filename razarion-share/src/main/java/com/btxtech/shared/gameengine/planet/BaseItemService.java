@@ -422,7 +422,12 @@ public class BaseItemService {
         }
     }
 
-    public SyncBaseItem createSyncBaseItem4Factory(BaseItemType toBeBuilt, DecimalPosition position, double angle, PlayerBaseFull base, SyncBaseItem createdBy) throws NoSuchItemTypeException, ItemLimitExceededException, HouseSpaceExceededException {
+    /**
+     * @param beforeAnnounced runs on the new unit before quests, bots and auto harvest hear of it, so
+     *                        an order the factory gives it (drive out) is queued before theirs and
+     *                        theirs wins. May be null.
+     */
+    public SyncBaseItem createSyncBaseItem4Factory(BaseItemType toBeBuilt, DecimalPosition position, double angle, PlayerBaseFull base, SyncBaseItem createdBy, java.util.function.Consumer<SyncBaseItem> beforeAnnounced) throws NoSuchItemTypeException, ItemLimitExceededException, HouseSpaceExceededException {
         if (!terrainService.getTerrainAnalyzer().isTerrainTypeAllowed(toBeBuilt.getPhysicalAreaConfig().getTerrainType(), position, toBeBuilt.getPhysicalAreaConfig().getRadius())) {
             throw new TerrainTypeNotAllowedException("BaseItemService.createSyncBaseItem4Factory() " + toBeBuilt + " " + position);
         }
@@ -438,6 +443,9 @@ public class BaseItemService {
         // leaving a visible gap where no unit is shown. Bundling both into one TickInfo makes the
         // preview->real handoff atomic on the client (mirrors spawnSyncBaseItem()).
         syncService.notifySendSyncBaseItem(syncBaseItem);
+        if (beforeAnnounced != null) {
+            beforeAnnounced.accept(syncBaseItem);
+        }
         gameLogicService.onFactorySyncItem(syncBaseItem, createdBy);
         return syncBaseItem;
     }

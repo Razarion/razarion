@@ -231,6 +231,14 @@ public class SyncPhysicalMovable extends AbstractSyncPhysical {
      * no path left to evaluate.
      */
     private boolean trackApproachAndGiveUp() {
+        // Turning on the spot is not circling: setupPreferredVelocity brakes to a stand while the
+        // unit faces more than 45 degrees off, so a unit with its goal behind it does not get closer
+        // until it has turned. A Hydra (1 rad/s) needs 3 s for a turn about, a Transporter 6 s - both
+        // longer than the threshold, so they gave up before they set off. A new unit faces its rally
+        // point, so every order behind the factory starts with such a turn.
+        if (MathHelper.getAngle(getAngle(), desiredMoveAngle) > Math.PI / 4) {
+            return false;
+        }
         double distance = getPosition().getDistance(path.getCurrentWayPoint());
         if (Double.isNaN(bestApproachDistance) || distance < bestApproachDistance - APPROACH_PROGRESS_DISTANCE) {
             bestApproachDistance = distance;

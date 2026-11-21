@@ -109,13 +109,12 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
   private cleanedUp = false;
   private isExploding = false;
   private damageEffect: BabylonDamageEffect | null = null;
-  private factoryBuildPhase: 'idle' | 'intro' | 'progress' | 'exiting' = 'idle';
+  private factoryBuildPhase: 'idle' | 'intro' | 'progress' | 'finished' = 'idle';
   private factoryScanEffect: BabylonBuildupEffect | null = null;
   // Preview model of the unit currently being built by this factory (null when idle).
   private factoryBuildPreviewRenderObject: RenderObject | null = null;
   private factoryBuildPreviewBuildupEffect: BabylonBuildupEffect | null = null;
   private factoryBuildPreviewTypeId: number = 0;
-  private factoryExitCallback: (() => void) | null = null;
   // Server-provided rally point in game coords (DecimalPosition.x → world X, .y → world Z).
   // Null until the first tick after factory creation. Used by the outro animation so the build
   // preview slides to the actual spawn position instead of the static FactoryType offset.
@@ -384,7 +383,6 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
     this.damageEffect = null;
     this.factoryBuildPhase = 'idle';
     this.disposeFactoryScanEffect();
-    this.stopFactoryExitAnimation();
     this.disposeFactoryBuildPreview();
     this.nameVisibilitySubscription?.unsubscribe();
     this.nameVisibilitySubscription = null;
@@ -494,6 +492,7 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
   }
 
   setConstructing(progress: number, constructingBaseItemTypeId: number): void {
+    const previousProgress = this.progress;
     this.progress = Math.max(0, progress);
 
     const renderObject = this.getRenderObject();
@@ -501,30 +500,15 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
     // Factory build animation: intro (platform goes down) then progress-scrubbed (platform rises).
     // progress < 0 is the master's warmup sentinel (see SyncFactory.fillSyncItemInfo).
     if (renderObject.hasProgressAnimation()) {
-      // Build-queue transition: with a queue, the server jumps the factory straight from a finished
-      // unit (progress reached 1.0 -> 'exiting') into the next unit's cycle (warmup progress < 0, or a
-      // fresh low progress) WITHOUT the progress===0 stop that ends a single build. Without this reset
-      // the state machine would stay stuck in 'exiting' and every unit after the first would build
-      // invisibly. Reset to 'idle' so the branches below replay intro/progress for the next unit.
-      if (this.factoryBuildPhase === 'exiting' && progress < 1.0) {
-        this.factoryBuildPhase = 'idle';
-        renderObject.setBuildAnimationActive(false);
-        this.stopBuildSound();
-        this.disposeFactoryScanEffect();
-        this.stopFactoryExitAnimation();
-        // Hand off the just-finished unit's preview: it already slid to the rally point and the real
-        // unit is arriving on a separate sync. Capture its refs (the next unit will repopulate these
-        // fields with a fresh preview) and dispose shortly after so the real unit takes over without
-        // a blink.
-        const prevPreviewEffect = this.factoryBuildPreviewBuildupEffect;
-        const prevPreviewRenderObject = this.factoryBuildPreviewRenderObject;
-        this.factoryBuildPreviewBuildupEffect = null;
-        this.factoryBuildPreviewRenderObject = null;
-        this.factoryBuildPreviewTypeId = 0;
-        setTimeout(() => {
-          prevPreviewEffect?.cleanup();
-          prevPreviewRenderObject?.dispose();
-        }, 300);
+      // Hand-off: the master created the finished unit inside the factory - where the preview stands -
+      // and moved on: to the next unit of the queue (warmup progress < 0, or a fresh low progress) or
+      // to idle (progress 0). The real unit arrives in the same tick, so the preview goes now; it
+      // drives out by itself. Also from 'progress': the client does not always see the 1.0 before
+      // the master moves on.
+      const nextCycle = progress < 0 || progress < previousProgress - 0.5;
+      if ((this.factoryBuildPhase === 'finished' && progress < 1.0)
+        || (this.factoryBuildPhase === 'progress' && progress !== 0 && nextCycle)) {
+        this.endFactoryBuildCycle();
       }
 
       // Resume mid-build after a recreate: the item was culled out of view while building and the
@@ -555,15 +539,8 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
       } else if (progress < 0) {
         // Still in warmup phase (server intro) — skip, intro animation is already playing.
       } else if (progress === 0 && this.factoryBuildPhase !== 'idle') {
-        // Factory stopped (cooldown done or warmup cancelled): cleanup animations immediately,
-        // but delay the preview disposal by 500ms so the real unit (arriving via a separate sync
-        // channel) has time to appear — avoids a visible "blink" between preview and real unit.
-        this.factoryBuildPhase = 'idle';
-        renderObject.setBuildAnimationActive(false);
-        this.stopBuildSound();
-        this.disposeFactoryScanEffect();
-        this.stopFactoryExitAnimation();
-        setTimeout(() => this.disposeFactoryBuildPreview(), 300);
+        // Factory stopped (unit created or warmup cancelled).
+        this.endFactoryBuildCycle();
       } else if (this.factoryBuildPhase === 'progress') {
         renderObject.setProgressAnimationValue(progress);
         this.startFactoryScanEffect();
@@ -571,18 +548,19 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
         this.startFactoryBuildPreview(constructingBaseItemTypeId);
         this.updateFactoryBuildPreview(progress);
         if (progress >= 1.0) {
-          // Build complete — enter outro (exit animation). The server is now in cooldown phase
-          // and keeps sending progress=1.0. When cooldown ends, server sends progress=0 and
-          // the progress===0 branch above cleans up.
-          this.factoryBuildPhase = 'exiting';
+          // Built. The preview stands finished in the factory until the master creates the real
+          // unit there (it may wait for the unit before to leave the spot); the hand-off above
+          // then replaces it.
+          this.factoryBuildPhase = 'finished';
           renderObject.setBuildAnimationActive(false);
           this.stopBuildSound();
           this.disposeFactoryScanEffect();
-          this.startFactoryExitAnimation();
+          if (this.factoryBuildPreviewBuildupEffect?.isInitialized()) {
+            this.factoryBuildPreviewBuildupEffect.complete();
+          }
         }
       }
-      // 'exiting' phase: exit animation is running (render callback). Server sends 1.0 during
-      // cooldown which we ignore. When server sends 0, the progress===0 branch cleans up.
+      // 'finished': the master holds 1.0 until the unit is created.
     }
 
     this.handleConstructing();
@@ -775,68 +753,13 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
     this.factoryBuildPreviewTypeId = 0;
   }
 
-  /**
-   * Slides the build preview from the factory center toward the factory's forward direction over
-   * animationOutroSeconds. The preview is made fully solid first (buildup effect completed). The
-   * actual cleanup happens when the server sends progress=0 (cooldown done, factory stopped).
-   */
-  private startFactoryExitAnimation(): void {
-    if (!this.factoryBuildPreviewRenderObject) {
-      return;
-    }
-    // Make the preview fully solid by completing the buildup effect (restores original materials)
-    if (this.factoryBuildPreviewBuildupEffect?.isInitialized()) {
-      this.factoryBuildPreviewBuildupEffect.complete();
-    }
-
-    const previewModel = this.factoryBuildPreviewRenderObject.getModel3D();
-    // Detach the preview from the factory and reparent it to the world container so the slide
-    // animation runs in pure world space. The factory's container has both a translation and a
-    // rotation (game gameAngle → babylonRotY = PI/2 - gameAngle), so leaving the preview parented
-    // means the rendered model is offset from the pivot by the factory's local→world transform.
-    // The spawned unit, however, lives directly under baseItemContainer with no such offset, so
-    // pivot-aligning the preview to the rally point (via parent-relative position math) leaves a
-    // visual gap of up to a model-radius, which the user sees as a "jump back" of 1–2 m once the
-    // real unit takes over. Reparenting eliminates the parent transform from the equation.
-    previewModel.computeWorldMatrix(true);
-    const previewWorldRotY = previewModel.absoluteRotationQuaternion
-      ? previewModel.absoluteRotationQuaternion.toEulerAngles().y
-      : (this.getContainer().rotation?.y || 0);
-    const startWorldPos = previewModel.absolutePosition.clone();
-    previewModel.setParent(this.rendererService.baseItemContainer);
-    previewModel.position = startWorldPos.clone();
-    previewModel.rotationQuaternion = null;
-    previewModel.rotation.y = previewWorldRotY;
-
-    let endWorldPos: Vector3;
-    if (this.factoryRallyPointGameX !== null && this.factoryRallyPointGameZ !== null) {
-      // Server-provided rally point in game coords (DecimalPosition.x → world X, .y → world Z).
-      endWorldPos = new Vector3(this.factoryRallyPointGameX, startWorldPos.y, this.factoryRallyPointGameZ);
-    } else {
-      const exitDistance = this.baseItemType.getPhysicalAreaConfig().getRadius() * 2.5;
-      const forward = this.getContainer().forward.clone();
-      endWorldPos = startWorldPos.add(forward.scale(exitDistance));
-    }
-
-    const outroSeconds = this.baseItemType.getFactoryType()?.getAnimationOutroSeconds() || 1.5;
-    const durationMs = outroSeconds * 1000;
-    const startTime = Date.now();
-
-    this.factoryExitCallback = () => {
-      const elapsed = Date.now() - startTime;
-      const t = Math.min(elapsed / durationMs, 1.0);
-      // Ease-out curve for natural deceleration
-      const eased = 1 - (1 - t) * (1 - t);
-      previewModel.position = Vector3.Lerp(startWorldPos, endWorldPos, eased);
-    };
-    this.rendererService.getScene().registerBeforeRender(this.factoryExitCallback);
-  }
-
-  private stopFactoryExitAnimation(): void {
-    if (this.factoryExitCallback) {
-      this.rendererService.getScene().unregisterBeforeRender(this.factoryExitCallback);
-      this.factoryExitCallback = null;
-    }
+  /** Ends the build cycle shown on the factory: outro, sound and scan plate off, preview gone. */
+  private endFactoryBuildCycle(): void {
+    this.factoryBuildPhase = 'idle';
+    this.getRenderObject().setBuildAnimationActive(false);
+    this.stopBuildSound();
+    this.disposeFactoryScanEffect();
+    this.disposeFactoryBuildPreview();
   }
 
   onProjectileFired(targetSyncBaseItemId: number, targetPosition: DecimalPosition): void {
