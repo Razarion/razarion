@@ -26,12 +26,23 @@ public class ProgressController {
     private final ProgressSaveService progressSaveService;
     private final FacebookLoginService facebookLoginService;
     private final String publicUrl;
+    /**
+     * Whether players are offered "Continue with Facebook" at all. Off by default, also with the
+     * secret set: Meta grants public_profile to people outside the app's own roles only after a
+     * business verification, which this project cannot pass (2026-11-22). Until then every player
+     * who pressed the button landed on an error in Facebook's dialog and never came back - 25
+     * attempts on PROD, not one saved. The rest of the Facebook code stays, including the data
+     * deletion callback, for the day this is switched back on.
+     */
+    private final boolean facebookOffered;
 
     public ProgressController(ProgressSaveService progressSaveService,
                               FacebookLoginService facebookLoginService,
-                              @org.springframework.beans.factory.annotation.Value("${razarion.public-url:https://www.razarion.com}") String publicUrl) {
+                              @org.springframework.beans.factory.annotation.Value("${razarion.public-url:https://www.razarion.com}") String publicUrl,
+                              @org.springframework.beans.factory.annotation.Value("${razarion.facebook.login-offered:false}") boolean facebookOffered) {
         this.progressSaveService = progressSaveService;
         this.facebookLoginService = facebookLoginService;
+        this.facebookOffered = facebookOffered;
         this.publicUrl = publicUrl.endsWith("/") ? publicUrl.substring(0, publicUrl.length() - 1) : publicUrl;
     }
 
@@ -43,7 +54,7 @@ public class ProgressController {
 
     @GetMapping("state")
     public Map<String, Boolean> state() {
-        return Map.of("saved", progressSaveService.isSaved(), "facebook", facebookLoginService.isEnabled());
+        return Map.of("saved", progressSaveService.isSaved(), "facebook", facebookOffered && facebookLoginService.isEnabled());
     }
 
     @PostMapping("offered")
@@ -65,7 +76,7 @@ public class ProgressController {
     /** "Continue with Facebook": off to Facebook's login dialog. */
     @GetMapping("facebook/start")
     public ResponseEntity<Void> facebookStart() {
-        String url = facebookLoginService.startUrl();
+        String url = facebookOffered ? facebookLoginService.startUrl() : null;
         if (url == null) {
             return toGame("failed");
         }

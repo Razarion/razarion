@@ -59,7 +59,7 @@ public class RegisterService {
             model.put("razarionTeam", "The Razarion Team");
 
             Template template = freemarkerConfig.getTemplate("registration-confirmation.ftl");
-            helper.setText(FreeMarkerTemplateUtils.processTemplateIntoString(template, model), true);
+            helper.setText(plainText(model), FreeMarkerTemplateUtils.processTemplateIntoString(template, model));
             mailSender.send(message);
         } catch (Exception e) {
             throw new RuntimeException("Failed to send the progress link", e);
@@ -86,12 +86,26 @@ public class RegisterService {
             Template template = freemarkerConfig.getTemplate("registration-confirmation.ftl");
             String html = FreeMarkerTemplateUtils.processTemplateIntoString(template, model);
 
-            helper.setText(html, true);
+            helper.setText(plainText(model), html);
 
             mailSender.send(message);
 
         } catch (Exception e) {
             throw new RuntimeException("Failed to send verification email", e);
         }
+    }
+
+    /**
+     * The same mail as plain text, sent alongside the HTML. A mail that is HTML only scores as spam
+     * in the common filters (SpamAssassin MIME_HTML_ONLY), and "save your progress" is a mail the
+     * player is waiting for: of the first nine who asked for one on PROD, four never opened the link
+     * (2026-11-17..22).
+     */
+    static String plainText(Map<String, Object> model) {
+        return model.get("greeting") + "\n\n"
+                + model.get("main") + "\n\n"
+                + model.get("link") + "\n\n"
+                + model.get("closing") + "\n\n"
+                + model.get("razarionTeam") + "\n";
     }
 }
