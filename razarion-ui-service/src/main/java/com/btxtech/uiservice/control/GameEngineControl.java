@@ -110,6 +110,15 @@ import java.util.logging.Logger;
         }
     }
 
+    /**
+     * Lets a SLAVE worker open its game connection now rather than at #start, so the world the
+     * server sends is in by the time the engine starts. Must follow #init: the worker reads the
+     * mode from INITIALIZE, and ignores this for a MASTER.
+     */
+    public void preconnect(String bearerToken) {
+        sendToWorker(GameEngineControlPackage.Command.PRECONNECT, bearerToken);
+    }
+
     protected boolean isSharedBufferMode() {
         return false;
     }

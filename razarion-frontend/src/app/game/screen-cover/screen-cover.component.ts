@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, NgZone} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, NgZone} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {Card} from 'primeng/card';
 import {PrimeTemplate} from 'primeng/api';
@@ -26,7 +26,7 @@ export class ScreenCoverComponent implements ScreenCover, AfterViewInit {
    */
   loadingProgress: number | null = null;
 
-  constructor(private zone: NgZone, public babylonModelService: BabylonModelService) {
+  constructor(private zone: NgZone, public babylonModelService: BabylonModelService, private elementRef: ElementRef<HTMLElement>) {
   }
 
   /**
@@ -37,7 +37,7 @@ export class ScreenCoverComponent implements ScreenCover, AfterViewInit {
    * removing the page's one once ours is actually painted is the whole of the handover.
    */
   ngAfterViewInit(): void {
-    requestAnimationFrame(() => removeSplash());
+    requestAnimationFrame(() => removeSplash(this.elementRef.nativeElement.querySelector('.cover-progress-well')));
   }
 
   removeLoadingCover(): void {

@@ -16,7 +16,16 @@
 /**
  * Take the page's loading screen away. Called once Angular's own cover is up, so there is no
  * moment without something on screen.
+ *
+ * The landing-cell picker (index.html, arm land=pick) is the one part that moves over instead of
+ * going: by now the choice is closed or about to be, and the picker is what tells the player where
+ * he lands until the game is there. Placed before `before`, the cover's progress well, so it sits
+ * where it sat on the page's card.
  */
-export function removeSplash(): void {
+export function removeSplash(before?: Element | null): void {
+  const picker = document.getElementById('raz-land');
+  if (picker && !picker.hidden && before?.parentNode) {
+    before.parentNode.insertBefore(picker, before);
+  }
   document.getElementById('raz-boot')?.remove();
 }

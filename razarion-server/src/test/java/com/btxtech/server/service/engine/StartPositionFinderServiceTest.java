@@ -169,4 +169,67 @@ class StartPositionFinderServiceTest {
         assertEquals(path.get(32), found);
         assertTrue(world.get(found) == 0);
     }
+
+    // Two landing cells as on PROD: points 21 m apart within a cell, some 100 m between cells.
+    private static final DecimalPosition A1 = new DecimalPosition(25, 120);
+    private static final DecimalPosition A2 = new DecimalPosition(46, 120);
+    private static final DecimalPosition A3 = new DecimalPosition(67, 120);
+    private static final DecimalPosition B1 = new DecimalPosition(164, 120);
+    private static final DecimalPosition B2 = new DecimalPosition(185, 120);
+
+    @Test
+    void cutsThePathIntoCellsAtTheGaps() {
+        List<StartPositionFinderService.LandingCell> cells = StartPositionFinderService.landingCells(List.of(A1, A2, A3, B1, B2));
+
+        assertEquals(2, cells.size());
+        assertEquals(List.of(A1, A2, A3), cells.get(0).slots());
+        assertEquals(List.of(B1, B2), cells.get(1).slots());
+        assertEquals(new DecimalPosition(46, 120), cells.get(0).center());
+        assertEquals(1, cells.get(1).index());
+    }
+
+    @Test
+    void aChosenCellLimitsTheSearchToItEvenWhenAnotherIsEmptier() {
+        // The player wants to land next to the others in cell B, although cell A is empty.
+        Map<DecimalPosition, Integer> world = new HashMap<>();
+        world.put(B1, 4);
+        world.put(B2, 3);
+
+        DecimalPosition found = serviceWith(world).findFreePosition(config(2, A1, A2, A3, B1, B2), 1);
+
+        assertEquals(B2, found);
+    }
+
+    @Test
+    void aCellThePathDoesNotHaveIsIgnored() {
+        Map<DecimalPosition, Integer> world = new HashMap<>();
+        world.put(A1, 1);
+        world.put(A2, 1);
+        world.put(A3, 1);
+
+        Set<DecimalPosition> found = new HashSet<>();
+        StartPositionFinderService service = serviceWith(world);
+        for (int i = 0; i < 50; i++) {
+            found.add(service.findFreePosition(config(2, A1, A2, A3, B1, B2), 7));
+        }
+
+        assertEquals(Set.of(B1, B2), found);
+    }
+
+    @Test
+    void theOverviewRecommendsTheCellOfTheFirstEmptiestPoint() {
+        Map<DecimalPosition, Integer> world = new HashMap<>();
+        world.put(A1, 2);
+        world.put(A2, 1);
+        world.put(A3, 2);
+
+        StartPositionFinderService.LandingOverview overview = serviceWith(world)
+                .landingOverview(config(2, A1, A2, A3, B1, B2));
+
+        assertEquals(2, overview.cells().size());
+        assertEquals(1, overview.recommended());
+        assertEquals(1, overview.cells().get(0).emptiestItems());
+        assertEquals(0, overview.cells().get(1).emptiestItems());
+        assertEquals(3, overview.cells().get(0).slots());
+    }
 }

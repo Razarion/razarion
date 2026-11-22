@@ -3,13 +3,16 @@ package com.btxtech.server.service.engine;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.SlavePlanetConfig;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerServiceImpl;
+import com.btxtech.shared.gameengine.datatypes.Character;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -20,6 +23,8 @@ import java.util.concurrent.ThreadLocalRandom;
 public class StartPositionFinderService {
     /** How many of the emptiest points, counted from the start of the path, a player may land on. */
     static final int FILL_WINDOW = 4;
+    /** Points of one landing cell are 21 m apart, cells some 100 m - see #landingCells. */
+    static final double CELL_GAP = 40;
     private final Logger logger = LoggerFactory.getLogger(StartPositionFinderService.class);
     private final SyncItemContainerServiceImpl syncItemContainerService;
 
@@ -53,14 +58,30 @@ public class StartPositionFinderService {
      * a median of seven. The old line reported that pass at 0 ms.
      */
     public DecimalPosition findFreePosition(SlavePlanetConfig slavePlanetConfig) {
+        return findFreePosition(slavePlanetConfig, null);
+    }
+
+    /**
+     * The same, limited to one landing cell when the player chose one on the loading screen - see
+     * LandingController. A cell the path does not have is ignored. The player chose it, so the
+     * emptiest point of that cell is returned however crowded it is.
+     */
+    public DecimalPosition findFreePosition(SlavePlanetConfig slavePlanetConfig, Integer landingCell) {
         if (slavePlanetConfig.getPositionRadius() == null || slavePlanetConfig.getPositionMaxItems() == null) {
             throw new RuntimeException("Position radius or maxItems not set");
         }
 
         long startTime = System.currentTimeMillis();
+        List<DecimalPosition> path = slavePlanetConfig.getPositionPath();
+        List<LandingCell> cells = landingCells(path);
+        if (landingCell != null && landingCell >= 0 && landingCell < cells.size()) {
+            path = cells.get(landingCell).slots();
+        } else {
+            landingCell = null;
+        }
         List<DecimalPosition> emptiest = new ArrayList<>();
         int lowestCount = Integer.MAX_VALUE;
-        for (DecimalPosition position : slavePlanetConfig.getPositionPath()) {
+        for (DecimalPosition position : path) {
             int count = countBaseItems(position, slavePlanetConfig.getPositionRadius());
             if (count < lowestCount) {
                 lowestCount = count;
@@ -79,6 +100,11 @@ public class StartPositionFinderService {
         // new player next to the others. The window keeps the random spread for players who arrive
         // within the same few seconds.
         DecimalPosition positionFound = emptiest.get(ThreadLocalRandom.current().nextInt(Math.min(FILL_WINDOW, emptiest.size())));
+        if (landingCell != null) {
+            logger.info("Free position found at {} items {} in chosen landing cell {} duration {}",
+                    positionFound, lowestCount, landingCell, System.currentTimeMillis() - startTime);
+            return positionFound;
+        }
         if (lowestCount > slavePlanetConfig.getPositionMaxItems()) {
             // Still the emptiest spawn point: the client's own fallback is a random point in the
             // start region that checks nothing at all, which is worse than a crowded one.
@@ -92,6 +118,89 @@ public class StartPositionFinderService {
                 positionFound, lowestCount, emptiest.size(), slavePlanetConfig.getPositionPath().size(),
                 System.currentTimeMillis() - startTime);
         return positionFound;
+    }
+
+    /**
+     * What the loading screen offers: the landing cells of the spawn path, how many players have a
+     * base in each, and the cell the server would send this player to if he chose nothing (the
+     * cell of the first emptiest point - findFreePosition picks at random among the first few of
+     * those, which is nearly always the same cell).
+     */
+    public LandingOverview landingOverview(SlavePlanetConfig slavePlanetConfig) {
+        List<LandingCell> cells = landingCells(slavePlanetConfig.getPositionPath());
+        double radius = slavePlanetConfig.getPositionRadius() != null ? slavePlanetConfig.getPositionRadius() : 12;
+        List<LandingCellInfo> infos = new ArrayList<>();
+        int recommended = 0;
+        int lowest = Integer.MAX_VALUE;
+        for (LandingCell cell : cells) {
+            int cellLowest = Integer.MAX_VALUE;
+            for (DecimalPosition slot : cell.slots()) {
+                int count = countBaseItems(slot, radius);
+                cellLowest = Math.min(cellLowest, count);
+                if (count < lowest) {
+                    lowest = count;
+                    recommended = cell.index();
+                }
+            }
+            infos.add(new LandingCellInfo(cell.index(), cell.center().getX(), cell.center().getY(),
+                    cell.slots().size(), countHumanBases(cell, radius), cellLowest));
+        }
+        return new LandingOverview(infos, recommended);
+    }
+
+    /**
+     * The spawn path cut into its cells: consecutive points closer than CELL_GAP belong together.
+     * The configured path lists the points of one cell after the other, 21 m apart, with some 100 m
+     * between cells (PROD 22.11.2026: eight cells of five).
+     */
+    static List<LandingCell> landingCells(List<DecimalPosition> path) {
+        List<LandingCell> cells = new ArrayList<>();
+        List<DecimalPosition> current = new ArrayList<>();
+        for (DecimalPosition position : path) {
+            if (!current.isEmpty() && current.get(current.size() - 1).getDistance(position) > CELL_GAP) {
+                cells.add(LandingCell.of(cells.size(), current));
+                current = new ArrayList<>();
+            }
+            current.add(position);
+        }
+        if (!current.isEmpty()) {
+            cells.add(LandingCell.of(cells.size(), current));
+        }
+        return cells;
+    }
+
+    /** Players, not items: one base with twenty units is still one neighbour. Bots do not count. */
+    private int countHumanBases(LandingCell cell, double radius) {
+        double reach = radius;
+        for (DecimalPosition slot : cell.slots()) {
+            reach = Math.max(reach, slot.getDistance(cell.center()) + radius);
+        }
+        Set<Integer> bases = new HashSet<>();
+        syncItemContainerService.iterateCellRadiusItem(cell.center(), reach, syncItem -> {
+            if (syncItem instanceof SyncBaseItem syncBaseItem && syncBaseItem.getBase() != null
+                    && syncBaseItem.getBase().getCharacter() == Character.HUMAN) {
+                bases.add(syncBaseItem.getBase().getBaseId());
+            }
+        });
+        return bases.size();
+    }
+
+    public record LandingCell(int index, DecimalPosition center, List<DecimalPosition> slots) {
+        static LandingCell of(int index, List<DecimalPosition> slots) {
+            double x = 0;
+            double y = 0;
+            for (DecimalPosition slot : slots) {
+                x += slot.getX();
+                y += slot.getY();
+            }
+            return new LandingCell(index, new DecimalPosition(x / slots.size(), y / slots.size()), slots);
+        }
+    }
+
+    public record LandingCellInfo(int index, double x, double y, int slots, int players, int emptiestItems) {
+    }
+
+    public record LandingOverview(List<LandingCellInfo> cells, int recommended) {
     }
 
     /**

@@ -103,6 +103,7 @@ public class TeaVMClientMarshaller {
                 break;
 
             case START:
+            case PRECONNECT:
                 setArrayString(array, DATA_OFFSET_0, (String) controlPackage.getData(0)); // raw bearer token
                 break;
 

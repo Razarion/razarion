@@ -1,5 +1,6 @@
 package com.btxtech.server.rest.ui;
 
+import com.btxtech.server.rest.LandingController;
 import com.btxtech.server.service.ui.GameUiContextService;
 import com.btxtech.server.user.UserService;
 import com.btxtech.shared.CommonUrl;
@@ -39,7 +40,7 @@ public class GameUiContextController implements GameUiContextAccess {
     public ColdGameUiContext loadColdGameUiContext() {
         UserContext userContext = userService.getUserContextFromContext();
         try {
-            return gameUiContextService.loadCold(userContext);
+            return gameUiContextService.loadCold(userContext, LandingController.takeChosenCell());
         } catch (Throwable e) {
             logger.warn(e.getMessage(), e);
             return new ColdGameUiContext().userContext(userContext);

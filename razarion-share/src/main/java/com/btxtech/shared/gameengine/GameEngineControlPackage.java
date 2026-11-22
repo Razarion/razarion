@@ -13,6 +13,8 @@ public class GameEngineControlPackage {
         INITIALIZED,
         INITIALISING_FAILED,
         START,
+        /** Opens the game connection of a SLAVE while the rest of the start is still running - see GameEngineWorker#preconnect. */
+        PRECONNECT,
         STOP_REQUEST,
         STOP_RESPONSE,
         TICK_UPDATE_REQUEST,

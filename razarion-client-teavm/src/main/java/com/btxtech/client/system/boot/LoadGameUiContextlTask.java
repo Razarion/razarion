@@ -46,8 +46,19 @@ public class LoadGameUiContextlTask extends AbstractStartupTask {
             deferredStartup.failed("LoadGameUiContextlTask fetch failed: " + errorMsg);
         };
 
-        fetchJson("/rest/game-ui-context-control/cold", bearerToken, onSuccess, onError);
+        fetchJson("/rest/game-ui-context-control/cold" + takeLandingCellQuery(), bearerToken, onSuccess, onError);
     }
+
+    /**
+     * The landing cell the player tapped on the loading screen (index.html, arm land=pick), as a
+     * query parameter for the request that decides where he lands - see LandingController. Taken
+     * in the same step that tells the page the choice is closed, so a tap counts exactly when it
+     * came before this request, and the page never offers a choice that no longer matters.
+     */
+    @JSBody(script = "window.RAZ_landingLocked = true;"
+            + "var v = window.RAZ_landingCell;"
+            + "return (typeof v === 'number' && v >= 0 && v < 64) ? '?landingCell=' + Math.floor(v) : '';")
+    private static native String takeLandingCellQuery();
 
     @JSFunctor
     public interface StringCallback extends JSObject {

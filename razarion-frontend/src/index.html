@@ -148,6 +148,44 @@
       }
 
       /*
+       * A fourth loading screen, from 2026-11-22: something to DO while the game loads, and
+       * something that matters - the player picks which landing cell he starts in, seeing how many
+       * players are there (land=pick), against the card alone (land=plain).
+       *
+       * Why another one after three draws: all three were pictures to look at. The loading time
+       * costs some 2 % of the waiting players per second, flat from the first second to the
+       * sixtieth (PROD 27.09., 16.10. and 22.11.2026) - no threshold, no "too long", only waiting.
+       * A picture does not change waiting; a decision might.
+       *
+       * The choice never holds the start up. It rides along with the request that decides where
+       * the player lands (LoadGameUiContextlTask), and the picker closes the moment that request
+       * goes out. See LandingController.
+       *
+       * Coin per browser, like the arms before it - count browsers (vid=), not sessions. Only for
+       * a visitor who can run the game and has no account token. ?land=pick|plain forces and
+       * stays, ?land=off forgets.
+       */
+      try {
+        var landQuery = new URLSearchParams(location.search).get('land');
+        if (landQuery === 'off') {
+          localStorage.removeItem('razLand');
+        } else if (landQuery === 'pick' || landQuery === 'plain') {
+          localStorage.setItem('razLand', landQuery);
+        }
+        var land = localStorage.getItem('razLand');
+        if (land !== 'pick' && land !== 'plain' && landQuery !== 'off'
+          && !localStorage.getItem('app.token') && hasWasmGc()) {
+          land = Math.random() < 0.5 ? 'pick' : 'plain';
+          localStorage.setItem('razLand', land);
+        }
+        if (land === 'pick' || land === 'plain') {
+          w.RAZ_landArm = land;
+        }
+      } catch (ignored) {
+        // No storage, no arm: the plain card, unmarked.
+      }
+
+      /*
        * Three shadow arms lived here for two days - map size, caster list, refresh rate - and
        * all three came back null. See ShadowQuality in the renderer for the numbers. Matched on
        * the device class present in both halves they moved renderP50 by nothing, and the 20 %
@@ -308,6 +346,10 @@
         if (w.RAZ_visitorId) {
           add('vid', w.RAZ_visitorId);
         }
+        // The loading-screen arm, see where it is tossed, above.
+        if (w.RAZ_landArm) {
+          add('land', w.RAZ_landArm);
+        }
         try {
           add('coi', self.crossOriginIsolated === true);
           add('sab', typeof SharedArrayBuffer !== 'undefined');
@@ -438,6 +480,7 @@
 <div id="raz-boot">
   <div id="raz-boot-card">
     <div id="raz-boot-title">Razarion &ndash; RTS meets MMO: One shared world that never stops</div>
+    <div id="raz-land" hidden></div>
     <div id="raz-boot-box">
       <div id="raz-boot-label">Loading&hellip;</div>
       <div id="raz-boot-track">
@@ -570,6 +613,84 @@
   #raz-boot-tips li {
     padding: 0.3rem 0;
   }
+
+  /* The landing-cell picker, arm land=pick. Amber is the colour of the base placer's BUILD HERE,
+     the next thing the player will be asked to press. */
+  #raz-land {
+    margin: 0 0 0.75rem;
+  }
+
+  #raz-land[hidden] {
+    display: none;
+  }
+
+  #raz-land-head {
+    padding: 0 0.5rem 0.5rem;
+    font-weight: 600;
+    color: #f5a623;
+  }
+
+  #raz-land-cells {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(3.4em, 1fr));
+    gap: 6px;
+    padding: 0 0.25rem;
+  }
+
+  .raz-land-cell {
+    appearance: none;
+    -webkit-appearance: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    min-height: 3.6em;
+    padding: 0.45em 0.2em;
+    border: 1px solid rgba(96, 168, 224, 0.35);
+    border-radius: 8px;
+    background: rgba(4, 10, 18, 0.6);
+    color: #cfe0f0;
+    font: inherit;
+    cursor: pointer;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .raz-land-name {
+    font-size: 1.2em;
+    font-weight: 700;
+  }
+
+  .raz-land-count {
+    font-size: 0.75em;
+    opacity: 0.8;
+  }
+
+  .raz-land-rec {
+    font-size: 0.65em;
+    color: #10b981;
+  }
+
+  .raz-land-cell.raz-land-chosen {
+    border-color: #f5a623;
+    background: rgba(245, 166, 35, 0.16);
+    box-shadow: inset 0 0 0 2px #f5a623;
+  }
+
+  #raz-land-note {
+    padding: 0.5rem 0.5rem 0;
+    font-size: 0.85em;
+    opacity: 0.85;
+  }
+
+  #raz-land.raz-land-locked .raz-land-cell {
+    opacity: 0.45;
+    cursor: default;
+  }
+
+  #raz-land.raz-land-locked .raz-land-cell.raz-land-chosen {
+    opacity: 1;
+  }
 </style>
 <script>
   /*
@@ -586,6 +707,154 @@
       if (splash) {
         splash.parentNode.removeChild(splash);
       }
+    }
+  })();
+</script>
+<script>
+  /*
+   * The landing-cell picker, arm land=pick - see where the arm is tossed, and LandingController.
+   *
+   * Shown only when the server has cells to offer (a new player without a base) and the start has
+   * not yet asked where he lands. The tap goes into window.RAZ_landingCell; LoadGameUiContextlTask
+   * sends it along with the cold context and sets RAZ_landingLocked in the same step, and from
+   * then on the picker only says where he lands. Nothing here ever waits for the player.
+   *
+   * pointerup as well as click: in the Meta in-app webview most taps on the landing page never
+   * became a click (2026-08), and these are mostly Meta visitors.
+   */
+  (function () {
+    var w = window;
+    var box = document.getElementById('raz-land');
+    if (w.RAZ_landArm !== 'pick' || !box || !document.getElementById('raz-boot')) {
+      return;
+    }
+    var EARLY = {PAGE_LOADED: 1, WASM_BOOTSTRAP: 1, WASM_LOAD: 1, LOAD_START_JS: 1};
+    var LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    var chosen = null;
+    var taps = 0;
+
+    function isLocked() {
+      return w.RAZ_landingLocked === true || (!!w.RAZ_currentTask && !EARLY[w.RAZ_currentTask]);
+    }
+
+    function track(kind, detail) {
+      try {
+        w.RAZ_track('/rest/tracker/firstInteraction', {
+          gameSessionUuid: w.RAZ_gameSessionUuid,
+          kind: kind,
+          detail: detail,
+          millisSincePageLoad: Date.now() - (w.RAZ_pageLoadedAt || Date.now())
+        });
+      } catch (ignored) {
+      }
+    }
+
+    function players(count) {
+      return count === 0 ? 'empty' : count === 1 ? '1 player' : count + ' players';
+    }
+
+    function render(data) {
+      var cells = data.cells;
+      var rec = data.recommended;
+      var total = 0;
+      var html = '<div id="raz-land-head">Choose where you land</div><div id="raz-land-cells">';
+      for (var i = 0; i < cells.length; i++) {
+        total += cells[i].players;
+        html += '<button type="button" class="raz-land-cell" data-cell="' + cells[i].index + '">'
+          + '<span class="raz-land-name">' + LETTERS.charAt(i % 26) + '</span>'
+          + '<span class="raz-land-count">' + players(cells[i].players) + '</span>'
+          + (cells[i].index === rec ? '<span class="raz-land-rec">suggested</span>' : '')
+          + '</button>';
+      }
+      html += '</div><div id="raz-land-note">Land next to other players &ndash; or start on your own.</div>';
+      box.innerHTML = html;
+      box.hidden = false;
+      var note = document.getElementById('raz-land-note');
+      var buttons = box.querySelectorAll('.raz-land-cell');
+
+      function letterOf(cell) {
+        for (var j = 0; j < cells.length; j++) {
+          if (cells[j].index === cell) {
+            return LETTERS.charAt(j % 26);
+          }
+        }
+        return '?';
+      }
+
+      function choose(cell) {
+        taps++;
+        if (isLocked()) {
+          track('LANDING_LATE', 'cell=' + cell + ',taps=' + taps);
+          return;
+        }
+        if (chosen === cell) {
+          return;
+        }
+        chosen = cell;
+        w.RAZ_landingCell = cell;
+        for (var k = 0; k < buttons.length; k++) {
+          buttons[k].classList.toggle('raz-land-chosen', +buttons[k].getAttribute('data-cell') === cell);
+        }
+        note.textContent = 'You land in zone ' + letterOf(cell) + '.';
+        var inCell = 0;
+        for (var m = 0; m < cells.length; m++) {
+          if (cells[m].index === cell) {
+            inCell = cells[m].players;
+          }
+        }
+        track('LANDING_PICK', 'cell=' + cell + ',rec=' + rec + ',players=' + inCell + ',taps=' + taps);
+      }
+
+      var lastTap = 0;
+      for (var b = 0; b < buttons.length; b++) {
+        (function (button) {
+          var handler = function () {
+            var now = Date.now();
+            if (now - lastTap < 300) {
+              return;
+            }
+            lastTap = now;
+            choose(+button.getAttribute('data-cell'));
+          };
+          button.addEventListener('pointerup', handler);
+          button.addEventListener('click', handler);
+        })(buttons[b]);
+      }
+
+      track('LANDING_SHOWN', 'cells=' + cells.length + ',rec=' + rec + ',players=' + total);
+
+      // Runs on after the splash is gone: the picker moves into Angular's cover (boot-splash.ts).
+      var watch = setInterval(function () {
+        if (!box.isConnected) {
+          clearInterval(watch);
+          return;
+        }
+        if (isLocked()) {
+          clearInterval(watch);
+          box.classList.add('raz-land-locked');
+          note.textContent = chosen !== null ? 'Landing in zone ' + letterOf(chosen) + '…' : 'Landing…';
+        }
+      }, 150);
+    }
+
+    try {
+      fetch('/rest/landing/cells', {credentials: 'same-origin'})
+        .then(function (response) {
+          return response.ok ? response.json() : null;
+        })
+        .then(function (data) {
+          if (!data || !data.cells || data.cells.length < 2) {
+            return;
+          }
+          if (isLocked() || !document.getElementById('raz-boot')) {
+            track('LANDING_TOO_LATE', 'cells=' + data.cells.length);
+            return;
+          }
+          render(data);
+        })
+        .catch(function () {
+        });
+    } catch (ignored) {
     }
   })();
 </script>

@@ -419,6 +419,7 @@ public final class TeaVMWorkerMarshaller {
                 break;
 
             case START:
+            case PRECONNECT:
                 data.add(getArrayString(array, DATA_OFFSET_0));
                 break;
 

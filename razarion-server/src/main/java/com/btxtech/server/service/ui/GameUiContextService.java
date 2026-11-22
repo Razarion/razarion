@@ -79,6 +79,13 @@ public class GameUiContextService extends AbstractConfigCrudService<GameUiContex
      * the client has to agree with; the properties are kept for a minute.
      */
     public ColdGameUiContext loadCold(UserContext userContext) {
+        return loadCold(userContext, null);
+    }
+
+    /**
+     * @param landingCell the cell the player chose on the loading screen, or null - see LandingController
+     */
+    public ColdGameUiContext loadCold(UserContext userContext, Integer landingCell) {
         ColdGameUiContext coldGameUiContext = new ColdGameUiContext();
         StaticGameConfig staticGameConfig = engineStaticGameConfig;
         coldGameUiContext.staticGameConfig(staticGameConfig != null ? staticGameConfig : staticGameConfigService.loadStaticGameConfig());
@@ -90,7 +97,7 @@ public class GameUiContextService extends AbstractConfigCrudService<GameUiContex
         CachedProperties properties = cachedProperties();
         coldGameUiContext.audioConfig(properties.audioConfig());
         coldGameUiContext.inGameQuestVisualConfig(properties.inGameQuestVisualConfig());
-        coldGameUiContext.warmGameUiContext(loadWarm(userContext));
+        coldGameUiContext.warmGameUiContext(loadWarm(userContext, landingCell));
         return coldGameUiContext;
     }
 
@@ -112,6 +119,10 @@ public class GameUiContextService extends AbstractConfigCrudService<GameUiContex
     }
 
     public WarmGameUiContext loadWarm(UserContext userContext) {
+        return loadWarm(userContext, null);
+    }
+
+    public WarmGameUiContext loadWarm(UserContext userContext, Integer landingCell) {
         if (userContext.getLevelId() == null) {
             return null;
         }
@@ -124,7 +135,7 @@ public class GameUiContextService extends AbstractConfigCrudService<GameUiContex
             var slavePlanetConfig = serverGameEngineCrudPersistence.readSlavePlanetConfig(userContext.getLevelId());
             if (slavePlanetConfig.isFindFreePosition() && baseItemService.getPlayerBase4UserId(userContext.getUserId()) == null) {
                 try {
-                    slavePlanetConfig.setNoBaseViewPosition(startPositionFinderService.findFreePosition(slavePlanetConfig));
+                    slavePlanetConfig.setNoBaseViewPosition(startPositionFinderService.findFreePosition(slavePlanetConfig, landingCell));
                 } catch (Exception e) {
                     logger.warn(e.getMessage(), e);
                 }
@@ -166,6 +177,19 @@ public class GameUiContextService extends AbstractConfigCrudService<GameUiContex
      * game page asks for its terrain before it knows anything else about the player, see
      * TerrainShapeControllerImpl#prefetchUrls.
      */
+    /**
+     * The landing cells a player of this level would choose from - the starter level when null.
+     * Null when the level does not place new players by itself, so there is nothing to choose.
+     */
+    public StartPositionFinderService.LandingOverview landingOverview(Integer levelIdOrNull) {
+        int levelId = levelIdOrNull != null ? levelIdOrNull : levelCrudPersistence.getStarterLevelId();
+        var slavePlanetConfig = serverGameEngineCrudPersistence.readSlavePlanetConfig(levelId);
+        if (slavePlanetConfig == null || !slavePlanetConfig.isFindFreePosition() || slavePlanetConfig.getPositionPath() == null) {
+            return null;
+        }
+        return startPositionFinderService.landingOverview(slavePlanetConfig);
+    }
+
     @Transactional
     public PlanetConfig starterPlanetConfig() {
         return load4Level(levelCrudPersistence.getStarterLevelId()).toGameWarmGameUiControlConfig().getPlanetConfig();

@@ -12,6 +12,8 @@ import {removeSplash} from './boot-splash';
 describe('Boot splash bridge', () => {
   afterEach(() => {
     document.getElementById('raz-boot')?.remove();
+    document.getElementById('raz-land')?.remove();
+    document.getElementById('cover')?.remove();
   });
 
   it('removes the splash', () => {
@@ -22,6 +24,44 @@ describe('Boot splash bridge', () => {
     removeSplash();
 
     expect(document.getElementById('raz-boot')).toBeNull();
+  });
+
+  it('moves a shown landing picker into the cover, before the progress well', () => {
+    const splash = document.createElement('div');
+    splash.id = 'raz-boot';
+    const picker = document.createElement('div');
+    picker.id = 'raz-land';
+    splash.appendChild(picker);
+    document.body.appendChild(splash);
+    const cover = document.createElement('div');
+    cover.id = 'cover';
+    const well = document.createElement('div');
+    cover.appendChild(well);
+    document.body.appendChild(cover);
+
+    removeSplash(well);
+
+    expect(document.getElementById('raz-boot')).toBeNull();
+    expect(picker.parentElement).toBe(cover);
+    expect(picker.nextElementSibling).toBe(well);
+  });
+
+  it('lets a hidden landing picker go with the splash', () => {
+    // The plain arm, or no cells to offer: the picker was never shown.
+    const splash = document.createElement('div');
+    splash.id = 'raz-boot';
+    const picker = document.createElement('div');
+    picker.id = 'raz-land';
+    picker.hidden = true;
+    splash.appendChild(picker);
+    document.body.appendChild(splash);
+    const well = document.createElement('div');
+    document.body.appendChild(well);
+
+    removeSplash(well);
+
+    expect(document.getElementById('raz-land')).toBeNull();
+    well.remove();
   });
 
   it('survives being asked to remove a splash that is already gone', () => {

@@ -56,7 +56,7 @@ public class TeaVMClientServerGameConnection extends AbstractServerGameConnectio
     private void handleMessageEvent(JsMessageEvent event) {
         try {
             String data = JsUtils.asString(event.getData());
-            handleMessage(data);
+            onMessageText(data);
         } catch (Throwable throwable) {
             JsConsole.error("TeaVMClientServerGameConnection.handleMessage() failed: " + throwable.getMessage());
         }

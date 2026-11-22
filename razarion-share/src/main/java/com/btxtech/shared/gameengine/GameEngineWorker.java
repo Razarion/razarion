@@ -176,6 +176,9 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
             case START:
                 start((String) controlPackage.getData(0));
                 break;
+            case PRECONNECT:
+                preconnect((String) controlPackage.getData(0));
+                break;
             case STOP_REQUEST:
                 stop();
                 break;
@@ -391,10 +394,41 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         }
     }
 
+    /**
+     * Opens the game connection while the start is still running, and holds what the server sends
+     * until #start - see AbstractServerGameConnection#holdMessages for why. Sent right after
+     * INITIALIZE, so the mode and the game session uuid the connection announces itself with are
+     * set. A MASTER has no connection; a second call is ignored.
+     */
+    private void preconnect(String bearerToken) {
+        try {
+            if (gameEngineMode != GameEngineMode.SLAVE || serverConnection != null) {
+                return;
+            }
+            serverConnection = connectionInstance.get();
+            serverConnection.holdMessages();
+            serverConnection.init(bearerToken);
+        } catch (Throwable t) {
+            // The start opens the connection itself if this did not.
+            logger.log(Level.WARNING, "[EarlyConnect] preconnect failed", t);
+            serverConnection = null;
+        }
+    }
+
     public void start(String bearerToken) {
         planetService.enableTracking(TRACK_TICK_PHASES);
         planetService.start();
-        if (gameEngineMode == GameEngineMode.SLAVE) {
+        if (gameEngineMode != GameEngineMode.SLAVE) {
+            return;
+        }
+        if (serverConnection != null && serverConnection.isHoldingMessages()) {
+            if (serverConnection.releaseHeldMessages()) {
+                return;
+            }
+            serverConnection.close();
+            serverConnection = null;
+        }
+        if (serverConnection == null) {
             serverConnection = connectionInstance.get();
             serverConnection.init(bearerToken);
         }
