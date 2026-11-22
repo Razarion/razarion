@@ -34,6 +34,8 @@ import java.util.logging.Logger;
 public class PlanetService implements Runnable { // Only available in worker. On ui part is GameUiControl
     // See Angular BabylonBaseItemImpl
     public static final int TICK_TIME_MILLI_SECONDS = 100; // Only access in testing
+    // Exhausted resources come back on their slot: checked once a second, not every tick.
+    private static final int RESOURCE_TICK_EVERY = 10;
     public static final int TICKS_PER_SECONDS = (int) (1000.0 / TICK_TIME_MILLI_SECONDS);
     public static final double TICK_FACTOR = (double) TICK_TIME_MILLI_SECONDS / 1000.0;
     private final Logger logger = Logger.getLogger(PlanetService.class.getName());
@@ -176,6 +178,9 @@ public class PlanetService implements Runnable { // Only available in worker. On
             energyService.tick();
             planetServiceTracker.afterEnergyService();
             boxService.tick();
+            if (gameEngineMode == GameEngineMode.MASTER && tickCount % RESOURCE_TICK_EVERY == 0) {
+                resourceService.tick();
+            }
             planetServiceTracker.afterBoxService();
             long afterOthers = System.currentTimeMillis();
             notifyTickListeners(synchronizationSendingContext);

@@ -137,6 +137,23 @@ public class ResourceService {
         resourceRegions.clear();
     }
 
+    /** Master only: brings exhausted resources of evenly distributed regions back on their slots. */
+    public void tick() {
+        if (gameEngineMode != GameEngineMode.MASTER) {
+            return;
+        }
+        long now = System.currentTimeMillis();
+        synchronized (resourceRegions) {
+            for (ResourceRegion resourceRegion : resourceRegions) {
+                try {
+                    resourceRegion.tick(now);
+                } catch (Exception e) {
+                    logger.log(Level.WARNING, "ResourceService.tick(): " + e.getMessage(), e);
+                }
+            }
+        }
+    }
+
     public void onSlaveSyncResourceItemChanged(SyncResourceItemInfo syncResourceItemInfo) {
         SyncResourceItem syncResourceItem = resources.get(syncResourceItemInfo.getId());
         if (syncResourceItem == null) {
