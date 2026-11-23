@@ -86,6 +86,12 @@ public class UserMgmtController {
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
+    @GetMapping(value = "get-newest-saved-user-backend-infos", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<UserBackendInfo> getNewestSavedUserBackendInfos() {
+        return userService.getNewestSavedUserBackendInfos();
+    }
+
+    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping(value = "search-user-backend-infos", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<UserBackendInfo> searchUserBackendInfos(@RequestParam("query") String query) {
         return userService.searchUserBackendInfos(query);

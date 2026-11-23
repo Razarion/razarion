@@ -27,13 +27,20 @@ import {BabylonRenderServiceAccessImpl} from '../../game/renderer/babylon-render
  */
 type UserRow = UserBackendInfo & { listName: string; rowKey: string; heading?: string };
 
+/** A column the table can be sorted by, a click on its heading. */
+export type UserSortField = 'lastLogin' | 'creation' | 'name' | 'callSign' | 'level' | 'base' | 'email';
+
+/** Dates, level and base start with the highest first, the texts with A. */
+const DESCENDING_FIRST: UserSortField[] = ['lastLogin', 'creation', 'level', 'base'];
+
 /** Typing pauses this long before the search goes out, so a name is one request and not six. */
 const SEARCH_DELAY_MS = 300;
 
 /**
  * The user table no longer holds every user: in November 2026 that was some 3000 rows, growing by
  * 300 a day of an ad campaign, and the backend page froze on it. Without a search it shows the ten
- * newest players and the ten newest registrations; the search goes to the server
+ * newest players, the ten newest registrations and the ten newest saves (mail link - no email
+ * is kept, so they are not among the registrations); the search goes to the server
  * (UserService.searchUserBackendInfos) and also finds the call sign the chat shows. Who is online
  * is the Connections tab's business. Cleaning up anonymous users went with the full list - the
  * server does that on its own (UserRepository, the unregistered cleanup).
@@ -64,6 +71,11 @@ const SEARCH_DELAY_MS = 300;
 })
 export class UserMgmtComponent extends EditorPanel implements OnInit, OnDestroy {
   rows: UserRow[] = [];
+  /** The rows in the server's order; {@link rows} is this, sorted. */
+  private loadedRows: UserRow[] = [];
+  sortField: UserSortField | null = null;
+  /** 1 ascending, -1 descending. */
+  sortOrder = 1;
   /** Users in the table, headings not counted. */
   userCount = 0;
   searchText = '';
@@ -145,14 +157,17 @@ export class UserMgmtComponent extends EditorPanel implements OnInit, OnDestroy 
         .then(users => UserMgmtComponent.toRows(users, `Search "${query}"`))
       : Promise.all([
         this.userMgmtControllerClient.getNewestUserBackendInfos(),
-        this.userMgmtControllerClient.getNewestRegisteredUserBackendInfos()
-      ]).then(([newest, registered]) => [
+        this.userMgmtControllerClient.getNewestRegisteredUserBackendInfos(),
+        this.userMgmtControllerClient.getNewestSavedUserBackendInfos()
+      ]).then(([newest, registered, saved]) => [
         ...UserMgmtComponent.toRows(newest, 'Newest players'),
+        ...UserMgmtComponent.toRows(saved, 'Newest saves'),
         ...UserMgmtComponent.toRows(registered, 'Newest registrations')
       ]);
     lists.then(rows => {
       if (sequence === this.loadSequence) {
-        this.rows = rows;
+        this.loadedRows = rows;
+        this.rows = UserMgmtComponent.sortRows(rows, this.sortField, this.sortOrder);
         this.userCount = rows.filter(row => !row.heading).length;
       }
     }).catch(err =>
@@ -166,6 +181,86 @@ export class UserMgmtComponent extends EditorPanel implements OnInit, OnDestroy 
         this.loading = false;
       }
     });
+  }
+
+  /**
+   * A click on a column heading: the first sorts by it (dates, level and base highest first), the
+   * next turns the order round. A reload keeps the sort.
+   */
+  onSort(field: UserSortField): void {
+    if (this.sortField === field) {
+      this.sortOrder = -this.sortOrder;
+    } else {
+      this.sortField = field;
+      this.sortOrder = DESCENDING_FIRST.includes(field) ? -1 : 1;
+    }
+    this.rows = UserMgmtComponent.sortRows(this.loadedRows, this.sortField, this.sortOrder);
+  }
+
+  sortIcon(field: UserSortField): string {
+    if (this.sortField !== field) {
+      return 'pi pi-sort-alt opacity-40';
+    }
+    return this.sortOrder > 0 ? 'pi pi-sort-amount-up-alt' : 'pi pi-sort-amount-down';
+  }
+
+  /**
+   * Sorts the users inside each list and leaves the lists where they are: the table shows several
+   * lists under their headings, and one sort across all of them would pull the players out from
+   * under their heading. Users without a value - never logged in, no email - go last either way.
+   */
+  static sortRows(rows: UserRow[], field: UserSortField | null, order: number): UserRow[] {
+    if (!field) {
+      return rows;
+    }
+    const result: UserRow[] = [];
+    let group: UserRow[] = [];
+    const flush = () => {
+      result.push(...group.sort((a, b) => UserMgmtComponent.compare(a, b, field, order)));
+      group = [];
+    };
+    for (const row of rows) {
+      if (row.heading) {
+        flush();
+        result.push(row);
+      } else {
+        group.push(row);
+      }
+    }
+    flush();
+    return result;
+  }
+
+  private static compare(a: UserBackendInfo, b: UserBackendInfo, field: UserSortField, order: number): number {
+    const va = UserMgmtComponent.sortValue(a, field);
+    const vb = UserMgmtComponent.sortValue(b, field);
+    if (va === null || vb === null) {
+      return va === vb ? 0 : va === null ? 1 : -1;
+    }
+    const diff = typeof va === 'string' ? va.localeCompare(vb as string) : va - (vb as number);
+    return diff * order;
+  }
+
+  private static sortValue(user: UserBackendInfo, field: UserSortField): string | number | null {
+    const time = (date: Date | string | null | undefined) => date ? new Date(date).getTime() : null;
+    const text = (value: string | null | undefined) => value ? value.toLowerCase() : null;
+    switch (field) {
+      case 'lastLogin':
+        return time(user.systemConnectionOpened);
+      case 'creation':
+        return time(user.creationDate);
+      case 'name':
+        return text(user.name);
+      case 'callSign':
+        return text(user.callSign);
+      case 'level':
+        return user.levelNumber ?? null;
+      case 'base':
+        return user.baseId ? 1 : 0;
+      case 'email':
+        // A saved player has no email; he sorts by his save, after every address.
+        return user.email ? text(user.email) : user.progressSavedDate ? '￿' + new Date(user.progressSavedDate).toISOString() : null;
+    }
   }
 
   /** An empty list has no heading either, so a search that finds nobody shows the table's empty message. */

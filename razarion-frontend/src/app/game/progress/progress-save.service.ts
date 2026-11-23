@@ -5,7 +5,7 @@ import {MessageService} from 'primeng/api';
 import {CockpitDisplayService} from '../cockpit/cockpit-display.service';
 import {UserService} from '../../auth/user.service';
 
-export type ProgressLinkResult = 'SENT' | 'INVALID_EMAIL' | 'TOO_MANY' | 'REGISTERED' | 'FAILED';
+export type ProgressLinkResult = 'SENT' | 'INVALID_EMAIL' | 'TOO_MANY' | 'REGISTERED' | 'FAILED' | 'NOT_IN_GAME' | 'BUSY';
 
 /** The level a player has after leaving the noob island (quest 392): the first one worth keeping. */
 export const PROGRESS_OFFER_LEVEL = 9;

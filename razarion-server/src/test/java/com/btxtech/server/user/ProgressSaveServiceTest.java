@@ -41,7 +41,8 @@ class ProgressSaveServiceTest {
         registerService = mock(RegisterService.class);
         service = new ProgressSaveService(userRepository, userService, registerService, mock(UserActivityService.class), "https://example.test/");
         asking = player("asking");
-        when(userService.getOrCreateUserIdFromContext()).thenReturn("asking");
+        when(userService.getUserIdFromContextOrNull()).thenReturn("asking");
+        when(userService.hasOpenSystemConnection("asking")).thenReturn(true);
         when(userRepository.findByUserId("asking")).thenReturn(Optional.of(asking));
         when(userRepository.findByEmailHash(anyString())).thenReturn(Optional.empty());
     }
@@ -100,6 +101,48 @@ class ProgressSaveServiceTest {
         }
         assertEquals(ProgressSaveService.RequestResult.TOO_MANY, service.requestLink("player@example.com"));
         assertEquals(ProgressSaveService.RequestResult.SENT, service.requestLink("other@example.com"));
+    }
+
+    /**
+     * The request used to create a player of its own: anyone could mail any address without ever
+     * opening the game. Now it needs a player with a running game behind it.
+     */
+    @Test
+    void noMailWithoutARunningGame() {
+        when(userService.hasOpenSystemConnection("asking")).thenReturn(false);
+        assertEquals(ProgressSaveService.RequestResult.NOT_IN_GAME, service.requestLink("player@example.com"));
+
+        when(userService.getUserIdFromContextOrNull()).thenReturn(null);
+        assertEquals(ProgressSaveService.RequestResult.NOT_IN_GAME, service.requestLink("player@example.com"));
+
+        verify(registerService, never()).sendProgressLink(anyString(), anyString(), anyBoolean());
+        verify(userRepository, never()).applyLoginLink(anyString(), anyString(), any(), any());
+    }
+
+    /** One player cannot walk through a list of addresses. */
+    @Test
+    void onePlayerCannotMailManyAddresses() {
+        for (int i = 0; i < ProgressSaveService.MAX_PER_PLAYER_PER_HOUR; i++) {
+            assertEquals(ProgressSaveService.RequestResult.SENT, service.requestLink("player" + i + "@example.com"));
+        }
+        assertEquals(ProgressSaveService.RequestResult.TOO_MANY, service.requestLink("one-more@example.com"));
+    }
+
+    /**
+     * Many players, many client addresses: the cap over everybody still holds, so the form can never
+     * send enough mail to get razarion.com suspended at Zoho.
+     */
+    @Test
+    void theCapOverEverybodyHolds() {
+        int sent = 0;
+        for (int i = 0; i < ProgressSaveService.MAX_OVERALL_PER_HOUR; i++) {
+            if (service.allowed("hash" + i, "10.0.0." + i, "player" + i) == ProgressSaveService.Limit.NONE) {
+                sent++;
+            }
+        }
+        assertEquals(ProgressSaveService.MAX_OVERALL_PER_HOUR, sent);
+        assertEquals(ProgressSaveService.Limit.OVERALL, service.allowed("fresh", "10.1.0.1", "fresh-player"));
+        assertEquals(ProgressSaveService.RequestResult.BUSY, service.requestLink("player@example.com"));
     }
 
     @Test

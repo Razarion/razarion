@@ -29,13 +29,13 @@
         <ng-template pTemplate="header">
           <tr>
             <th></th>
-            <th>Last login</th>
-            <th>Creation</th>
-            <th>Name</th>
-            <th>Call sign</th>
-            <th>Level</th>
-            <th>Base</th>
-            <th>Email</th>
+            <th class="cursor-pointer select-none" (click)="onSort('lastLogin')">Last login <i [class]="sortIcon('lastLogin')"></i></th>
+            <th class="cursor-pointer select-none" (click)="onSort('creation')">Creation <i [class]="sortIcon('creation')"></i></th>
+            <th class="cursor-pointer select-none" (click)="onSort('name')">Name <i [class]="sortIcon('name')"></i></th>
+            <th class="cursor-pointer select-none" (click)="onSort('callSign')">Call sign <i [class]="sortIcon('callSign')"></i></th>
+            <th class="cursor-pointer select-none" (click)="onSort('level')">Level <i [class]="sortIcon('level')"></i></th>
+            <th class="cursor-pointer select-none" (click)="onSort('base')">Base <i [class]="sortIcon('base')"></i></th>
+            <th class="cursor-pointer select-none" (click)="onSort('email')">Email <i [class]="sortIcon('email')"></i></th>
             <th></th>
           </tr>
         </ng-template>
@@ -80,7 +80,11 @@
                 {{ userBackendInfo.baseId ? "Y" : "-" }}
               </td>
               <td>
-                {{ userBackendInfo.email }}
+                @if (userBackendInfo.email) {
+                  {{ userBackendInfo.email }}
+                } @else if (userBackendInfo.progressSavedDate) {
+                  <span class="opacity-70">saved {{ userBackendInfo.progressSavedDate | date:'dd.MM.yyyy HH:mm' }}</span>
+                }
               </td>
               <td>
                 <p-button icon="pi pi-trash"

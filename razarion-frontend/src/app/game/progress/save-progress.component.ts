@@ -46,6 +46,13 @@ export class SaveProgressComponent {
       case 'REGISTERED':
         this.error = 'You are signed in with a password, your game is saved already.';
         break;
+      case 'NOT_IN_GAME':
+        // The connection to the game dropped; a reload brings it back.
+        this.error = 'The connection to the game was lost. Please reload the page and try again.';
+        break;
+      case 'BUSY':
+        this.error = 'Too many links are being sent right now. Please try again in an hour.';
+        break;
       default:
         this.error = 'Sending the link did not work. Please try again later.';
     }

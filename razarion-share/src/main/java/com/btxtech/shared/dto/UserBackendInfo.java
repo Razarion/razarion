@@ -10,6 +10,8 @@ public class UserBackendInfo {
     private Date creationDate;
     private Date verificationStartedDate;
     private Date verificationDoneDate;
+    /** Saved by the mail link (or Facebook): no email is kept, only this date and fingerprints. */
+    private Date progressSavedDate;
     private String email;
     private String name;
     /** What the chat, the ticker and the island news call this player, e.g. "Falcon-42" (CallSign). */
@@ -66,6 +68,19 @@ public class UserBackendInfo {
 
     public void setVerificationDoneDate(Date verificationDoneDate) {
         this.verificationDoneDate = verificationDoneDate;
+    }
+
+    public Date getProgressSavedDate() {
+        return progressSavedDate;
+    }
+
+    public void setProgressSavedDate(Date progressSavedDate) {
+        this.progressSavedDate = progressSavedDate;
+    }
+
+    public UserBackendInfo progressSavedDate(Date progressSavedDate) {
+        setProgressSavedDate(progressSavedDate);
+        return this;
     }
 
     public String getEmail() {

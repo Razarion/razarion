@@ -54,6 +54,15 @@ public interface UserRepository extends JpaRepository<UserEntity, Integer> {
     List<UserEntity> findNewestRegisteredForBackendInfo(Pageable pageable);
 
     /**
+     * The newest players who saved their progress by the mail link (or Facebook). They keep no
+     * email, so the registrations above never show them - since the password registration left the
+     * game on 2026-11-17, this is where new accounts appear.
+     */
+    @EntityGraph(attributePaths = {"level", "activeQuest"})
+    @Query("SELECT u FROM UserEntity u WHERE u.progressSavedDate IS NOT NULL ORDER BY u.progressSavedDate DESC")
+    List<UserEntity> findNewestSavedForBackendInfo(Pageable pageable);
+
+    /**
      * The backend user search: a part of the name, the email or the user id, or one of the given
      * user ids - those whose call sign matched, which the database cannot compute.
      */
@@ -88,10 +97,12 @@ public interface UserRepository extends JpaRepository<UserEntity, Integer> {
     /**
      * Unregistered players who can still come back, gone past the grace: their base has to leave
      * the start region, their progress stays. Only the ids - this is every such player of the last
-     * two weeks, once a minute.
+     * two weeks, once a minute. A player who saved his progress keeps his base, like a registered
+     * one: he said he is coming back.
      */
     @Query("SELECT u.userId FROM UserEntity u WHERE u.anonymousToken IS NOT NULL "
             + "AND u.verificationStartedDate IS NULL AND u.verificationDoneDate IS NULL "
+            + "AND u.progressSavedDate IS NULL "
             + "AND u.systemConnectionClosed IS NOT NULL AND u.systemConnectionClosed < :graceCutoff")
     List<String> findRetainedUserIdsInactiveSince(@Param("graceCutoff") LocalDateTime graceCutoff);
 

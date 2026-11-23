@@ -191,6 +191,11 @@ public class UserService implements UserDetailsService {
         return locks;
     }
 
+    /** The player has a running game: his system connection is open. */
+    public boolean hasOpenSystemConnection(String userId) {
+        return userId != null && clientSystemConnectionService.getClientSystemConnection(userId) != null;
+    }
+
     public static Authentication removeAnonymousAuthentication(Authentication authentication) {
         if (authentication == null
                 || !authentication.isAuthenticated()
@@ -211,6 +216,7 @@ public class UserService implements UserDetailsService {
                 .creationDate(userEntity.getCreationDate())
                 .verificationStartedDate(userEntity.getVerificationStartedDate())
                 .verificationDoneDate(userEntity.getVerificationDoneDate())
+                .progressSavedDate(userEntity.getProgressSavedDate())
                 .email(userEntity.getEmail())
                 .userId(userEntity.getUserId())
                 .levelId(extractId(userEntity.getLevel(), LevelEntity::getId))
@@ -893,7 +899,7 @@ public class UserService implements UserDetailsService {
 
     /**
      * The backend's user tab no longer loads every user - some 3000 in November 2026, 300 more each
-     * day of a campaign, and the table of all of them froze the page. It shows these two short lists
+     * day of a campaign, and the table of all of them froze the page. It shows these short lists
      * and a search.
      */
     @Transactional
@@ -904,6 +910,11 @@ public class UserService implements UserDetailsService {
     @Transactional
     public List<UserBackendInfo> getNewestRegisteredUserBackendInfos() {
         return toBackendInfos(userRepository.findNewestRegisteredForBackendInfo(PageRequest.of(0, BACKEND_NEWEST)));
+    }
+
+    @Transactional
+    public List<UserBackendInfo> getNewestSavedUserBackendInfos() {
+        return toBackendInfos(userRepository.findNewestSavedForBackendInfo(PageRequest.of(0, BACKEND_NEWEST)));
     }
 
     /**
@@ -1172,7 +1183,10 @@ public class UserService implements UserDetailsService {
      * daily because the pod was evicted for memory pressure; since the pod got its own memory
      * request that restart is gone, and with it the accidental cleanup.
      * <p>
-     * Registered players keep their base regardless - they are expected to come back.
+     * Registered players keep their base regardless - they are expected to come back. So does a
+     * player who saved his progress by the mail link: until 2026-11 he kept level and quests but
+     * found his base gone an hour after leaving like everybody else, so saving had nothing to show
+     * for itself in the game.
      */
     @Transactional
     @Scheduled(fixedRate = 60000)
@@ -1201,11 +1215,18 @@ public class UserService implements UserDetailsService {
     /**
      * The base only - the spawn point is what cannot wait two weeks. The quest progress stays with
      * the player: his quest is still active when he comes back, and only the base is new.
+     * <p>
+     * A saved player is left out by the query and checked once more before his base goes, as the
+     * row deletion above does: one lookup per base actually removed, against a player losing the
+     * one thing saving keeps for him.
      */
     private void removeBasesOfRetainedUsers(LocalDateTime cutoff) {
         for (String userId : userRepository.findRetainedUserIdsInactiveSince(cutoff)) {
             var playerBase = baseItemService.getPlayerBase4UserId(userId);
             if (playerBase == null) {
+                continue;
+            }
+            if (userRepository.findByUserId(userId).map(u -> u.getProgressSavedDate() != null).orElse(false)) {
                 continue;
             }
             logger.info("Removing the base of unregistered user {}, his progress waits for his return", userId);

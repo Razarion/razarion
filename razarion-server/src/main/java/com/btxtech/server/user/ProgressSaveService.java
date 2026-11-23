@@ -62,12 +62,23 @@ public class ProgressSaveService {
     private final RegisterService registerService;
     private final UserActivityService userActivityService;
     private final String publicUrl;
-    /** Mails asked for per address fingerprint and per client address - see {@link #allowed}. */
+    /** All mails together, whoever asks for them - see {@link #allowed}. */
+    static final int MAX_OVERALL_PER_HOUR = 20;
+    static final int MAX_OVERALL_PER_DAY = 60;
+    static final int MAX_PER_PLAYER_PER_HOUR = 5;
+    /** Mails asked for per address fingerprint, per client address and per player - see {@link #allowed}. */
     private final Map<String, Deque<Long>> requestsByEmail = new ConcurrentHashMap<>();
     private final Map<String, Deque<Long>> requestsByIp = new ConcurrentHashMap<>();
+    private final Map<String, Deque<Long>> requestsByUser = new ConcurrentHashMap<>();
+    private final Deque<Long> requestsOverall = new ArrayDeque<>();
+    private long overallLimitLoggedAt;
 
     public enum RequestResult {
-        SENT, INVALID_EMAIL, TOO_MANY, REGISTERED, FAILED
+        SENT, INVALID_EMAIL, TOO_MANY, REGISTERED, FAILED,
+        /** No running game behind the request: no player, or none with an open connection. */
+        NOT_IN_GAME,
+        /** The cap over all players is reached - see {@link #allowed}. */
+        BUSY
     }
 
     public enum LinkResult {
@@ -104,12 +115,24 @@ public class ProgressSaveService {
         if (normalized.length() > MAX_EMAIL_LENGTH || !EMAIL.matcher(normalized).matches()) {
             return RequestResult.INVALID_EMAIL;
         }
+        // Only a player in a running game - the dialog is part of the game. Without this the request
+        // created a player of its own and anyone could mail any address without ever playing.
+        String askingUserId = userService.getUserIdFromContextOrNull();
+        if (askingUserId == null || !userService.hasOpenSystemConnection(askingUserId)) {
+            return RequestResult.NOT_IN_GAME;
+        }
+        UserEntity asking = userRepository.findByUserId(askingUserId).orElse(null);
+        if (asking == null) {
+            return RequestResult.NOT_IN_GAME;
+        }
         String emailHash = hashEmail(normalized);
-        if (!allowed(emailHash, clientIp())) {
+        Limit limit = allowed(emailHash, clientIp(), askingUserId);
+        if (limit == Limit.OVERALL) {
+            return RequestResult.BUSY;
+        }
+        if (limit != Limit.NONE) {
             return RequestResult.TOO_MANY;
         }
-        String askingUserId = userService.getOrCreateUserIdFromContext();
-        UserEntity asking = userRepository.findByUserId(askingUserId).orElseThrow();
         if (asking.createRegisterState() != UserContext.RegisterState.UNREGISTERED) {
             // A password account is already safe, and its login is its email.
             return RequestResult.REGISTERED;
@@ -184,28 +207,59 @@ public class ProgressSaveService {
         }
     }
 
+    enum Limit {
+        NONE, ADDRESS, IP, PLAYER, OVERALL
+    }
+
     /**
-     * Three mails per address in ten minutes and ten a day; twenty per client address an hour. In
-     * memory, which is enough for one pod: the point is that the form cannot be used to flood
-     * somebody's inbox.
+     * Three mails per address in ten minutes and ten a day; twenty per client address and five per
+     * player an hour; and {@link #MAX_OVERALL_PER_HOUR} / {@link #MAX_OVERALL_PER_DAY} over everybody.
+     * In memory, which is enough for one pod.
+     * <p>
+     * The per-address limit keeps the form from flooding one inbox. The overall cap is what keeps
+     * it from flooding many: every mail goes out from razarion.com through Zoho, and a run of mails
+     * to strangers or made-up addresses brings bounces and spam reports - Zoho suspends a sender
+     * with too many, and then the mails of real players stop as well. Real use is two to four a day
+     * (11/2026), so the cap is never felt; and the client address alone does not hold, the
+     * forwarded header is the client's to write and many addresses are cheap.
      */
-    boolean allowed(String emailHash, String ip) {
+    Limit allowed(String emailHash, String ip, String userId) {
         long now = System.currentTimeMillis();
-        Deque<Long> byEmail = requestsByEmail.computeIfAbsent(emailHash, k -> new ArrayDeque<>());
-        Deque<Long> byIp = ip != null ? requestsByIp.computeIfAbsent(ip, k -> new ArrayDeque<>()) : new ArrayDeque<>();
         synchronized (this) {
+            Deque<Long> byEmail = requestsByEmail.computeIfAbsent(emailHash, k -> new ArrayDeque<>());
+            Deque<Long> byIp = ip != null ? requestsByIp.computeIfAbsent(ip, k -> new ArrayDeque<>()) : new ArrayDeque<>();
+            Deque<Long> byUser = userId != null ? requestsByUser.computeIfAbsent(userId, k -> new ArrayDeque<>()) : new ArrayDeque<>();
             prune(byEmail, now - DAY);
             prune(byIp, now - HOUR);
-            long lastTen = byEmail.stream().filter(t -> t > now - TEN_MINUTES).count();
-            if (lastTen >= 3 || byEmail.size() >= 10 || byIp.size() >= 20) {
-                return false;
+            prune(byUser, now - HOUR);
+            prune(requestsOverall, now - DAY);
+            Limit limit = Limit.NONE;
+            long overallLastHour = requestsOverall.stream().filter(t -> t > now - HOUR).count();
+            if (overallLastHour >= MAX_OVERALL_PER_HOUR || requestsOverall.size() >= MAX_OVERALL_PER_DAY) {
+                limit = Limit.OVERALL;
+            } else if (byEmail.stream().filter(t -> t > now - TEN_MINUTES).count() >= 3 || byEmail.size() >= 10) {
+                limit = Limit.ADDRESS;
+            } else if (byIp.size() >= 20) {
+                limit = Limit.IP;
+            } else if (byUser.size() >= MAX_PER_PLAYER_PER_HOUR) {
+                limit = Limit.PLAYER;
             }
-            byEmail.addLast(now);
-            byIp.addLast(now);
+            if (limit == Limit.NONE) {
+                byEmail.addLast(now);
+                byIp.addLast(now);
+                byUser.addLast(now);
+                requestsOverall.addLast(now);
+            } else if (limit == Limit.OVERALL && now - overallLimitLoggedAt > HOUR) {
+                // Once an hour: a flood would otherwise write a line per request.
+                overallLimitLoggedAt = now;
+                logger.warn("Save-progress mails are capped: {} in the last hour, {} in the last day - somebody may be using the form to send mails",
+                        overallLastHour, requestsOverall.size());
+            }
             requestsByEmail.values().removeIf(Deque::isEmpty);
             requestsByIp.values().removeIf(Deque::isEmpty);
+            requestsByUser.values().removeIf(Deque::isEmpty);
+            return limit;
         }
-        return true;
     }
 
     private static void prune(Deque<Long> times, long cutoff) {

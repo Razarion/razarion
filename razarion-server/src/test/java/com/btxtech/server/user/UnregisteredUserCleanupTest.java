@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.TreeMap;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -157,6 +158,27 @@ class UnregisteredUserCleanupTest {
 
         verify(baseItemService).deleteBase(7);
         verify(userRepository, never()).delete(any());
+    }
+
+    /**
+     * A player who saved his progress by the mail link keeps his base like a registered one. The
+     * query leaves him out; should it ever hand him over, the base stays all the same.
+     */
+    @Test
+    void keepsTheBaseOfAPlayerWhoSavedHisProgress() {
+        BaseItemService baseItemService = mock(BaseItemService.class);
+        ReflectionTestUtils.setField(userService, "baseItemService", baseItemService);
+        PlayerBase playerBase = mock(PlayerBase.class);
+        when(playerBase.getBaseId()).thenReturn(9);
+        when(baseItemService.getPlayerBase4UserId("saved")).thenReturn(playerBase);
+        UserEntity saved = anonymous("saved");
+        saved.setProgressSaved(new Date(), null);
+        when(userRepository.findByUserId("saved")).thenReturn(Optional.of(saved));
+        when(userRepository.findRetainedUserIdsInactiveSince(any())).thenReturn(List.of("saved"));
+
+        userService.cleanupDisconnectedUnregisteredUsers();
+
+        verify(baseItemService, never()).deleteBase(9);
     }
 
     /**
