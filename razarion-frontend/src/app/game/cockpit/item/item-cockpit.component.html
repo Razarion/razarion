@@ -43,6 +43,10 @@
         <!-- On a phone this row names the open panel, so it also closes it - a second header above it
              repeated the name and cost a row (2026-09-18). -->
         @if (compactLayout.compact()) {
+          <!-- The emote button of the phone while this panel is open: the one over the map gives way
+               to the panel, and here it is the selected unit that waves. -->
+          <button type="button" class="item-cockpit-emote" aria-label="Emotes" title="Wave to other players"
+                  (click)="emoteService.togglePickerAt($event)">👋</button>
           <button type="button" class="item-cockpit-close" (click)="compactLayout.close()" aria-label="Close">
             <i class="pi pi-times"></i>
           </button>

@@ -954,4 +954,16 @@ public class JsonDeserializer {
         r.setTimestamp(json.isNullOrUndefined("timestamp") ? null : (long) json.getDouble("timestamp"));
         return r;
     }
+
+    public static com.btxtech.shared.datatypes.EmotePacket deserializeEmotePacket(JsObject json) {
+        if (json == null) return null;
+        return new com.btxtech.shared.datatypes.EmotePacket()
+                .setEmote(json.isNullOrUndefined("emote") ? null : json.getString("emote"))
+                .setSyncItemId(json.isNullOrUndefined("syncItemId") ? 0 : json.getInt("syncItemId"))
+                .setBaseId(json.isNullOrUndefined("baseId") ? 0 : json.getInt("baseId"))
+                .setName(json.isNullOrUndefined("name") ? null : json.getString("name"))
+                .setX(json.isNullOrUndefined("x") ? 0 : json.getDouble("x"))
+                .setY(json.isNullOrUndefined("y") ? 0 : json.getDouble("y"))
+                .setReply(!json.isNullOrUndefined("reply") && json.getBoolean("reply"));
+    }
 }

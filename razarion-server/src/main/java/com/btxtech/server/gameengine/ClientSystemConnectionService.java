@@ -202,6 +202,11 @@ public class ClientSystemConnectionService extends TextWebSocketHandler {
         sendToClients(SystemConnectionPacket.CHAT_RECEIVE_MESSAGE, chatMessage);
     }
 
+    /** To every open game page: each shows it if it has the unit in view - see EmoteService. */
+    public void sendEmote(com.btxtech.shared.datatypes.EmotePacket emotePacket) {
+        sendToClients(SystemConnectionPacket.EMOTE, emotePacket);
+    }
+
     private void sendToClients(SystemConnectionPacket packet, Object object) {
         String text;
         try {

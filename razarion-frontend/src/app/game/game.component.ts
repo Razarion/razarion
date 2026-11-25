@@ -30,6 +30,7 @@ import {InventoryComponent} from './inventory/inventory.component';
 import {UnlockComponent} from './unlock/unlock.component';
 import {UserService} from '../auth/user.service';
 import {ChatCockpitComponent} from './cockpit/chat/chat-cockpit.component';
+import {EmoteBarComponent} from './emote/emote-bar.component';
 import {InfoDialogComponent} from './info-dialog/info-dialog.component';
 import {BabylonAudioService} from './renderer/babylon-audio.service';
 import {ServerRestartComponent} from './server-restart/server-restart.component';
@@ -58,6 +59,7 @@ import {ProgressSaveService} from './progress/progress-save.service';
     InventoryComponent,
     UnlockComponent,
     ChatCockpitComponent,
+    EmoteBarComponent,
     InfoDialogComponent,
     ServerRestartComponent,
     RadarComponent,
@@ -147,6 +149,24 @@ export class GameComponent implements OnInit {
   @HostListener('window:resize')
   protected onWindowResize(): void {
     this.expandedRadarSize = GameComponent.calculateExpandedRadarSize();
+  }
+
+  /** The chat icon of the phone layout. Opening is measured - see CHAT_OPENED. */
+  protected onChatIcon(): void {
+    const opening = !this.compactLayout.isOpen('chat');
+    const unread = this.compactLayout.chatUnread();
+    this.compactLayout.toggle('chat');
+    if (opening) {
+      this.firstInteractionTrackerService.report('CHAT_OPENED', 'unread=' + (unread ? 'yes' : 'no'));
+    }
+  }
+
+  /** The online count of the phone layout: opens the chat - measured apart from the chat icon. */
+  protected onOnlineTap(): void {
+    if (!this.compactLayout.isOpen('chat')) {
+      this.compactLayout.open('chat');
+      this.firstInteractionTrackerService.report('CHAT_OPENED', 'from=online');
+    }
   }
 
   ngOnInit(): void {

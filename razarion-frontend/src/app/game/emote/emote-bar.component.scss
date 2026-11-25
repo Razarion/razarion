@@ -1,0 +1,144 @@
+:host {
+  pointer-events: none;
+}
+
+/* At the mini map's upper right corner, the picker opening upwards: the map is the one panel that
+   stays put at every window size (bottom left, 200 px) - the chat moves to the bottom right on a
+   wide screen and sat under the button there - and the map is where the other players' rings and
+   names are. Clear of the map's zoom button, which stands over its corner. */
+.emote-dock {
+  position: fixed;
+  left: 184px;
+  bottom: 262px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  pointer-events: auto;
+  z-index: 20;
+}
+
+.emote-toggle,
+.emote-pick {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: solid 1px var(--p-emerald-900, #064e3b);
+  background: rgba(16, 16, 16, 0.9);
+  font: 700 22px/1 sans-serif;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.emote-toggle-open {
+  border-color: var(--p-emerald-400, #34d399);
+}
+
+.emote-picker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 4px;
+  border-radius: 26px;
+  background: rgba(0, 0, 0, 0.35);
+}
+
+/* Opened from the phone's unit panel: a column over its 👋, at the right edge - the build tip stands
+   at the left, over the first build button. */
+.emote-picker-anchored {
+  position: fixed;
+  pointer-events: auto;
+  z-index: 22;
+  background: rgba(0, 0, 0, 0.55);
+}
+
+.emote-sender {
+  max-width: 120px;
+  padding: 2px 6px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  font: 600 11px/1.2 sans-serif;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.emote-pick {
+  font-size: 20px;
+}
+
+.emote-pick:disabled {
+  opacity: 0.5;
+}
+
+/* "X waves at you": the one moment the game may interrupt for another person. Upper middle,
+   under the ticker, away from the thumb. */
+.emote-reply {
+  position: fixed;
+  top: 150px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px 8px 14px;
+  max-width: calc(100% - 32px);
+  border-radius: 24px;
+  border: solid 1px #ffe066;
+  background: rgba(16, 16, 16, 0.92);
+  color: #fff;
+  font: 600 15px/1.2 sans-serif;
+  pointer-events: auto;
+  z-index: 21;
+  animation: emote-reply-in 220ms ease-out;
+}
+
+.emote-reply-text b {
+  color: #ffe066;
+}
+
+.emote-reply-btn {
+  flex: 0 0 auto;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 18px;
+  background: #ffe066;
+  color: #111;
+  font: 700 15px/1 sans-serif;
+  cursor: pointer;
+}
+
+.emote-reply-close {
+  flex: 0 0 auto;
+  border: none;
+  background: none;
+  color: #aaa;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+@keyframes emote-reply-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -8px);
+  }
+}
+
+@media (max-width: 640px), (max-height: 540px) {
+  /* The phone's map sits in the bottom right corner, above the icon bar. */
+  .emote-dock {
+    left: auto;
+    right: 8px;
+    bottom: 190px;
+  }
+
+  .emote-reply {
+    top: 120px;
+  }
+}

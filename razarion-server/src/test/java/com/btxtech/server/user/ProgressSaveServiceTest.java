@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
+
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
@@ -31,6 +31,7 @@ class ProgressSaveServiceTest {
     private UserRepository userRepository;
     private UserService userService;
     private RegisterService registerService;
+    private AppTokenService appTokenService;
     private ProgressSaveService service;
     private UserEntity asking;
 
@@ -39,12 +40,79 @@ class ProgressSaveServiceTest {
         userRepository = mock(UserRepository.class);
         userService = mock(UserService.class);
         registerService = mock(RegisterService.class);
-        service = new ProgressSaveService(userRepository, userService, registerService, mock(UserActivityService.class), "https://example.test/");
+        appTokenService = mock(AppTokenService.class);
+        service = new ProgressSaveService(userRepository, userService, registerService, mock(UserActivityService.class), appTokenService, "https://example.test/");
         asking = player("asking");
         when(userService.getUserIdFromContextOrNull()).thenReturn("asking");
         when(userService.hasOpenSystemConnection("asking")).thenReturn(true);
         when(userRepository.findByUserId("asking")).thenReturn(Optional.of(asking));
         when(userRepository.findByEmailHash(anyString())).thenReturn(Optional.empty());
+        when(userRepository.findFirstByEmailIgnoreCase(anyString())).thenReturn(Optional.empty());
+        when(userService.isPlayerAccount(any())).thenReturn(true);
+    }
+
+    private static UserEntity account(String userId, String email) {
+        UserEntity userEntity = player(userId);
+        userEntity.setEmail(email);
+        userEntity.setPasswordHash("{bcrypt}x");
+        userEntity.setVerifiedDone();
+        return userEntity;
+    }
+
+    /**
+     * Saving under the address of a password account made a second player behind it (2026-11-23).
+     * The mail signs in to the account instead, and nothing is saved under the asking player.
+     */
+    @Test
+    void theAddressOfAPasswordAccountSendsASignInToIt() {
+        when(userRepository.findFirstByEmailIgnoreCase("player@example.com")).thenReturn(Optional.of(account("account", "Player@Example.com")));
+
+        assertEquals(ProgressSaveService.RequestResult.SENT, service.requestLink(" Player@Example.com"));
+
+        verify(userRepository).applyLoginLink(eq("account"), anyString(), any(Date.class), isNull());
+        verify(registerService).sendProgressLink(eq("player@example.com"), anyString(), eq(ProgressSaveService.LinkMail.ACCOUNT));
+        verify(userRepository, never()).applyLoginLink(eq("asking"), anyString(), any(), any());
+    }
+
+    /** The admin keeps his password: the form answers the same and sends nothing. */
+    @Test
+    void noSignInLinkForAnAccountWithARole() {
+        UserEntity admin = account("admin", "admin@example.com");
+        when(userRepository.findFirstByEmailIgnoreCase("admin@example.com")).thenReturn(Optional.of(admin));
+        when(userService.isPlayerAccount(admin)).thenReturn(false);
+
+        assertEquals(ProgressSaveService.RequestResult.SENT, service.requestLink("admin@example.com"));
+
+        verify(registerService, never()).sendProgressLink(anyString(), anyString(), any());
+        verify(userRepository, never()).applyLoginLink(anyString(), anyString(), any(), any());
+    }
+
+    /** An account never confirmed is cleaned away after a day - saving goes on as for a stranger. */
+    @Test
+    void anUnconfirmedAccountIsNoAccount() {
+        UserEntity unconfirmed = player("unconfirmed");
+        unconfirmed.setEmail("player@example.com");
+        unconfirmed.setPasswordHash("{bcrypt}x");
+        when(userRepository.findFirstByEmailIgnoreCase("player@example.com")).thenReturn(Optional.of(unconfirmed));
+
+        assertEquals(ProgressSaveService.RequestResult.SENT, service.requestLink("player@example.com"));
+
+        verify(registerService).sendProgressLink(eq("player@example.com"), anyString(), eq(ProgressSaveService.LinkMail.SAVE));
+    }
+
+    @Test
+    void openingAnAccountLinkHandsOutItsLoginToken() {
+        UserEntity account = account("account", "player@example.com");
+        account.setProgressLinkState(null, null, ProgressSaveService.sha256Hex("the-token"), new Date(System.currentTimeMillis() + 60_000));
+        when(userRepository.findByLoginLinkHash(ProgressSaveService.sha256Hex("the-token"))).thenReturn(Optional.of(account));
+        when(appTokenService.issue("player@example.com", "")).thenReturn("jwt");
+
+        ProgressSaveService.LinkUse use = service.useLink("the-token");
+
+        assertEquals(ProgressSaveService.LinkResult.ACCOUNT, use.result());
+        assertEquals("jwt", use.appToken());
+        verify(userRepository).applyLinkUsed(eq("account"), isNull(), isNull());
+        verify(userService, never()).adoptPlayer(anyString());
     }
 
     private static UserEntity player(String userId) {
@@ -68,7 +136,7 @@ class ProgressSaveServiceTest {
         ArgumentCaptor<String> linkHash = ArgumentCaptor.forClass(String.class);
         verify(userRepository).applyLoginLink(eq("asking"), linkHash.capture(), any(Date.class), eq(ProgressSaveService.hashEmail("player@example.com")));
         ArgumentCaptor<String> link = ArgumentCaptor.forClass(String.class);
-        verify(registerService).sendProgressLink(eq("player@example.com"), link.capture(), eq(false));
+        verify(registerService).sendProgressLink(eq("player@example.com"), link.capture(), eq(ProgressSaveService.LinkMail.SAVE));
         assertTrue(link.getValue().startsWith("https://example.test/rest/progress/link/"));
         // Only the hash of the link is stored, never the link.
         String token = link.getValue().substring(link.getValue().lastIndexOf('/') + 1);
@@ -83,7 +151,7 @@ class ProgressSaveServiceTest {
         assertEquals(ProgressSaveService.RequestResult.SENT, service.requestLink("player@example.com"));
 
         verify(userRepository).applyLoginLink(eq("saved"), anyString(), any(Date.class), isNull());
-        verify(registerService).sendProgressLink(eq("player@example.com"), anyString(), eq(true));
+        verify(registerService).sendProgressLink(eq("player@example.com"), anyString(), eq(ProgressSaveService.LinkMail.SIGN_IN));
         verify(userRepository, never()).applyLoginLink(eq("asking"), anyString(), any(), any());
     }
 
@@ -91,7 +159,7 @@ class ProgressSaveServiceTest {
     void noMailForSomethingThatIsNoAddress() {
         assertEquals(ProgressSaveService.RequestResult.INVALID_EMAIL, service.requestLink("not an address"));
         assertEquals(ProgressSaveService.RequestResult.INVALID_EMAIL, service.requestLink(null));
-        verify(registerService, never()).sendProgressLink(anyString(), anyString(), anyBoolean());
+        verify(registerService, never()).sendProgressLink(anyString(), anyString(), any());
     }
 
     @Test
@@ -115,7 +183,7 @@ class ProgressSaveServiceTest {
         when(userService.getUserIdFromContextOrNull()).thenReturn(null);
         assertEquals(ProgressSaveService.RequestResult.NOT_IN_GAME, service.requestLink("player@example.com"));
 
-        verify(registerService, never()).sendProgressLink(anyString(), anyString(), anyBoolean());
+        verify(registerService, never()).sendProgressLink(anyString(), anyString(), any());
         verify(userRepository, never()).applyLoginLink(anyString(), anyString(), any(), any());
     }
 
@@ -149,7 +217,7 @@ class ProgressSaveServiceTest {
     void aPasswordAccountIsNotOfferedASecondWay() {
         asking.setVerifiedDone();
         assertEquals(ProgressSaveService.RequestResult.REGISTERED, service.requestLink("player@example.com"));
-        verify(registerService, never()).sendProgressLink(anyString(), anyString(), anyBoolean());
+        verify(registerService, never()).sendProgressLink(anyString(), anyString(), any());
     }
 
     @Test
@@ -158,7 +226,7 @@ class ProgressSaveServiceTest {
         asking.setProgressLinkState(null, pending, ProgressSaveService.sha256Hex("the-token"), new Date(System.currentTimeMillis() + 60_000));
         when(userRepository.findByLoginLinkHash(ProgressSaveService.sha256Hex("the-token"))).thenReturn(Optional.of(asking));
 
-        assertEquals(ProgressSaveService.LinkResult.SAVED, service.useLink("the-token"));
+        assertEquals(ProgressSaveService.LinkResult.SAVED, service.useLink("the-token").result());
 
         verify(userRepository).applyLinkUsed(eq("asking"), eq(pending), any(Date.class));
         verify(userService).adoptPlayer("asking");
@@ -171,7 +239,7 @@ class ProgressSaveServiceTest {
         saved.setProgressLinkState(hash, null, ProgressSaveService.sha256Hex("the-token"), new Date(System.currentTimeMillis() + 60_000));
         when(userRepository.findByLoginLinkHash(ProgressSaveService.sha256Hex("the-token"))).thenReturn(Optional.of(saved));
 
-        assertEquals(ProgressSaveService.LinkResult.SIGNED_IN, service.useLink("the-token"));
+        assertEquals(ProgressSaveService.LinkResult.SIGNED_IN, service.useLink("the-token").result());
 
         verify(userRepository).applyLinkUsed(eq("saved"), eq(hash), any(Date.class));
         verify(userService).adoptPlayer("saved");
@@ -183,8 +251,8 @@ class ProgressSaveServiceTest {
         when(userRepository.findByLoginLinkHash(ProgressSaveService.sha256Hex("old"))).thenReturn(Optional.of(asking));
         when(userRepository.findByLoginLinkHash(ProgressSaveService.sha256Hex("unknown"))).thenReturn(Optional.empty());
 
-        assertEquals(ProgressSaveService.LinkResult.EXPIRED, service.useLink("old"));
-        assertEquals(ProgressSaveService.LinkResult.EXPIRED, service.useLink("unknown"));
+        assertEquals(ProgressSaveService.LinkResult.EXPIRED, service.useLink("old").result());
+        assertEquals(ProgressSaveService.LinkResult.EXPIRED, service.useLink("unknown").result());
         verify(userService, never()).adoptPlayer(anyString());
     }
 
@@ -195,7 +263,7 @@ class ProgressSaveServiceTest {
         when(userRepository.findByLoginLinkHash(ProgressSaveService.sha256Hex("the-token"))).thenReturn(Optional.of(asking));
         when(userRepository.findByEmailHash(pending)).thenReturn(Optional.of(player("faster")));
 
-        assertEquals(ProgressSaveService.LinkResult.EXPIRED, service.useLink("the-token"));
+        assertEquals(ProgressSaveService.LinkResult.EXPIRED, service.useLink("the-token").result());
         verify(userRepository).applyLinkUsed(eq("asking"), isNull(), isNull());
         verify(userService, never()).adoptPlayer(anyString());
         assertNull(asking.getEmailHash());

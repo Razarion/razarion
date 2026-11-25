@@ -22,5 +22,7 @@ public enum UserActivityType {
     /** Progress saved; detail EMAIL (link opened) or FACEBOOK. */
     PROGRESS_SAVED,
     /** A saved player continues in another browser; detail EMAIL or FACEBOOK. */
-    PROGRESS_SIGN_IN;
+    PROGRESS_SIGN_IN,
+    /** A sign over one of the player's units (EmoteService); detail the emote, ":REPLY" when it answered one. */
+    EMOTE_SENT;
 }

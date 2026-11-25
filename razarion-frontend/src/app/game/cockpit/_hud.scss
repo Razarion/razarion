@@ -506,3 +506,44 @@
      against them - shrinking the ring here would either crop the map or put a transform between
      the click and the coordinate it turns into. A chunky map is the cheaper of the two. */
 }
+
+/* Who else is playing (PresenceService): a green dot that breathes, so the count reads as "live"
+   rather than as one more number. Unprefixed: the phone status strip uses the dot as well. */
+.hud-online-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #4ade80;
+  box-shadow: 0 0 6px #4ade80;
+  animation: hud-online-breathe 2.4s ease-in-out infinite;
+}
+
+@keyframes hud-online-breathe {
+  50% {
+    opacity: 0.45;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hud-online-dot {
+    animation: none;
+  }
+}
+
+.game-main .hud-online .hud-stat-value {
+  color: #4ade80;
+}
+
+.compact-status-online {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-left: auto;
+  padding: 0;
+  border: none;
+  background: none;
+  color: #4ade80;
+  font: inherit;
+  cursor: pointer;
+}

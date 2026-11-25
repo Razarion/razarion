@@ -121,6 +121,9 @@ public class TeaVMClientServerSystemConnection extends AbstractServerSystemConne
         if (type == ChatMessage.class) {
             return JsonDeserializer.deserializeChatMessage(obj);
         }
+        if (type == com.btxtech.shared.datatypes.EmotePacket.class) {
+            return JsonDeserializer.deserializeEmotePacket(obj);
+        }
         JsConsole.warn("fromJson: unsupported packet type: " + packet.name());
         return null;
     }

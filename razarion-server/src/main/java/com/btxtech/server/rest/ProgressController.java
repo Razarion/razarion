@@ -65,10 +65,20 @@ public class ProgressController {
     /** The link from the mail. Lands on the game, which tells the player how it went. */
     @GetMapping("link/{token}")
     public ResponseEntity<Void> link(@PathVariable("token") String token) {
-        String outcome = switch (progressSaveService.useLink(token)) {
+        ProgressSaveService.LinkUse use = progressSaveService.useLink(token);
+        if (use.result() == ProgressSaveService.LinkResult.ACCOUNT) {
+            // The login token rides in the fragment: the browser keeps it to itself, so it shows up
+            // in no request, no server log and no referrer. The page stores it before it starts - see
+            // account-link.ts in the frontend.
+            return ResponseEntity.status(HttpStatus.FOUND)
+                    .header(HttpHeaders.LOCATION, "/game?progress=account#account=" + use.appToken())
+                    .header(HttpHeaders.CACHE_CONTROL, "no-store")
+                    .build();
+        }
+        String outcome = switch (use.result()) {
             case SAVED -> "saved";
             case SIGNED_IN -> "welcome";
-            case EXPIRED -> "expired";
+            case EXPIRED, ACCOUNT -> "expired";
         };
         return toGame(outcome);
     }

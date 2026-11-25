@@ -275,7 +275,25 @@ export type InteractionKind =
   | 'REEL_CLOSED'
   | 'REEL_TOUCHED'
   | 'REEL_LEFT'
-  | 'REEL_RETURNED';
+  | 'REEL_RETURNED'
+/**
+ * The chat. OPENED: the chat icon of the phone layout was tapped open, `unread=yes|no` for whether
+ * its dot said there was something new - on a desktop the chat is always in view and this never
+ * comes. SENT: the player's own message went out, phone or desktop. Measured from 2026-11-25: the
+ * chat was full of the planet's announcements, and the players who said "hi" into it got no answer,
+ * but whether anybody opened it at all was not known.
+ */
+  | 'CHAT_OPENED'
+  | 'CHAT_SENT'
+/**
+ * Signs over units (EmoteService). SENT: the player showed one, `emote=WAVE,from=button|reply`.
+ * SEEN: another player's sign appeared on a unit in this player's view, `emote=...` (`,reply`
+ * when it answered somebody). REPLY_OFFERED: "X waves at you - wave back" was put in front of
+ * the player. Measured from 2026-11-25, to see whether a met person keeps a new player playing.
+ */
+  | 'EMOTE_SENT'
+  | 'EMOTE_SEEN'
+  | 'EMOTE_REPLY_OFFERED';
 
 /**
  * How a group size is reported. Bucketed rather than exact: {@link

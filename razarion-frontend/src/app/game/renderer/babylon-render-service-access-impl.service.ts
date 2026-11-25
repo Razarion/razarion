@@ -3113,6 +3113,13 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     return this.waterVisible;
   }
 
+  /** Ids of the player's own items selected right now, of those in view. */
+  public getSelectedOwnItemIds(): number[] {
+    return this.babylonBaseItems
+      .filter(item => item.isSelected() && GwtHelper.gwtIssueStringEnum(item.diplomacy, Diplomacy) === Diplomacy.OWN)
+      .map(item => item.getId());
+  }
+
   /** The live instance for an id, or null while the item is out of view and not rendered. */
   public getBabylonBaseItemById(syncBaseItemTypeId: number): BabylonBaseItemImpl | null {
     return this.babylonBaseItems.find(item => {

@@ -20,4 +20,10 @@ public class ChatCockpitService {
     public void onMessage(ChatMessage chatMessage) {
         chatCockpit.onMessage(chatMessage);
     }
+
+    public void onEmote(com.btxtech.shared.datatypes.EmotePacket emotePacket) {
+        if (chatCockpit != null) {
+            chatCockpit.onEmote(emotePacket);
+        }
+    }
 }

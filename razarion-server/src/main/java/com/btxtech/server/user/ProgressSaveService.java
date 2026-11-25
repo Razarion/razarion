@@ -61,6 +61,7 @@ public class ProgressSaveService {
     private final UserService userService;
     private final RegisterService registerService;
     private final UserActivityService userActivityService;
+    private final AppTokenService appTokenService;
     private final String publicUrl;
     /** All mails together, whoever asks for them - see {@link #allowed}. */
     static final int MAX_OVERALL_PER_HOUR = 20;
@@ -82,18 +83,32 @@ public class ProgressSaveService {
     }
 
     public enum LinkResult {
-        SAVED, SIGNED_IN, EXPIRED
+        SAVED, SIGNED_IN, EXPIRED,
+        /** Signed in to a password account - {@link LinkUse#appToken()} is its login token. */
+        ACCOUNT
+    }
+
+    /** Which mail goes out: save the asking player, continue a saved one, or sign in to an account. */
+    public enum LinkMail {
+        SAVE, SIGN_IN, ACCOUNT
+    }
+
+    /** What opening a link did, with the login token when it opened a password account. */
+    public record LinkUse(LinkResult result, String appToken) {
+        static final LinkUse EXPIRED = new LinkUse(LinkResult.EXPIRED, null);
     }
 
     public ProgressSaveService(UserRepository userRepository,
                                UserService userService,
                                RegisterService registerService,
                                UserActivityService userActivityService,
+                               AppTokenService appTokenService,
                                @Value("${razarion.public-url:https://www.razarion.com}") String publicUrl) {
         this.userRepository = userRepository;
         this.userService = userService;
         this.registerService = registerService;
         this.userActivityService = userActivityService;
+        this.appTokenService = appTokenService;
         this.publicUrl = publicUrl.endsWith("/") ? publicUrl.substring(0, publicUrl.length() - 1) : publicUrl;
     }
 
@@ -137,6 +152,11 @@ public class ProgressSaveService {
             // A password account is already safe, and its login is its email.
             return RequestResult.REGISTERED;
         }
+        Optional<UserEntity> account = userRepository.findFirstByEmailIgnoreCase(normalized)
+                .filter(u -> u.getPasswordHash() != null && u.isVerified());
+        if (account.isPresent()) {
+            return sendAccountLink(account.get(), normalized, askingUserId);
+        }
         Optional<UserEntity> saved = userRepository.findByEmailHash(emailHash);
         boolean signIn = saved.isPresent() && !saved.get().getUserId().equals(askingUserId);
         String targetUserId = saved.map(UserEntity::getUserId).orElse(askingUserId);
@@ -147,7 +167,7 @@ public class ProgressSaveService {
                 new Date(System.currentTimeMillis() + LINK_VALID_MINUTES * 60_000L),
                 saved.isPresent() ? null : emailHash);
         try {
-            registerService.sendProgressLink(normalized, publicUrl + "/rest/progress/link/" + token, signIn);
+            registerService.sendProgressLink(normalized, publicUrl + "/rest/progress/link/" + token, signIn ? LinkMail.SIGN_IN : LinkMail.SAVE);
         } catch (Exception e) {
             logger.error("Could not send the progress link for user {}", askingUserId, e);
             return RequestResult.FAILED;
@@ -157,19 +177,56 @@ public class ProgressSaveService {
     }
 
     /**
+     * The address is the login of a password account. Saving the asking player under it as well
+     * made a second player behind the same address (found 2026-11-23); the mail signs this browser
+     * in to the account instead, without its password. An account with a role gets no mail - the
+     * answer is the same, so the form still tells nothing about the address.
+     */
+    private RequestResult sendAccountLink(UserEntity account, String normalized, String askingUserId) {
+        if (!userService.isPlayerAccount(account)) {
+            logger.warn("Save progress asked for the address of an account with a role, by user {} - no mail", askingUserId);
+            return RequestResult.SENT;
+        }
+        String token = newToken();
+        userRepository.applyLoginLink(account.getUserId(),
+                sha256Hex(token),
+                new Date(System.currentTimeMillis() + LINK_VALID_MINUTES * 60_000L),
+                null);
+        try {
+            registerService.sendProgressLink(normalized, publicUrl + "/rest/progress/link/" + token, LinkMail.ACCOUNT);
+        } catch (Exception e) {
+            logger.error("Could not send the account link for user {}", askingUserId, e);
+            return RequestResult.FAILED;
+        }
+        userActivityService.onProgressLinkSent(askingUserId, "ACCOUNT");
+        return RequestResult.SENT;
+    }
+
+    /**
      * Opens a link: a save link stores its fingerprint for good, and either kind makes this browser
      * the player the link belongs to.
      */
-    public LinkResult useLink(String token) {
+    public LinkUse useLink(String token) {
         if (token == null || token.isBlank() || token.length() > 100) {
-            return LinkResult.EXPIRED;
+            return LinkUse.EXPIRED;
         }
         UserEntity userEntity = userRepository.findByLoginLinkHash(sha256Hex(token)).orElse(null);
         if (userEntity == null || userEntity.getLoginLinkExpiry() == null
                 || userEntity.getLoginLinkExpiry().getTime() < System.currentTimeMillis()) {
-            return LinkResult.EXPIRED;
+            return LinkUse.EXPIRED;
         }
         String userId = userEntity.getUserId();
+        if (userEntity.getPasswordHash() != null && userEntity.getEmail() != null) {
+            // A password account: the browser signs in with the account's login token, as after the
+            // password. No cookie to point anywhere - the token is what names the player.
+            userRepository.applyLinkUsed(userId, userEntity.getEmailHash(), userEntity.getProgressSavedDate());
+            if (!userService.isPlayerAccount(userEntity)) {
+                return LinkUse.EXPIRED;
+            }
+            userActivityService.onProgressSignIn(userId, "ACCOUNT");
+            logger.info("User {} signed in to his account by a link", userId);
+            return new LinkUse(LinkResult.ACCOUNT, appTokenService.issue(userEntity.getEmail(), ""));
+        }
         String pending = userEntity.getPendingEmailHash();
         boolean save = pending != null;
         String emailHash = userEntity.getEmailHash();
@@ -178,7 +235,7 @@ public class ProgressSaveService {
             Optional<UserEntity> other = userRepository.findByEmailHash(pending);
             if (other.isPresent() && !other.get().getUserId().equals(userId)) {
                 userRepository.applyLinkUsed(userId, emailHash, userEntity.getProgressSavedDate());
-                return LinkResult.EXPIRED;
+                return LinkUse.EXPIRED;
             }
             emailHash = pending;
         }
@@ -188,11 +245,11 @@ public class ProgressSaveService {
         if (save) {
             userActivityService.onProgressSaved(userId, "EMAIL");
             logger.info("User {} saved his progress", userId);
-            return LinkResult.SAVED;
+            return new LinkUse(LinkResult.SAVED, null);
         }
         userActivityService.onProgressSignIn(userId, "EMAIL");
         logger.info("User {} continues his saved progress on another browser", userId);
-        return LinkResult.SIGNED_IN;
+        return new LinkUse(LinkResult.SIGNED_IN, null);
     }
 
     public boolean isSaved() {

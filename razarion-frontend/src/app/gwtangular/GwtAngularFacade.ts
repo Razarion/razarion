@@ -800,6 +800,20 @@ export interface InGameQuestVisualizationService {
 
 export interface ChatCockpit {
   onMessage(chatMessage: ChatMessage): void;
+
+  /** A sign over somebody's unit (JsChatCockpit.onEmote) - see EmoteService. */
+  onEmote(emote: EmoteEvent): void;
+}
+
+/** Plain fields (JsChatCockpit.onEmote), like ChatMessage. */
+export interface EmoteEvent {
+  emote: string;
+  syncItemId: number;
+  baseId: number;
+  name: string | null;
+  x: number;
+  y: number;
+  reply: boolean;
 }
 
 /** Plain fields (JsChatCockpit): a Java object would reach JS opaque under WASM-GC. */

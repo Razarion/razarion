@@ -141,6 +141,17 @@
         <span class="hud-stat-value">{{ resources }}</span>
       </div>
 
+      <!-- Who else is playing. Only once there is somebody: "0 online" would tell a newcomer the
+           one thing this is here to answer the other way. -->
+      @if (presenceService.presence().count > 0) {
+        <span class="hud-sep"></span>
+        <div class="hud-stat hud-online" [pTooltip]="presenceService.namesText()" tooltipPosition="bottom">
+          <span class="hud-online-dot"></span>
+          <span class="hud-stat-value">{{ presenceService.presence().count }}</span>
+          <span class="hud-stat-label">online</span>
+        </div>
+      }
+
       <span class="hud-sep hud-sep-grow"></span>
 
       <!-- Things you open, read and close again. At the far end of the bar, away from the numbers,

@@ -40,22 +40,32 @@ public class RegisterService {
      * address or, when the address already holds a saved player, continues that player on the device
      * that opens it. The address is used for this one mail and is not kept anywhere.
      */
-    public void sendProgressLink(String email, String link, boolean signIn) {
+    public void sendProgressLink(String email, String link, ProgressSaveService.LinkMail kind) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED, StandardCharsets.UTF_8.name());
             helper.setFrom(new InternetAddress(NO_REPLY_EMAIL, PERSONAL_NAME));
             helper.setTo(email);
-            helper.setSubject(signIn ? "Continue your Razarion game" : "Save your Razarion progress");
+            helper.setSubject(switch (kind) {
+                case SAVE -> "Save your Razarion progress";
+                case SIGN_IN -> "Continue your Razarion game";
+                case ACCOUNT -> "Sign in to your Razarion account";
+            });
 
             Map<String, Object> model = new HashMap<>();
             model.put("greeting", "Hello,");
-            model.put("main", signIn
-                    ? "Open the link below to continue your saved game on this device:"
-                    : "Open the link below to save your progress. Afterwards you can continue on any device with this address:");
+            model.put("main", switch (kind) {
+                case SAVE -> "Open the link below to save your progress. Afterwards you can continue on any device with this address:";
+                case SIGN_IN -> "Open the link below to continue your saved game on this device:";
+                case ACCOUNT -> "This address belongs to your Razarion account. Open the link below to sign in to it on this device - no password needed:";
+            });
             model.put("link", link);
-            model.put("closing", "The link works once and for " + ProgressSaveService.LINK_VALID_MINUTES
-                    + " minutes. If you did not ask for it, just ignore this mail. We do not keep your address and will not write to you.");
+            String validity = "The link works once and for " + ProgressSaveService.LINK_VALID_MINUTES
+                    + " minutes. If you did not ask for it, just ignore this mail.";
+            // A password account's login is its address, so that one is kept - the other two are not.
+            model.put("closing", kind == ProgressSaveService.LinkMail.ACCOUNT
+                    ? validity
+                    : validity + " We do not keep your address and will not write to you.");
             model.put("razarionTeam", "The Razarion Team");
 
             Template template = freemarkerConfig.getTemplate("registration-confirmation.ftl");

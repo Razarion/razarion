@@ -37,4 +37,25 @@ public class JsChatCockpit implements ChatCockpit {
 
     @org.teavm.jso.JSBody(params = {"obj", "message"}, script = "obj.onMessage(message);")
     private static native void callOnMessage(JSObject obj, JSObject message);
+
+    /** Plain fields again, for the same reason as {@link #onMessage}. */
+    @Override
+    public void onEmote(com.btxtech.shared.datatypes.EmotePacket emotePacket) {
+        JsObject emote = JsObject.create();
+        emote.set("emote", emotePacket.getEmote());
+        emote.set("syncItemId", emotePacket.getSyncItemId());
+        emote.set("baseId", emotePacket.getBaseId());
+        if (emotePacket.getName() != null) {
+            emote.set("name", emotePacket.getName());
+        } else {
+            emote.setNull("name");
+        }
+        emote.set("x", emotePacket.getX());
+        emote.set("y", emotePacket.getY());
+        emote.set("reply", emotePacket.isReply());
+        callOnEmote(js, emote);
+    }
+
+    @org.teavm.jso.JSBody(params = {"obj", "emote"}, script = "if (obj.onEmote) { obj.onEmote(emote); }")
+    private static native void callOnEmote(JSObject obj, JSObject emote);
 }

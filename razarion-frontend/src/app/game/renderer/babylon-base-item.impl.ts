@@ -25,6 +25,7 @@ import {UiConfigCollectionService} from "../ui-config-collection.service";
 import {SelectionService as TsSelectionService} from "../selection.service";
 import {AdvancedDynamicTexture} from '@babylonjs/gui/2D/advancedDynamicTexture';
 import {TextBlock} from '@babylonjs/gui/2D/controls/textBlock';
+import {Rectangle} from '@babylonjs/gui/2D/controls/rectangle';
 
 import {Nullable} from '@babylonjs/core/types';
 import {BabylonLightning} from "./babylon-lightning";
@@ -85,6 +86,8 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
   private baseId: number;
   private harvestingBeamEffect: BabylonHarvestingBeam | null = null;
   private nameBlock: TextBlock | null = null;
+  private emoteBubble: Rectangle | null = null;
+  private static readonly EMOTE_MILLIS = 3500;
   private buildup: number | null = null;
   private progress: number = 0;
   private idle = false;
@@ -390,6 +393,79 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
       BabylonBaseItemImpl.nameTexture?.removeControl(this.nameBlock);
       this.nameBlock.dispose();
       this.nameBlock = null;
+    }
+    this.removeEmote();
+  }
+
+  /**
+   * A sign over the unit for a few seconds - a wave, a thumb (EmoteService). The bare sign above
+   * the name, no plate behind it: it jumps up large for a moment, so the eye catches it, and
+   * settles. The cost is that of the name beside it - a linked control redraws the layer every
+   * frame anyway while the unit moves - and only for the seconds it shows.
+   */
+  showEmote(glyph: string): void {
+    this.removeEmote();
+    const bubble = new Rectangle('emote');
+    bubble.width = '90px';
+    bubble.height = '70px';
+    bubble.thickness = 0;
+    bubble.isPointerBlocker = false;
+    const text = new TextBlock();
+    text.text = glyph;
+    text.fontSize = glyph.length > 2 ? 30 : 40;
+    text.fontWeight = 'bold';
+    text.color = '#ffffff';
+    // The emoji carry their own colours; the outline is for "GG" and keeps it readable on any ground.
+    text.outlineWidth = 4;
+    text.outlineColor = 'black';
+    text.shadowColor = 'rgba(0, 0, 0, 0.6)';
+    text.shadowBlur = 6;
+    text.shadowOffsetY = 2;
+    bubble.addControl(text);
+    BabylonBaseItemImpl.unitNameTexture(this.rendererService.getScene()).addControl(bubble);
+    bubble.linkWithMesh(this.getContainer());
+    bubble.linkOffsetY = -105 - this.baseItemType.getPhysicalAreaConfig().getRadius() * 2;
+    bubble.scaleX = bubble.scaleY = 0.3;
+    const start = performance.now();
+    const tick = () => {
+      if (this.emoteBubble !== bubble) {
+        return;
+      }
+      const t = performance.now() - start;
+      bubble.scaleX = bubble.scaleY = BabylonBaseItemImpl.emoteScale(t);
+      bubble.alpha = t > BabylonBaseItemImpl.EMOTE_MILLIS - 500 ? Math.max(0, (BabylonBaseItemImpl.EMOTE_MILLIS - t) / 500) : 1;
+      if (t >= BabylonBaseItemImpl.EMOTE_MILLIS) {
+        this.removeEmote();
+        return;
+      }
+      requestAnimationFrame(tick);
+    };
+    this.emoteBubble = bubble;
+    requestAnimationFrame(tick);
+  }
+
+  /**
+   * Size of the sign over its life: from small up to 1.7 in a fifth of a second, back to 1 by
+   * half a second, then held.
+   */
+  static emoteScale(t: number): number {
+    const PEAK = 1.7, UP = 200, SETTLE = 500;
+    if (t <= UP) {
+      const p = t / UP;
+      return 0.3 + (PEAK - 0.3) * (1 - Math.pow(1 - p, 3));
+    }
+    if (t <= SETTLE) {
+      const p = (t - UP) / (SETTLE - UP);
+      return PEAK - (PEAK - 1) * (p * p * (3 - 2 * p));
+    }
+    return 1;
+  }
+
+  private removeEmote(): void {
+    if (this.emoteBubble) {
+      BabylonBaseItemImpl.nameTexture?.removeControl(this.emoteBubble);
+      this.emoteBubble.dispose();
+      this.emoteBubble = null;
     }
   }
 

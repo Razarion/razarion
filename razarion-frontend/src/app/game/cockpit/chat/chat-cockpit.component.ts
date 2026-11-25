@@ -11,6 +11,8 @@ import {TypescriptGenerator} from '../../../backend/typescript-generator';
 import {ChatCockpit, ChatMessage as GwtAngularChatMessage} from '../../../gwtangular/GwtAngularFacade';
 import {CompactLayoutService} from '../compact-layout.service';
 import {FirstInteractionTrackerService} from '../../tracking/first-interaction-tracker.service';
+import {EmoteService} from '../../emote/emote.service';
+import {EmoteEvent} from '../../../gwtangular/GwtAngularFacade';
 
 /**
  * A post or reel on Instagram, as the server keeps it (ChatService.normalizeInstagramUrl). Checked
@@ -89,7 +91,8 @@ export class ChatCockpitComponent implements ChatCockpit, AfterViewInit, OnDestr
   constructor(httpClient: HttpClient,
               private zone: NgZone,
               private compactLayout: CompactLayoutService,
-              private tracker: FirstInteractionTrackerService) {
+              private tracker: FirstInteractionTrackerService,
+              private emoteService: EmoteService) {
     this.chatControllerClient = new ChatControllerClient(TypescriptGenerator.generateHttpClientAdapter(httpClient))
   }
 
@@ -100,6 +103,11 @@ export class ChatCockpitComponent implements ChatCockpit, AfterViewInit, OnDestr
     if (ref && this.openReelUrl) {
       this.embedReel(ref.nativeElement, this.openReelUrl);
     }
+  }
+
+  /** A sign over a unit - not a chat line: it goes over the unit, see EmoteService. */
+  onEmote(emote: EmoteEvent): void {
+    this.emoteService.onEmote(emote);
   }
 
   onMessage(gwtAngularChatMessage: GwtAngularChatMessage): void {
@@ -160,6 +168,7 @@ export class ChatCockpitComponent implements ChatCockpit, AfterViewInit, OnDestr
       .then(() => {
         this.messageToSend = "";
         this.scrollToBottom();
+        this.tracker.report('CHAT_SENT');
       })
       .catch(error => {
         this.sendError = error?.status === 429 ? 'Too many messages, please wait a moment' : 'Could not send, please try again';

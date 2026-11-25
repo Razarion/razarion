@@ -157,6 +157,14 @@ public class UserService implements UserDetailsService {
     @Value("${razarion.recorder.email:}")
     private String recorderEmail;
 
+    /**
+     * A password account that plays and holds no role: the only kind a sign-in link by mail may
+     * open - see {@link ProgressSaveService}. The admin and the recorder keep their password.
+     */
+    public boolean isPlayerAccount(UserEntity userEntity) {
+        return !userEntity.isAdmin() && !isRecorderEmail(userEntity.getEmail());
+    }
+
     private boolean isRecorderEmail(String email) {
         return recorderEmail != null && !recorderEmail.isBlank() && recorderEmail.trim().equalsIgnoreCase(email);
     }
@@ -397,6 +405,27 @@ public class UserService implements UserDetailsService {
             }
         }
         return null;
+    }
+
+    /**
+     * This browser stops being anybody: the http session lets go of its player and ends. The player
+     * himself stays - a saved one can come back by his link - only this browser no longer leads to
+     * him. See FreshStartController, which clears the cookie and the storage along with it.
+     */
+    public void forgetBrowser(HttpServletRequest request) {
+        jakarta.servlet.http.HttpSession session = request.getSession(false);
+        if (session == null) {
+            return;
+        }
+        String httpSessionId = session.getId();
+        synchronized (anonymousCreationLocks[Math.floorMod(httpSessionId.hashCode(), anonymousCreationLocks.length)]) {
+            anonymousMap.remove(httpSessionId);
+        }
+        try {
+            session.invalidate();
+        } catch (IllegalStateException e) {
+            // Invalidated already.
+        }
     }
 
     private void writeAnonymousCookie(ServletRequestAttributes attr, String userId) {

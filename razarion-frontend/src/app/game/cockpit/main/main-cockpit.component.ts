@@ -21,6 +21,7 @@ import {GwtAngularService} from '../../../gwtangular/GwtAngularService';
 import {CompactLayoutService} from '../compact-layout.service';
 import {SaveProgressComponent} from '../../progress/save-progress.component';
 import {ProgressSaveService} from '../../progress/progress-save.service';
+import {PresenceService} from '../../presence/presence.service';
 
 
 @Component({
@@ -115,13 +116,15 @@ export class MainCockpitComponent implements MainCockpit {
               public compactLayout: CompactLayoutService,
               public userService: UserService,
               private firstInteractionTrackerService: FirstInteractionTrackerService,
-              public progressSaveService: ProgressSaveService) {
+              public progressSaveService: ProgressSaveService,
+              public presenceService: PresenceService) {
   }
 
   show(): void {
     this.zone.run(() => {
       this.cockpitDisplayService.showMainCockpit = true;
       this.cockpitDisplayService.showChatCockpit = true;
+      this.presenceService.start();
     });
   }
 

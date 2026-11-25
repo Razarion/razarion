@@ -164,6 +164,11 @@
     </div>
   </div>
 
+  <!-- Signs over units and the one-tap answer to a wave - see EmoteService. -->
+  @if (cockpitDisplayService.showMainCockpit) {
+    <emote-bar></emote-bar>
+  }
+
   <div class="panel-quest"
     [class.cockpit-border]="compactLayout.compact()"
     [class.hud-skin]="!compactLayout.compact()"
@@ -199,6 +204,14 @@
         <span [class.compact-status-power-over]="mainCockpit.powerOverloaded">
           <i class="pi pi-bolt"></i> {{ mainCockpit.displayEnergyString }}
         </span>
+      }
+      <!-- Who else is playing; a tap opens the chat, the place to meet them. Only once there is
+           somebody - see the same count in the desktop top bar. -->
+      @if (mainCockpit.presenceService.presence().count > 0) {
+        <button type="button" class="compact-status-online" (click)="onOnlineTap()"
+                [attr.aria-label]="mainCockpit.presenceService.namesText()">
+          <span class="hud-online-dot"></span> {{ mainCockpit.presenceService.presence().count }} online
+        </button>
       }
     </div>
 
@@ -401,7 +414,7 @@
         <button type="button" class="compact-icon"
                 [class.compact-icon-open]="compactLayout.isOpen('chat')"
                 [disabled]="!cockpitDisplayService.showChatCockpit"
-                (click)="compactLayout.toggle('chat')"
+                (click)="onChatIcon()"
                 [attr.aria-label]="compactLayout.chatUnread() ? 'Chat, new messages' : 'Chat'">
           <i class="pi pi-comments"></i>
           @if (compactLayout.chatUnread() && cockpitDisplayService.showChatCockpit) {

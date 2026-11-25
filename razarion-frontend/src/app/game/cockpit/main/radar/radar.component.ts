@@ -22,6 +22,7 @@ import { MiniQuestMarker } from './mini-quest-marker';
 import { MiniFog } from './mini-fog';
 import { QuestMarkerService } from './quest-marker.service';
 import { CockpitDisplayService } from '../../cockpit-display.service';
+import { PresenceService } from '../../../presence/presence.service';
 import {Button} from 'primeng/button';
 import {Slider} from 'primeng/slider';
 import {FormsModule} from '@angular/forms';
@@ -133,6 +134,7 @@ export class RadarComponent implements ViewFieldListener, OnInit, OnChanges, OnD
 
   private readonly zone = inject(NgZone);
   private readonly cockpitDisplayService = inject(CockpitDisplayService);
+  private readonly presenceService = inject(PresenceService);
 
   constructor(private gwtAngularService: GwtAngularService, private renderService: BabylonRenderServiceAccessImpl,
               private questMarkerService: QuestMarkerService) {
@@ -170,6 +172,7 @@ export class RadarComponent implements ViewFieldListener, OnInit, OnChanges, OnD
     this.miniTerrain = new MiniTerrain(facade.gameUiControl, this.renderService);
     this.miniViewField = new MiniViewField(facade.gameUiControl, this.renderService);
     this.miniItemView = new MiniItemView(facade.gameUiControl, facade.baseItemUiService, this.renderService);
+    this.miniItemView.setOnlineName(baseId => this.presenceService.onlineName(baseId));
     this.miniQuestMarker = new MiniQuestMarker(facade.gameUiControl, this.renderService);
     this.miniFog = new MiniFog(facade.gameUiControl, this.renderService);
     this.started = true;

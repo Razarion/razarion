@@ -111,6 +111,8 @@ export class ProgressSaveService {
       this.saved = true;
       this.markOffered();
       this.messageService.add({severity: 'success', summary: 'Welcome back', detail: 'You continue your saved game.', life: 8000});
+    } else if (outcome === 'account') {
+      this.messageService.add({severity: 'success', summary: 'Signed in', detail: 'You are in your Razarion account.', life: 8000});
     } else if (outcome === 'cancelled') {
       this.messageService.add({severity: 'info', summary: 'Not saved', detail: 'Facebook login was cancelled. Your game goes on as before.', life: 8000});
     } else if (outcome === 'failed') {

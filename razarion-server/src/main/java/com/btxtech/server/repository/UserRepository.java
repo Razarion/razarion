@@ -20,6 +20,9 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<UserEntity, Integer> {
     Optional<UserEntity> findByEmail(String email);
 
+    /** A password account by its login, whatever case it was registered in - see ProgressSaveService. */
+    Optional<UserEntity> findFirstByEmailIgnoreCase(String email);
+
     Optional<UserEntity> findByUserId(String userId);
 
     // With the level joined in: the callers read it, and one lazy select per user was the whole

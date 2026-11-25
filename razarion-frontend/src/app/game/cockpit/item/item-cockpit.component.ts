@@ -20,6 +20,7 @@ import {BuildupItemModel, ItemCockpitService, OwnItemCockpitModel} from './item-
 import {TipStallReason} from '../../tip/tip-stall';
 import {CompactLayoutService} from '../compact-layout.service';
 import {FirstInteractionTrackerService} from '../../tracking/first-interaction-tracker.service';
+import {EmoteService} from '../../emote/emote.service';
 
 /**
  * Where the build tip sits: viewport coordinates of the top centre of its button, plus what it is
@@ -102,7 +103,8 @@ export class ItemCockpitComponent implements AfterViewInit, DoCheck, OnDestroy {
               private userService: UserService,
               private tipService: TipService,
               protected compactLayout: CompactLayoutService,
-              private firstInteractionTracker: FirstInteractionTrackerService) {
+              private firstInteractionTracker: FirstInteractionTrackerService,
+              protected emoteService: EmoteService) {
   }
 
   ngAfterViewInit(): void {

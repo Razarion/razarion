@@ -1,6 +1,7 @@
 package com.btxtech.shared.system;
 
 import com.btxtech.shared.datatypes.ChatMessage;
+import com.btxtech.shared.datatypes.EmotePacket;
 import com.btxtech.shared.datatypes.LevelUpPacket;
 import com.btxtech.shared.datatypes.LifecyclePacket;
 import com.btxtech.shared.datatypes.UnlockedItemPacket;
@@ -34,7 +35,9 @@ public enum SystemConnectionPacket implements ConnectionMarshaller.Packet {
     // Chat
     CHAT_RECEIVE_MESSAGE(ChatMessage.class),
     // User
-    EMAIL_VERIFIED(Void.class);
+    EMAIL_VERIFIED(Void.class),
+    // Emote over a unit
+    EMOTE(EmotePacket.class);
 
     private final Class theClass;
 

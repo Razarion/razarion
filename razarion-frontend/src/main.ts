@@ -4,6 +4,10 @@ import {AppComponent} from './app/app.component';
 import {shouldStartWasmEarly, startWasmDownload} from './app/wasm-boot';
 import {prefetchTerrain} from './app/terrain-prefetch';
 import {prefetchWorker} from './app/worker-prefetch';
+import {adoptAccountTokenFromLink} from './app/game/progress/account-link';
+
+// First of all: a sign-in link by mail brings the login token, and everything below asks for it.
+adoptAccountTokenFromLink();
 
 // Before Angular, and deliberately so: the engine is 613 KB that compiles while the rest of the
 // bundle is still arriving, and nothing in fetching it needs a running application. See wasm-boot.

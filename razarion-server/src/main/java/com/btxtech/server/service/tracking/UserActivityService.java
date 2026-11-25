@@ -140,6 +140,19 @@ public class UserActivityService {
         }
     }
 
+    public void onEmoteSent(String userId, String detail) {
+        try {
+            var userActivity = new UserActivity()
+                    .userActivityType(UserActivityType.EMOTE_SENT)
+                    .serverTime(new Date())
+                    .userId(userId)
+                    .detail(detail);
+            mongoTemplate.save(userActivity, USER_ACTIVITY);
+        } catch (Exception e) {
+            logger.warn(e.getMessage(), e);
+        }
+    }
+
     public void onProgressLinkSent(String userId, String detail) {
         try {
             var userActivity = new UserActivity()

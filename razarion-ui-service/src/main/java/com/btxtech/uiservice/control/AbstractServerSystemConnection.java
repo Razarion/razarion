@@ -86,6 +86,9 @@ public abstract class AbstractServerSystemConnection {
             case EMAIL_VERIFIED:
                 userUiService.onEmailVerified();
                 break;
+            case EMOTE:
+                chatCockpitService.onEmote((com.btxtech.shared.datatypes.EmotePacket) param);
+                break;
             default:
                 throw new IllegalArgumentException("Unknown Packet: " + packet);
         }
