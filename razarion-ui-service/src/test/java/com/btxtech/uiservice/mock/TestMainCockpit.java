@@ -29,6 +29,10 @@ public class TestMainCockpit implements MainCockpit {
     }
 
     @Override
+    public void buildRejected(int itemTypeId) {
+    }
+
+    @Override
     public void displayLevel(int levelNumber) {
 
     }

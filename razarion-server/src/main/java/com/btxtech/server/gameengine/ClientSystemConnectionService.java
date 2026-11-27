@@ -159,6 +159,10 @@ public class ClientSystemConnectionService extends TextWebSocketHandler {
         sendToClient(userId, SystemConnectionPacket.BOX_PICKED, boxContent);
     }
 
+    public void onBuildRejected(String userId, Integer itemTypeId) {
+        sendToClient(userId, SystemConnectionPacket.BUILD_REJECTED, itemTypeId != null ? itemTypeId : 0);
+    }
+
     public void onUnlockedItemLimit(String userId, Map<Integer, Integer> unlockedItemLimit, boolean blinking) {
         sendToClient(userId, SystemConnectionPacket.UNLOCKED_ITEM_LIMIT, new UnlockedItemPacket().unlockedItemLimit(unlockedItemLimit).availableUnlocks(blinking));
     }

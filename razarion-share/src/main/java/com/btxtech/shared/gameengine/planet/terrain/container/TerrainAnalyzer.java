@@ -32,6 +32,8 @@ import static com.btxtech.shared.gameengine.planet.terrain.TerrainUtil.*;
 public class TerrainAnalyzer {
     // private final Logger log = Logger.getLogger(TerrainAnalyzer.class.getName());
     private static final byte[] NO_BLOCKED_NODES = new byte[0];
+    /** Client only, tile-local: see setLocalBlockedNodeMask. */
+    private byte[] localBlockedNodeMask;
     /** Edge length of the cells the terrain object circles are filed under for {@link #getObstacles}. */
     private static final int OBSTACLE_CELL_SIZE = 8;
     private final HeightMapAccess heightMapAccess;
@@ -152,6 +154,8 @@ public class TerrainAnalyzer {
             if (isBlockedByTerrainObject(terrainNodeIndex)) {
                 return TerrainType.BLOCKED;
             }
+        } else if (isBlockedByLocalNodeMask(terrainNodeIndex)) {
+            return TerrainType.BLOCKED;
         }
 
         double blHeight = getHeightNodeAt(terrainNodeIndex);
@@ -171,6 +175,41 @@ public class TerrainAnalyzer {
         } else {
             return TerrainType.BLOCKED;
         }
+    }
+
+    /**
+     * The client's per-tile analyzer has no TerrainShapeManager and so knew nothing of terrain
+     * objects: its placer showed green over a small plant or rock and the master refused the build
+     * (PROD 18.-25.11.2026, 20 refused builds, every one on a node blocked by a terrain object). The
+     * worker now sends each tile's blocked-node mask along (GameEngineWorker.getTerrainTile), and the
+     * client's analyzer, which works in tile-local node indices, reads it here.
+     */
+    public void setLocalBlockedNodeMask(byte[] localBlockedNodeMask) {
+        this.localBlockedNodeMask = localBlockedNodeMask;
+    }
+
+    private boolean isBlockedByLocalNodeMask(Index localNodeIndex) {
+        if (localBlockedNodeMask == null || localBlockedNodeMask.length == 0) {
+            return false;
+        }
+        int x = localNodeIndex.getX();
+        int y = localNodeIndex.getY();
+        if (x < 0 || y < 0 || x >= NODE_X_COUNT || y >= NODE_Y_COUNT) {
+            return false;
+        }
+        int bit = y * NODE_X_COUNT + x;
+        return (localBlockedNodeMask[bit >> 3] & (1 << (bit & 7))) != 0;
+    }
+
+    /**
+     * The nodes of a tile blocked by its terrain objects, one bit per node (row-major), or an empty
+     * array when none is. Cheap and cached - see buildBlockedNodeMask.
+     */
+    public byte[] getBlockedNodeMask(Index terrainTileIndex) {
+        if (terrainShapeManager == null) {
+            return NO_BLOCKED_NODES;
+        }
+        return getBlockedNodeMask(terrainTileIndex.getX(), terrainTileIndex.getY());
     }
 
     private boolean isBlockedByTerrainObject(Index terrainNodeIndex) {
@@ -358,18 +397,32 @@ public class TerrainAnalyzer {
         if (terrainType == null) {
             throw new NullPointerException("PathingAccess.isTerrainTypeAllowed() terrainType==null");
         }
-        Index nodeIndex = terrainPositionToNodeIndex(terrainPosition);
         if (terrainType.isAreaCheck()) {
-            List<Index> rasterOffsets = GeometricUtil.rasterizeCircle(new Circle2D(DecimalPosition.NULL, radius), (int) TerrainUtil.NODE_SIZE);
-            for (Index rasterOffset : rasterOffsets) {
-                if (!isTerrainTypeAllowed(terrainType, nodeIndex.add(rasterOffset))) {
+            for (Index node : areaCheckNodes(terrainPosition, radius)) {
+                if (!isTerrainTypeAllowed(terrainType, node)) {
                     return false;
                 }
             }
             return true;
         } else {
-            return isTerrainTypeAllowed(terrainType, nodeIndex);
+            return isTerrainTypeAllowed(terrainType, terrainPositionToNodeIndex(terrainPosition));
         }
+    }
+
+    /**
+     * The nodes a body of this radius at this position covers, for an area check: a circle rasterized
+     * around the origin and laid on the node the position falls in. The client's placer
+     * (TerrainUiService.isTerrainFree) asks the same nodes, so that what it shows as free is what the
+     * master accepts - it used to lay the circle on the exact position and checked other ground.
+     */
+    public static List<Index> areaCheckNodes(DecimalPosition terrainPosition, double radius) {
+        Index centerNode = terrainPositionToNodeIndex(terrainPosition);
+        List<Index> rasterOffsets = GeometricUtil.rasterizeCircle(new Circle2D(DecimalPosition.NULL, radius), (int) TerrainUtil.NODE_SIZE);
+        List<Index> nodes = new ArrayList<>(rasterOffsets.size());
+        for (Index rasterOffset : rasterOffsets) {
+            nodes.add(centerNode.add(rasterOffset));
+        }
+        return nodes;
     }
 
     /**

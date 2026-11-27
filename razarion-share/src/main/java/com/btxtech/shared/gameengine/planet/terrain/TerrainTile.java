@@ -20,6 +20,9 @@ public class TerrainTile {
     // where the full TerrainShapeManager is available (blocking terrain objects + cross-tile edge heights).
     // Null when not computed (e.g. mock server); consumers must fall back to local analysis.
     private int[] terrainTypeOrdinals;
+    // Nodes blocked by the tile's terrain objects, one bit per node (row-major), empty when none.
+    // Sent with every tile by the worker, so that the client's own analysis sees the plants and rocks.
+    private byte[] blockedNodeMask;
 
     public Index getIndex() {
         return index;
@@ -100,5 +103,13 @@ public class TerrainTile {
 
     public void setTerrainTypeOrdinals(int[] terrainTypeOrdinals) {
         this.terrainTypeOrdinals = terrainTypeOrdinals;
+    }
+
+    public byte[] getBlockedNodeMask() {
+        return blockedNodeMask;
+    }
+
+    public void setBlockedNodeMask(byte[] blockedNodeMask) {
+        this.blockedNodeMask = blockedNodeMask;
     }
 }

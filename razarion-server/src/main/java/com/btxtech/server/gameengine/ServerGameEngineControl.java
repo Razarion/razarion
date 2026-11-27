@@ -400,6 +400,15 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
     }
 
     @Override
+    public void onBuildRejected(SyncBaseItem builder, Integer itemTypeId) {
+        String userId = builder.getBase() != null ? builder.getBase().getUserId() : null;
+        if (userId == null) {
+            return; // a bot
+        }
+        engineEventExecutor.execute("build rejected for " + userId, () -> systemConnectionService.onBuildRejected(userId, itemTypeId));
+    }
+
+    @Override
     public void onQuestProgressUpdate(String userId, QuestProgressInfo questProgressInfo) {
         systemConnectionService.onQuestProgressInfo(userId, questProgressInfo);
     }

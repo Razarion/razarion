@@ -133,4 +133,8 @@ public class MainCockpitService {
         mainCockpit.blinkAvailableUnlock(show);
     }
 
+    public void buildRejected(int itemTypeId) {
+        mainCockpit.buildRejected(itemTypeId);
+    }
+
 }

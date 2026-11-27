@@ -137,6 +137,10 @@ public class DaggerUiBaseIntegrationTest {
             }
 
             @Override
+            public void buildRejected(int itemTypeId) {
+            }
+
+            @Override
             public void displayLevel(int levelNumber) {
 
             }

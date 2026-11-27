@@ -27,6 +27,7 @@ import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistExcepti
 import com.btxtech.shared.gameengine.datatypes.exception.ItemLimitExceededException;
 import com.btxtech.shared.gameengine.datatypes.exception.NoSuchItemTypeException;
 import com.btxtech.shared.gameengine.datatypes.exception.NotYourBaseException;
+import com.btxtech.shared.gameengine.datatypes.exception.PositionTakenException;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.packets.PlayerBaseInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
@@ -961,6 +962,15 @@ public class BaseItemService {
             gameLogicService.onItemDoesNotExistException(e);
         } catch (InsufficientFundsException e) {
             gameLogicService.onInsufficientFundsException(e);
+        } catch (PositionTakenException e) {
+            // The build was refused. This used to be logged and nothing else: the player's builder
+            // stood, and the quest tip said "On the way" for 15 s (PROD 2026-11-25, quest 396).
+            logger.log(Level.INFO, e.getMessage());
+            SyncBaseItem builder = syncItemContainerService.getSyncBaseItem(baseCommand.getId());
+            if (builder != null) {
+                syncService.notifySendSyncBaseItem(builder);
+                gameLogicService.onBuildRejected(builder, e.getItemTypeId());
+            }
         } catch (Throwable t) {
             logger.log(Level.WARNING, t.getMessage(), t);
         }

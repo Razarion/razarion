@@ -658,6 +658,17 @@ public class TeaVMClientMarshaller {
         if (!isNullOrUndefined(reliefObj)) {
             terrainTile.setGroundRelief(JsUint16ArrayWrapper.wrap(reliefObj));
         }
+        // [7] = blocked-node mask of the terrain objects (Uint8Array or null); absent from an older worker
+        if (getArrayLength(array) > 7) {
+            int[] mask = demarshallTerrainTypeOrdinals(getArrayElementDirect(array, 7));
+            if (mask != null) {
+                byte[] bytes = new byte[mask.length];
+                for (int i = 0; i < mask.length; i++) {
+                    bytes[i] = (byte) mask[i];
+                }
+                terrainTile.setBlockedNodeMask(bytes);
+            }
+        }
 
         return terrainTile;
     }

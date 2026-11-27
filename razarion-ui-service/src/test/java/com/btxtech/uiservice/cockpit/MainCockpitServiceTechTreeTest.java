@@ -42,6 +42,10 @@ public class MainCockpitServiceTechTreeTest {
             news++;
         }
 
+        @Override
+        public void buildRejected(int itemTypeId) {
+        }
+
         @Override public void show() { }
         @Override public void hide() { }
         @Override public void displayResources(int resources) { }

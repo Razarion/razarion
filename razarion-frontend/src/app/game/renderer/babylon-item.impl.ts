@@ -25,11 +25,10 @@ import {
   Vertex
 } from "../../gwtangular/GwtAngularFacade";
 import {BabylonModelService} from "./babylon-model.service";
-import {BabylonRenderServiceAccessImpl, RazarionMetadataType} from "./babylon-render-service-access-impl.service";
+import {BabylonRenderServiceAccessImpl} from "./babylon-render-service-access-impl.service";
 import {ActionService, SelectionInfo} from "../action.service";
 import {UiConfigCollectionService} from "../ui-config-collection.service";
 import {SelectionService as TsSelectionService} from "../selection.service";
-import {GwtInstance} from '../../gwtangular/GwtInstance';
 import {RenderObject} from './render-object';
 import {PressMouseVisualization} from './press-mouse-visualization';
 import {AdvancedDynamicTexture} from '@babylonjs/gui/2D/advancedDynamicTexture';
@@ -420,22 +419,8 @@ export class BabylonItemImpl implements BabylonItem {
       if (this.isWaterUnit() || this.isFixVerticalNorm()) {
         normal = new Vector3(0, 1, 0);
       } else {
-        let pickingInfo = this.rendererService.setupTerrainPickPointFromPosition(GwtInstance.newDecimalPosition(position.getX(), position.getY()));
-        if (pickingInfo && pickingInfo.hit) {
-          let razarionMetadata = pickingInfo.pickedMesh && BabylonRenderServiceAccessImpl.getRazarionMetadata(pickingInfo.pickedMesh);
-          let pickedNormal: Vector3 | undefined;
-          if (razarionMetadata) {
-            if (razarionMetadata.type == RazarionMetadataType.BOT_GROUND) {
-              pickedNormal = razarionMetadata.botGroundNorm;
-            }
-          }
-          if (!pickedNormal) {
-            pickedNormal = pickingInfo.getNormal(true)!;
-          }
-          normal = pickedNormal;
-        } else {
-          normal = new Vector3(0, 1, 0);
-        }
+        // What it stands on, without a ray through the ground mesh - see terrainNormalAt
+        normal = this.rendererService.terrainNormalAt(position.getX(), position.getY()) ?? new Vector3(0, 1, 0);
       }
       this.lastNormal = normal;
       let rotation3D = this.calculateRotation(normal);

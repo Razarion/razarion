@@ -81,6 +81,11 @@ export class TipService {
     this.guide.deactivate();
   }
 
+  /** See TipGuide#onBuildRejected. */
+  public onBuildRejected(): void {
+    this.guide.onBuildRejected();
+  }
+
   /** Whether a quest tip is running: the guided part of the game. */
   public isActive(): boolean {
     return this.guide.isActive();

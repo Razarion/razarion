@@ -53,6 +53,11 @@ public class GameLogicService {
     public void onInsufficientFundsException(InsufficientFundsException e) {
     }
 
+    /** The master refused a build at that spot; the builder's owner is told. */
+    public void onBuildRejected(SyncBaseItem builder, Integer itemTypeId) {
+        gameLogicListener.ifPresent(listener -> listener.onBuildRejected(builder, itemTypeId));
+    }
+
     public void onItemDoesNotExistException(ItemDoesNotExistException e) {
         // Benign and frequent: a command (usually an attack) targets an item that was destroyed
         // before the command executed on the tick. Log quietly, without a stack trace, to keep the prod log clean.

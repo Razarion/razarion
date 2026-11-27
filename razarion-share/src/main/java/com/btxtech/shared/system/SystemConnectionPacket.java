@@ -32,6 +32,8 @@ public enum SystemConnectionPacket implements ConnectionMarshaller.Packet {
     BOX_PICKED(BoxContent.class),
     // Unlock
     UNLOCKED_ITEM_LIMIT(UnlockedItemPacket.class),
+    // Build: the master refused to build this item type at the chosen spot
+    BUILD_REJECTED(Integer.class),
     // Chat
     CHAT_RECEIVE_MESSAGE(ChatMessage.class),
     // User

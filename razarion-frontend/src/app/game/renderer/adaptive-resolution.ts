@@ -68,6 +68,20 @@ export class AdaptiveResolution {
   static readonly WARMUP_MS = 15000;
   /** Slow windows in a row before a step up. */
   static readonly SLOW_WINDOWS_TO_STEP_UP = 2;
+  /**
+   * A median frame slower than this (below 40 fps) asks for the shadows to go, well before the
+   * pixels do. The shadows used to go only with the first resolution step, below 20 fps - and a
+   * Pixel 7 in a fight on the noob island (2026-11-27) ran 30 fps with shadows on for minutes:
+   * too slow to look smooth, too fast for that bar. A CPU profile there had the main thread 99 %
+   * busy, the shadow pass 14 % of it, with no reserve for anything that comes on top - every tick
+   * that takes a little longer to apply becomes a visible jerk. The shadow pass is the one cut
+   * that was measured to pay (12.5 -> 8 ms on the same phone, see the render service); the
+   * shorter caster list and the smaller map were measured and did not.
+   */
+  static readonly SHADOW_FRAME_MS = 25;
+
+  private shadowSlowWindows = 0;
+  private shadowsOff = false;
 
   private level: number;
   private readonly baseLevel: number;
@@ -149,7 +163,30 @@ export class AdaptiveResolution {
     return this.judge(AdaptiveResolution.median(intervals), now);
   }
 
+  /**
+   * Whether the frames have been slow enough for long enough that the shadows should go - see
+   * {@link SHADOW_FRAME_MS}. Asked once per frame by the renderer; true once, then false again.
+   */
+  takeShadowsOff(): boolean {
+    const off = this.shadowsOff;
+    this.shadowsOff = false;
+    return off;
+  }
+
+  private judgeShadows(medianMs: number): void {
+    if (medianMs <= AdaptiveResolution.SHADOW_FRAME_MS) {
+      this.shadowSlowWindows = 0;
+      return;
+    }
+    this.shadowSlowWindows++;
+    if (this.shadowSlowWindows >= AdaptiveResolution.SLOW_WINDOWS_TO_STEP_UP) {
+      this.shadowSlowWindows = 0;
+      this.shadowsOff = true;
+    }
+  }
+
   private judge(medianMs: number, now: number): number | null {
+    this.judgeShadows(medianMs);
     const pending = this.pendingStep;
     if (pending) {
       this.pendingStep = null;

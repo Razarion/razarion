@@ -74,6 +74,9 @@ public abstract class AbstractServerSystemConnection {
             case BOX_PICKED:
                 inventoryUiService.onOnBoxPicked((BoxContent) param);
                 break;
+            case BUILD_REJECTED:
+                gameUiControl.onBuildRejected((Integer) param);
+                break;
             case UNLOCKED_ITEM_LIMIT:
                 userUiService.onUnlockItemLimitChanged((UnlockedItemPacket) param);
                 break;

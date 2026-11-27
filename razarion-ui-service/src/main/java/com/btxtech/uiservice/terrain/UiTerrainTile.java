@@ -64,6 +64,8 @@ public class UiTerrainTile {
         int[] heightArray = heightMapConverter.convert(heightMap);
 
         terrainAnalyzer = new TerrainAnalyzer(new PlainArrayHeightMapAccess(heightArray), null);
+        // The terrain objects, which this analyzer has no other way to know - see setLocalBlockedNodeMask.
+        terrainAnalyzer.setLocalBlockedNodeMask(terrainTile.getBlockedNodeMask());
         babylonTerrainTile = babylonRendererService.createTerrainTile(terrainTile);
 
         if (active) {

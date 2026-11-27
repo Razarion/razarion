@@ -66,6 +66,7 @@ const DRIVE_MIN_TURN_RATE = 0.1;
 // Engine pitch while turning on the spot: a slow drive.
 const TURN_ENGINE_PITCH = 0.9;
 import {Subscription} from 'rxjs';
+import {TickPacer} from './tick-pacer';
 
 // Wave-bobbing for ships: small sinusoidal Y / pitch / roll oscillation so
 // stationary water units visibly ride the surface. Three different periods
@@ -83,6 +84,15 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
 
   // See GWT java PlanetService
   static readonly TICK_TIME_MILLI_SECONDS: number = 100;
+  /** How long a unit glides to the position of a tick - see TickPacer. Fed by the renderer per tick. */
+  static readonly tickPacer = new TickPacer();
+  /**
+   * A position this far from where the unit is drawn is not driven there, it is set: a unit that
+   * appears, is unloaded or was put somewhere else must not be seen gliding across the map.
+   */
+  private static readonly TELEPORT_DISTANCE = 20;
+  /** A tick that moved a unit less than this (squared, 1 cm) did not move it. */
+  private static readonly DRIVING_STEP_SQ = 0.0001;
   private baseId: number;
   private harvestingBeamEffect: BabylonHarvestingBeam | null = null;
   private nameBlock: TextBlock | null = null;
@@ -95,6 +105,11 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
   private position3D: Vector3 | null = null;
   private oldPosition3D: Vector3 | null = null;
   private lastPositionUpdateTime: number | null = null;
+  /** The glide of the current position update, fixed when it starts so a change of pace cannot jerk it. */
+  private positionGlideMillis = BabylonBaseItemImpl.TICK_TIME_MILLI_SECONDS;
+  private rotationGlideMillis = BabylonBaseItemImpl.TICK_TIME_MILLI_SECONDS;
+  /** Frames drawn at the target of a driving tick, not yet known to be waiting - see interpolate. */
+  private heldWaitFrames = 0;
   private rotation3D: Vector3 | null = null;
   private oldRotation3D: Vector3 | null = null;
   private lastRotationUpdateTime: number | null = null;
@@ -909,6 +924,15 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
   }
 
   onExplode(): void {
+    const start = performance.now();
+    try {
+      this.explode();
+    } finally {
+      this.rendererService.tickApplyProbe.recordExplode(performance.now() - start);
+    }
+  }
+
+  private explode(): void {
     // A unit dying is the moment a filmed battle is about, and it is the last chance to note
     // where it happened - the item is on its way out.
     this.rendererService.combatTracker.record(this.getContainer().position.clone(), [this.getBaseId()]);
@@ -1167,10 +1191,18 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
 
   override onPosition3D(position3D: Vector3): boolean {
     this.updateDriveSound(position3D);
-    let updateImmediately = !this.position3D || this.lastPositionUpdateTime === null;
+    let updateImmediately = !this.position3D || this.lastPositionUpdateTime === null
+      || Vector3.Distance(this.getContainer().position, position3D) > BabylonBaseItemImpl.TELEPORT_DISTANCE;
+    // The frames it stood at the last target were waiting only if it drives on from there.
+    if (this.heldWaitFrames > 0 && this.position3D && !updateImmediately
+      && Vector3.DistanceSquared(this.position3D, position3D) > BabylonBaseItemImpl.DRIVING_STEP_SQ) {
+      BabylonBaseItemImpl.tickPacer.recordUnitWaitFrames(this.heldWaitFrames);
+    }
+    this.heldWaitFrames = 0;
     this.oldPosition3D = updateImmediately ? position3D.clone() : this.getContainer().position.clone();
     this.position3D = position3D.clone();
     this.lastPositionUpdateTime = Date.now();
+    this.positionGlideMillis = BabylonBaseItemImpl.tickPacer.glideMillis();
     return updateImmediately;
   }
 
@@ -1180,6 +1212,7 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
     this.oldRotation3D = updateImmediately ? rotation3D.clone() : this.getContainer().rotation.clone();
     this.rotation3D = rotation3D.clone();
     this.lastRotationUpdateTime = Date.now();
+    this.rotationGlideMillis = BabylonBaseItemImpl.tickPacer.glideMillis();
     return updateImmediately;
   }
 
@@ -1301,15 +1334,25 @@ export class BabylonBaseItemImpl extends BabylonItemImpl implements BabylonBaseI
       this.rendererService.babylonAudioService.releaseLoop(this.soundKey('drive'));
     }
     if (this.lastPositionUpdateTime !== null && this.position3D && this.oldPosition3D) {
-      let t = (date - this.lastPositionUpdateTime) / BabylonBaseItemImpl.TICK_TIME_MILLI_SECONDS;
+      let t = (date - this.lastPositionUpdateTime) / this.positionGlideMillis;
       if (t > 1) {
         t = 1;
+      }
+      // Driving: the last tick moved it. Frames at the target are only held here: a unit that has
+      // stopped gets no further position at all, and its frames are not waiting. They count as
+      // waiting once the next position shows it drove on (onPosition3D).
+      if (Vector3.DistanceSquared(this.oldPosition3D, this.position3D) > BabylonBaseItemImpl.DRIVING_STEP_SQ) {
+        if (t >= 1) {
+          this.heldWaitFrames++;
+        } else {
+          BabylonBaseItemImpl.tickPacer.recordUnitFrame(false);
+        }
       }
       this.getContainer().position = Vector3.Lerp(this.oldPosition3D, this.position3D, t);
     }
 
     if (this.lastRotationUpdateTime !== null && this.rotation3D !== null && this.oldRotation3D !== null) {
-      let t = (date - this.lastRotationUpdateTime) / BabylonBaseItemImpl.TICK_TIME_MILLI_SECONDS;
+      let t = (date - this.lastRotationUpdateTime) / this.rotationGlideMillis;
       if (t > 1) {
         t = 1;
       }

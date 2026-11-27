@@ -1,6 +1,5 @@
 package com.btxtech.uiservice.terrain;
 
-import com.btxtech.shared.datatypes.Circle2D;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Rectangle2D;
@@ -8,6 +7,7 @@ import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
+import com.btxtech.shared.gameengine.planet.terrain.container.TerrainAnalyzer;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.shared.utils.GeometricUtil;
 import com.btxtech.uiservice.control.GameEngineControl;
@@ -166,9 +166,12 @@ public class TerrainUiService {
             return false;
         }
         if (terrainType.isAreaCheck()) {
-            List<Index> nodeIndices = GeometricUtil.rasterizeCircle(new Circle2D(DecimalPosition.NULL, radius), (int) TerrainUtil.NODE_SIZE);
-            for (Index nodeIndex : nodeIndices) {
-                DecimalPosition scanPosition = TerrainUtil.nodeIndexToTerrainPosition(nodeIndex).add(terrainPosition);
+            // The same nodes the master checks (TerrainAnalyzer.isTerrainTypeAllowed): the circle's
+            // offsets laid on the node the position falls in. Laid on the exact position, as before,
+            // a position off the node grid could shift a scan point into a neighbour node and the two
+            // sides would judge slightly different ground.
+            for (Index node : TerrainAnalyzer.areaCheckNodes(terrainPosition, radius)) {
+                DecimalPosition scanPosition = TerrainUtil.nodeIndexToMiddleTerrainPosition(node);
                 if (!isTerrainFree(scanPosition, terrainType)) {
                     return false;
                 }

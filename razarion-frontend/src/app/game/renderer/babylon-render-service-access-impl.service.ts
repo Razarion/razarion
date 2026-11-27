@@ -75,6 +75,10 @@ import {SimpleMaterial} from "@babylonjs/materials/simple/simpleMaterial";
 import {GwtHelper} from "../../gwtangular/GwtHelper";
 import {PickingInfo} from "@babylonjs/core/Collisions/pickingInfo";
 import {BabylonBaseItemImpl} from "./babylon-base-item.impl";
+import {TickPacer} from "./tick-pacer";
+import {GwtInstance} from "../../gwtangular/GwtInstance";
+import {TickApplyProbe} from "./tick-apply-probe";
+import {installFastDeepCopier} from "./fast-deep-copier";
 import {BabylonLightning} from "./babylon-lightning";
 import {BabylonImpact} from "./babylon-impact";
 import {BabylonWreckage} from "./babylon-wreckage";
@@ -240,6 +244,10 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   private babylonBaseItems: BabylonBaseItemImpl[] = [];
   /** Where the shooting is, for a camera that would rather film a battle than a factory. */
   readonly combatTracker = new CombatTracker();
+  /** What a slow tick spends its time on - see TickApplyProbe. */
+  readonly tickApplyProbe = new TickApplyProbe();
+  /** Whether the faster mesh copy is in place, for the telemetry. */
+  private fastCopy = false;
   private babylonResourceItems: BabylonResourceItemImpl[] = [];
   // Boxes are looked up by footprint for the same reason resources are: a click on the ground a box
   // stands on has to become a pick, not a move onto a spot the box occupies.
@@ -555,6 +563,8 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   }
 
   internalSetup() {
+    // Before any unit is built: every unit is a clone of its model's meshes - see fast-deep-copier.
+    this.fastCopy = installFastDeepCopier();
     // Perf overlay (F8) is on by default: create it eagerly here (runs once, just before the
     // render loop starts) so it records from the first frame. F8 only toggles it off/on now.
     if (!this.perfOverlay) {
@@ -584,7 +594,23 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
       console.warn(`[AdaptiveResolution] scaling=${level} manual`);
     };
     // The scene, for measuring what a part of it costs on a device (remote debugging)
-    (window as any).razScene = () => self.scene;    // Where the camera looks, for reporting a spot on the map (x, height, z)
+    (window as any).razScene = () => self.scene;
+    // The normal a unit stands on, the way it is found now and the old way by a ray through the
+    // ground mesh, to check the two agree on a device (remote debugging)
+    (window as any).razTerrainNormal = (x: number, z: number) => {
+      const t0 = performance.now();
+      const now = self.terrainNormalAt(x, z);
+      const t1 = performance.now();
+      const pick = self.setupTerrainPickPointFromPosition(GwtInstance.newDecimalPosition(x, z));
+      const t2 = performance.now();
+      let old: Vector3 | null = null;
+      if (pick?.hit) {
+        const metadata = pick.pickedMesh && BabylonRenderServiceAccessImpl.getRazarionMetadata(pick.pickedMesh);
+        old = (metadata?.type == RazarionMetadataType.BOT_GROUND ? metadata.botGroundNorm : undefined) ?? pick.getNormal(true);
+      }
+      return {now: now?.asArray(), old: old?.asArray(), nowMs: t1 - t0, oldMs: t2 - t1};
+    };
+    // Where the camera looks, for reporting a spot on the map (x, height, z)
     (window as any).razWhere = () => {
       const camera = self.scene.activeCamera as any;
       const t = camera?.target ?? camera?.getTarget?.();
@@ -996,6 +1022,15 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
 
 
   createBabylonBaseItem(id: number, baseItemType: BaseItemType, baseId: number, diplomacy: Diplomacy, userName: string): BabylonBaseItem {
+    const createStart = performance.now();
+    try {
+      return this.createBabylonBaseItemTimed(id, baseItemType, baseId, diplomacy, userName);
+    } finally {
+      this.tickApplyProbe.recordCreate(performance.now() - createStart, baseItemType.getName());
+    }
+  }
+
+  private createBabylonBaseItemTimed(id: number, baseItemType: BaseItemType, baseId: number, diplomacy: Diplomacy, userName: string): BabylonBaseItem {
     try {
       let item = new BabylonBaseItemImpl(id,
         baseItemType,
@@ -2001,6 +2036,38 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
     return this.scene.pick(this.scene.pointerX, this.scene.pointerY);
   }
 
+  /**
+   * The normal of what a unit stands on at (x, z), as setupTerrainPickPointFromPosition and
+   * PickingInfo.getNormal(true) found it, null where it found nothing: a bot-ground plate's own
+   * normal on a plate, the ground's otherwise. The ground is read from the tile's heights and vertex
+   * normals (BabylonTerrainTileImpl.groundAt) instead of a ray through every triangle of its mesh,
+   * which cost a Pixel 7 25-45 ms of every tick while units drove. Only where a plate may lie is
+   * there still a ray, and it is tested against the plates alone - a few boxes, not a whole ground.
+   */
+  public terrainNormalAt(x: number, z: number): Vector3 | null {
+    let ground: { height: number, normal: Vector3 } | null = null;
+    let botGround = false;
+    for (const tile of this.loadedTerrainTiles) {
+      if (!ground) {
+        ground = tile.groundAt(x, z);
+      }
+      if (!botGround && tile.mayHaveBotGroundAt(x, z)) {
+        botGround = true;
+      }
+    }
+    if (botGround) {
+      const ray = new Ray(new Vector3(x, 100, z), new Vector3(0, -1, 0), 1000);
+      const plate = this.scene.pickWithRay(ray, (mesh: AbstractMesh) =>
+        BabylonRenderServiceAccessImpl.getRazarionMetadata(mesh)?.type == RazarionMetadataType.BOT_GROUND);
+      // The nearer of the two is what the ray through both found first.
+      if (plate?.hit && plate.pickedPoint && (!ground || plate.pickedPoint.y >= ground.height)) {
+        const metadata = plate.pickedMesh && BabylonRenderServiceAccessImpl.getRazarionMetadata(plate.pickedMesh);
+        return metadata?.botGroundNorm ?? plate.getNormal(true);
+      }
+    }
+    return ground ? ground.normal : null;
+  }
+
   public setupTerrainPickPointFromPosition(position: DecimalPosition): Nullable<PickingInfo> {
     let ray = new Ray(new Vector3(position.getX(), 100, position.getY()), new Vector3(0, -1, 0), 1000);
 
@@ -2524,7 +2591,11 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
         return;
       }
       const level = adaptive.onFrame(performance.now());
-      if (level !== null && level > adaptive.getBaseLevel() && this.scene.shadowsEnabled) {
+      // Below 40 fps the shadows go on their own, long before a resolution step would take them
+      // (AdaptiveResolution.SHADOW_FRAME_MS). The step-up branch below stays for a session that
+      // drops from fast to below 20 fps within two windows.
+      const shadowsTooSlow = adaptive.takeShadowsOff();
+      if ((shadowsTooSlow || (level !== null && level > adaptive.getBaseLevel())) && this.scene.shadowsEnabled) {
         // The first step up turns the shadows off instead of taking pixels away, and the frames are
         // judged afresh from there: only if they are still too slow does the resolution go down.
         // Not at the start and not on one bad window - see AdaptiveResolution.
@@ -2895,11 +2966,16 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
   }
 
   onGameEngineTick(clientTickMs: number): void {
+    BabylonBaseItemImpl.tickPacer.onTick(Date.now());
     // The first tick is the moment the game is playable, and everything downloaded up to here was
     // blocking. The probe keeps that apart from what streams in afterwards; it ignores every tick
     // but the first.
     this.startupPayloadProbe.onGamePlayable();
     this.renderTelemetry?.recordTick(clientTickMs);
+    const slowTick = this.tickApplyProbe.onTick(clientTickMs, (window as any).RAZ_gameSessionUuid ?? "-");
+    if (slowTick) {
+      console.warn(slowTick);
+    }
     if (this.perfOverlay?.isActive()) {
       this.perfOverlay.onTickArrived(clientTickMs);
     }
@@ -2935,7 +3011,21 @@ export class BabylonRenderServiceAccessImpl implements BabylonRenderServiceAcces
       renderHeight: this.engine.getRenderHeight(),
       hardwareScaling: this.engine.getHardwareScalingLevel(),
       gpu: glInfo?.renderer ?? null,
-      ...this.groundClumps.takeStats()
+      ...this.groundClumps.takeStats(),
+      ...this.collectGlideStats(),
+      ...this.tickApplyProbe.takePeriodCreates(),
+      fastCopy: this.fastCopy
+    };
+  }
+
+  private collectGlideStats(): { glideMs: number, glideFixed: boolean, unitFrames: number, unitWaitFrames: number } {
+    const pacer = BabylonBaseItemImpl.tickPacer;
+    const unitFrames = pacer.takeUnitFrames();
+    return {
+      glideMs: pacer.glideMillis(),
+      glideFixed: TickPacer.FIXED_GLIDE,
+      unitFrames: unitFrames.frames,
+      unitWaitFrames: unitFrames.waiting
     };
   }
 

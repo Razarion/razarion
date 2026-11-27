@@ -126,6 +126,84 @@ public class BaseItemUiServiceTest extends DaggerUiBaseIntegrationTest {
         Assert.assertEquals(2, baseItemUiService.getTipItemStates(-1).length);
     }
 
+    /**
+     * Units coming into view together are built over several ticks once one tick has spent
+     * CREATE_BUDGET_MILLIS on them - and the first unit of a tick is built whatever it costs.
+     */
+    @Test
+    public void createBudget() {
+        ColdGameUiContext coldGameUiContext = FallbackConfig.coldGameUiControlConfig(null);
+        coldGameUiContext.setUserContext(new UserContext()
+                .userId("00001")
+                .unlockedItemLimit(Collections.emptyMap())
+                .levelId(1));
+        setupUiEnvironment(coldGameUiContext);
+        setupAlarmService();
+        createBase(coldGameUiContext.getUserContext().getUserId(), 21);
+        getTestUiServiceDagger().inputService().onViewFieldChanged(
+                400, 500,
+                700, 500,
+                700, 700,
+                400, 700);
+
+        BaseItemUiService baseItemUiService = getTestUiServiceDagger().baseItemUiService();
+        long[] now = {0};
+        // every unit takes 5 ms to build
+        baseItemUiService.createClock = () -> {
+            now[0] += 5;
+            return now[0];
+        };
+        NativeSyncBaseItemTickInfo[] tick = {
+                tickInfo(1, 21, BUILDER_ITEM_TYPE_ID, 500, 600),
+                tickInfo(2, 21, BUILDER_ITEM_TYPE_ID, 520, 600),
+                tickInfo(3, 21, BUILDER_ITEM_TYPE_ID, 540, 600)};
+        BabylonRenderServiceAccessMock renderer = getTestUiServiceDagger().babylonRenderServiceAccessMock();
+
+        baseItemUiService.updateSyncBaseItems(tick);
+        // 0 -> 5 ms, 5 -> 10 ms: the budget of 8 is spent after the second
+        Assert.assertEquals(2, renderer.getBabylonBaseItemMocks().size());
+
+        baseItemUiService.updateSyncBaseItems(tick);
+        Assert.assertEquals(3, renderer.getBabylonBaseItemMocks().size());
+
+        baseItemUiService.updateSyncBaseItems(tick);
+        Assert.assertEquals(3, renderer.getBabylonBaseItemMocks().size());
+    }
+
+    @Test
+    public void createBudgetAlwaysBuildsOne() {
+        ColdGameUiContext coldGameUiContext = FallbackConfig.coldGameUiControlConfig(null);
+        coldGameUiContext.setUserContext(new UserContext()
+                .userId("00001")
+                .unlockedItemLimit(Collections.emptyMap())
+                .levelId(1));
+        setupUiEnvironment(coldGameUiContext);
+        setupAlarmService();
+        createBase(coldGameUiContext.getUserContext().getUserId(), 21);
+        getTestUiServiceDagger().inputService().onViewFieldChanged(
+                400, 500,
+                700, 500,
+                700, 700,
+                400, 700);
+
+        BaseItemUiService baseItemUiService = getTestUiServiceDagger().baseItemUiService();
+        long[] now = {0};
+        // a unit far over the budget on its own
+        baseItemUiService.createClock = () -> {
+            now[0] += 50;
+            return now[0];
+        };
+        NativeSyncBaseItemTickInfo[] tick = {
+                tickInfo(1, 21, BUILDER_ITEM_TYPE_ID, 500, 600),
+                tickInfo(2, 21, BUILDER_ITEM_TYPE_ID, 520, 600)};
+        BabylonRenderServiceAccessMock renderer = getTestUiServiceDagger().babylonRenderServiceAccessMock();
+
+        baseItemUiService.updateSyncBaseItems(tick);
+        Assert.assertEquals(1, renderer.getBabylonBaseItemMocks().size());
+        baseItemUiService.updateSyncBaseItems(tick);
+        Assert.assertEquals(2, renderer.getBabylonBaseItemMocks().size());
+    }
+
     private NativeSyncBaseItemTickInfo tickInfo(int id, int baseId, int itemTypeId, double x, double y) {
         NativeSyncBaseItemTickInfo info = new NativeSyncBaseItemTickInfo();
         info.id = id;

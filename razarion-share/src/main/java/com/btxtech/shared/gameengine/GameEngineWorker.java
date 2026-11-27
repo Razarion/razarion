@@ -724,6 +724,18 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         }
         long time = System.currentTimeMillis();
         TerrainTile terrainTile = terrainService.generateTerrainTile(terrainTileIndex);
+        try {
+            // The terrain objects' blocked nodes go with the tile. The client asked for the full
+            // terrain types only for the tile under the mouse cursor - never on a phone - and its
+            // placer judged the ground from the heights alone, blind to terrain objects: a small
+            // plant or rock under the building showed green and the master refused the build (PROD
+            // 18.-25.11.2026, 20 times, every one on a node blocked by a terrain object). The mask is
+            // cheap and cached; the full terrain types are not (about a second on a tile with bot
+            // ground plates).
+            terrainTile.setBlockedNodeMask(terrainService.getTerrainAnalyzer().getBlockedNodeMask(terrainTileIndex));
+        } catch (Throwable t) {
+            logger.log(Level.SEVERE, "GameEngineWorker.getTerrainTile() blocked node mask failed for " + terrainTileIndex, t);
+        }
         long generationMs = System.currentTimeMillis() - time;
         // Forward the worker generation time alongside the tile so the F8 perf overlay can show it
         // next to the client-side mesh-build time.

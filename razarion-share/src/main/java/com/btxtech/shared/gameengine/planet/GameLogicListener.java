@@ -76,6 +76,10 @@ public interface GameLogicListener {
     default void onSlaveCommandSent(SyncBaseItem syncBaseItemSave, BaseCommand baseCommand) {
     }
 
+    /** MASTER: a build command was refused (the spot is not free for that type). */
+    default void onBuildRejected(SyncBaseItem builder, Integer itemTypeId) {
+    }
+
     default void onSynBuilderStopped(SyncBaseItem syncBaseItem, SyncBaseItem currentBuildup) {
     }
 

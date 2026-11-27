@@ -511,6 +511,22 @@ export class TipGuide implements ViewFieldListener {
     this.evaluate();
   }
 
+  /**
+   * The server refused the build the player just placed. Its builder never moves, and the remembered
+   * order kept the tip on "On the way" until ORDER_ARRIVAL_MILLIS ran out - 15 s of a builder that
+   * stood (PROD 2026-11-25, quest 396). Forgetting the order sends the tip straight back to the build
+   * button, so the next placement is one tap away.
+   */
+  onBuildRejected(): void {
+    for (const [unitId, order] of [...this.orders]) {
+      if (order.kind === 'build') {
+        this.orders.delete(unitId);
+      }
+    }
+    this.placerTypeId = null;
+    this.evaluate();
+  }
+
   private remember(unitIds: number[], kind: PendingOrder['kind'], targetTypeId: number | null): void {
     const at = Date.now();
     unitIds.forEach(unitId => this.orders.set(unitId, {kind, targetTypeId, arrived: false, at}));

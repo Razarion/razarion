@@ -32,6 +32,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.LongSupplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -56,6 +57,16 @@ public class BaseItemUiService {
     // reload time, so legitimate re-fires aren't swallowed.
     private static final long PROJECTILE_FIRED_DEDUPE_WINDOW_MS = 500;
     private final Map<Long, Long> recentProjectileFires = new HashMap<>();
+    /**
+     * Main-thread milliseconds one tick may spend building the Babylon items of units that come into
+     * view. A unit is built from a clone of every mesh of its model - a Viper about 10 ms, a Refinery
+     * 37 ms on a Pixel 7 - and when the follow camera brings a bot base into view, six of them
+     * arrived in one tick and made it 111 ms (TickApplySlow, 2026-11-27): a visible jerk. Past the
+     * budget the remaining units are built in the next ticks, one tick (100 ms) later each; the
+     * first unit of a tick is always built, so nothing waits behind an expensive one for long.
+     */
+    static final long CREATE_BUDGET_MILLIS = 8;
+    LongSupplier createClock = System::currentTimeMillis;
     private final Set<Integer> outOfViewItemIds = new HashSet<>();
     private final ItemTypeService itemTypeService;
     private final Provider<GameUiControl> gameUiControl;
@@ -138,6 +149,8 @@ public class BaseItemUiService {
         if (syncBaseItemSetPositionMonitor != null) {
             syncBaseItemSetPositionMonitor.setInvisibleSyncBaseItemTickInfo(null, null, null);
         }
+        long createSpentMillis = 0;
+        boolean createdAny = false;
         for (NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo : nativeSyncBaseItemTickInfos) {
             try {
                 BaseItemType baseItemType = itemTypeService.getBaseItemType(nativeSyncBaseItemTickInfo.itemTypeId);
@@ -179,6 +192,13 @@ public class BaseItemUiService {
                 // Alive
                 BabylonBaseItem babylonBaseItem = babylonBaseItems.get(nativeSyncBaseItemTickInfo.id);
                 if (babylonBaseItem == null) {
+                    if (createdAny && createSpentMillis >= CREATE_BUDGET_MILLIS) {
+                        // Built in a later tick - see CREATE_BUDGET_MILLIS. Not in babylonBaseItems,
+                        // so it is not a leftover either: nothing is disposed for it.
+                        continue;
+                    }
+                    long createStart = createClock.getAsLong();
+                    createdAny = true;
                     String userName = null;
                     PlayerBaseDto baseDto = getBase(nativeSyncBaseItemTickInfo.baseId);
                     if (baseDto.getCharacter() == Character.HUMAN) {
@@ -196,6 +216,7 @@ public class BaseItemUiService {
                             && syncBaseItemSetPositionMonitor.isBotIdAllowed(botIdOfBase(nativeSyncBaseItemTickInfo.baseId))) {
                         syncBaseItemSetPositionMonitor.addVisible(babylonBaseItem);
                     }
+                    createSpentMillis += createClock.getAsLong() - createStart;
                 }
                 babylonBaseItem.setIdle(nativeSyncBaseItemTickInfo.idle);
                 leftoversAliveBabylonBaseItems.remove(nativeSyncBaseItemTickInfo.id);

@@ -782,6 +782,9 @@ export interface MainCockpit {
   /** A level was reached that allows something the one before it did not. See MainCockpitService. */
   techTreeHasNews(): void
 
+  /** The server refused to build this item type where it was placed. See MainCockpit.buildRejected (Java). */
+  buildRejected(itemTypeId: number): void;
+
   clean(): void;
 }
 

@@ -97,6 +97,22 @@ export interface RenderTelemetrySceneStats {
   clumps: number;
   clumpBuilds: number;
   clumpBuildMaxMs: number;
+  /**
+   * The glide of a unit to the position of a tick (see TickPacer): how long it lasts now, whether
+   * it is the old fixed one (?fixedglide), and of the frames a unit was driving, how many it stood
+   * at its target waiting for the next tick - the stop-and-go the follow camera shows, as a count.
+   */
+  glideMs: number;
+  glideFixed: boolean;
+  unitFrames: number;
+  unitWaitFrames: number;
+  /**
+   * Units whose Babylon item was built in the period (a unit coming into view), the milliseconds
+   * that took on the main thread, and whether the faster mesh copy was in place (fast-deep-copier).
+   */
+  creates: number;
+  createMs: number;
+  fastCopy: boolean;
 }
 
 export class RenderTelemetry {
@@ -282,6 +298,10 @@ export class RenderTelemetry {
       `backbuffer=${stats.renderWidth}x${stats.renderHeight} scaling=${stats.hardwareScaling.toFixed(2)} dpr=${window.devicePixelRatio} ` +
       `zoomMin=${zoom.min.toFixed(1)} zoomP05=${zoom.p05.toFixed(1)} zoomP50=${zoom.p50.toFixed(1)} zoomP95=${zoom.p95.toFixed(1)} ` +
       `clumps=${stats.clumps} clumpBuilds=${stats.clumpBuilds} clumpBuildMax=${stats.clumpBuildMaxMs.toFixed(0)} ` +
+      `glide=${stats.glideFixed ? 'fixed' : 'adaptive'} glideMs=${stats.glideMs.toFixed(0)} unitFrames=${stats.unitFrames} ` +
+      `glideWaitPct=${stats.unitFrames > 0 ? (100 * stats.unitWaitFrames / stats.unitFrames).toFixed(1) : -1} ` +
+      `creates=${stats.creates} createMs=${stats.createMs.toFixed(0)} ` +
+      `createAvgMs=${stats.creates > 0 ? (stats.createMs / stats.creates).toFixed(1) : -1} copy=${stats.fastCopy ? 'fast' : 'babylon'} ` +
       `touch=${navigator.maxTouchPoints > 0} gpu="${this.shortGpu(stats.gpu)}"`
     );
     this.reset();
@@ -358,7 +378,9 @@ export class RenderTelemetry {
         heapUsedMb: -1, heapLimitMb: -1, textureCount: -1, textureMb: -1, geometries: -1,
         parkedMeshes: -1, parkingFilter: false,
         renderWidth: -1, renderHeight: -1, hardwareScaling: -1, gpu: null,
-        clumps: -1, clumpBuilds: -1, clumpBuildMaxMs: -1
+        clumps: -1, clumpBuilds: -1, clumpBuildMaxMs: -1,
+        glideMs: -1, glideFixed: false, unitFrames: 0, unitWaitFrames: 0,
+        creates: 0, createMs: 0, fastCopy: false
       };
     }
   }

@@ -22,6 +22,8 @@ import {CompactLayoutService} from '../compact-layout.service';
 import {SaveProgressComponent} from '../../progress/save-progress.component';
 import {ProgressSaveService} from '../../progress/progress-save.service';
 import {PresenceService} from '../../presence/presence.service';
+import {MessageService} from 'primeng/api';
+import {TipService} from '../../tip/tip.service';
 
 
 @Component({
@@ -117,7 +119,9 @@ export class MainCockpitComponent implements MainCockpit {
               public userService: UserService,
               private firstInteractionTrackerService: FirstInteractionTrackerService,
               public progressSaveService: ProgressSaveService,
-              public presenceService: PresenceService) {
+              public presenceService: PresenceService,
+              private messageService: MessageService,
+              private tipService: TipService) {
   }
 
   show(): void {
@@ -320,6 +324,30 @@ export class MainCockpitComponent implements MainCockpit {
         this.techTreeNews = true;
         this.techTreeNewsTimeout = null;
       }), MainCockpitComponent.TECH_TREE_NEWS_RESTART_MILLIS);
+    });
+  }
+
+  /**
+   * The server refused the building the player just placed: the ground there does not fit it (the
+   * master checks the whole circle, the placer may have judged it otherwise). Until now nothing was
+   * said - the builder stood and the quest tip promised "On the way" for 15 s.
+   */
+  buildRejected(itemTypeId: number): void {
+    this.zone.run(() => {
+      this.firstInteractionTrackerService.report('BUILD_REJECTED', 'type=' + itemTypeId);
+      let name = 'It';
+      try {
+        name = this.gwtAngularService.gwtAngularFacade.itemTypeService.getBaseItemTypeAngular(itemTypeId).getName() || name;
+      } catch (e) {
+        // unknown type: the generic text
+      }
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Cannot build here',
+        detail: name + ' does not fit on this spot. Place it a little further away.',
+        life: 5000
+      });
+      this.tipService.onBuildRejected();
     });
   }
 

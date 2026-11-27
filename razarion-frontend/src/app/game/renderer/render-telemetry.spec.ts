@@ -9,7 +9,9 @@ describe('RenderTelemetry', () => {
     meshTop: 'Rock:200,Palm:120,ground:20',
     parkedMeshes: 205, parkingFilter: true, indexTop: 'ground:900k,palm:430k',
     renderWidth: 1280, renderHeight: 720, hardwareScaling: 1, gpu: 'Test "GPU"',
-    clumps: 0, clumpBuilds: 0, clumpBuildMaxMs: 0
+    clumps: 0, clumpBuilds: 0, clumpBuildMaxMs: 0,
+    glideMs: 125, glideFixed: false, unitFrames: 0, unitWaitFrames: 0,
+    creates: 0, createMs: 0, fastCopy: true
   };
 
   let lines: string[];

@@ -114,6 +114,10 @@ public class GameUiControl { // Equivalent worker class is PlanetService
         initServerQuest(warmGameUiContext.getSlaveQuestInfo());
     }
 
+    public void onBuildRejected(Integer itemTypeId) {
+        cockpitService.buildRejected(itemTypeId != null ? itemTypeId : 0);
+    }
+
     public void init() {
         abstractServerSystemConnection = serverSystemConnectionInstance.get();
         abstractServerSystemConnection.init();

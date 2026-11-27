@@ -134,6 +134,9 @@ export type InteractionKind =
   /** A building placer closed without building - cancelled, replaced or the builder lost.
    *  Detail: `type=<id> open=<seconds> by=x|esc|deselect sel=own|resource|enemy|friend|box|none|replaced|other`. */
   | 'BUILD_PLACER_ABANDONED'
+  /** The server refused a placed building (the ground does not fit it), as `type=<itemTypeId>`.
+   *  Not a player action - the placement was. */
+  | 'BUILD_REJECTED'
   /** The unload button pressed on the sailing quest, answered with "sail to the coast first"
    *  instead of the placer (TipGuide#holdsUnload, 2026-11-13). */
   | 'UNLOAD_HELD'

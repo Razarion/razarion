@@ -345,6 +345,8 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
   // The material of every ground quad, row-major ((NODE_X_COUNT) x (NODE_Y_COUNT)), for the editor's
   // terrain type overlay - the sub meshes no longer follow the grid
   private groundQuadMaterials: Uint8Array | null = null;
+  /** The vertex normals of the ground mesh, one per node - see groundAt. */
+  private groundNormals: Float32Array | null = null;
   // The texels of the ground type texture, from the terrain helper; consumed by phase 3
   private groundTypePixels: Uint8Array | null = null;
 
@@ -935,6 +937,49 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     return this.waterMesh ? Math.max(ground, BabylonTerrainTileImpl.WATER_LEVEL) : ground;
   }
 
+  /**
+   * The ground at a world point inside this tile as a downward ray picking the ground mesh finds
+   * it: the height and the normal on the triangle computeTileMesh lays there, the normal
+   * interpolated from the triangle's vertex normals like PickingInfo.getNormal(true) does. Water and
+   * bot-ground plates are not counted. Null outside the tile or before its mesh is there.
+   * <p>
+   * A unit asked a ray pick for this on every position it was given, to stand along the slope - and
+   * the pick runs the ray through every triangle of the ground mesh: on a Pixel 7 in a fight a
+   * second of every minute, 25-45 ms of each tick while units drive (2026-11-27).
+   */
+  groundAt(worldX: number, worldZ: number): { height: number, normal: Vector3 } | null {
+    const size = BabylonTerrainTileImpl.NODE_X_COUNT;
+    const lx = worldX - this.tileXOffset, lz = worldZ - this.tileYOffset;
+    const n = this.groundNormals;
+    if (!(lx >= 0 && lz >= 0 && lx <= size && lz <= size) || this.groundHeights.length === 0 || !n) {
+      return null;
+    }
+    const x = Math.min(Math.floor(lx), size - 1), z = Math.min(Math.floor(lz), size - 1);
+    const fx = lx - x, fz = lz - z, nodes = size + 1, h = this.groundHeights;
+    const bL = x + z * nodes, bR = bL + 1, tL = bL + nodes, tR = tL + 1;
+    // The weights of the triangle's three vertices - the same split as surfaceHeightAt
+    let i0: number, i1: number, i2: number, w0: number, w1: number, w2: number;
+    if (fx + fz <= 1) {
+      i0 = bL; i1 = bR; i2 = tL;
+      w0 = 1 - fx - fz; w1 = fx; w2 = fz;
+    } else {
+      i0 = tR; i1 = tL; i2 = bR;
+      w0 = fx + fz - 1; w1 = 1 - fx; w2 = 1 - fz;
+    }
+    const height = h[i0] * w0 + h[i1] * w1 + h[i2] * w2;
+    const normal = new Vector3(
+      n[i0 * 3] * w0 + n[i1 * 3] * w1 + n[i2 * 3] * w2,
+      n[i0 * 3 + 1] * w0 + n[i1 * 3 + 1] * w1 + n[i2 * 3 + 1] * w2,
+      n[i0 * 3 + 2] * w0 + n[i1 * 3 + 2] * w1 + n[i2 * 3 + 2] * w2);
+    normal.normalize();
+    return {height, normal};
+  }
+
+  /** Whether a bot-ground plate may be at this world point (its gravel bed included). */
+  mayHaveBotGroundAt(worldX: number, worldZ: number): boolean {
+    return this.insideBotGround(worldX, worldZ);
+  }
+
   /** The MaterialIndex (0 ground, 1 asphalt) of a ground quad, row-major, or -1 before the tile is built. */
   getGroundQuadMaterialIndex(quad: number): number {
     return this.groundQuadMaterials ? this.groundQuadMaterials[quad] : -1;
@@ -1012,6 +1057,7 @@ export class BabylonTerrainTileImpl implements BabylonTerrainTile {
     vertexData.uvs = mesh.uvs;
     vertexData.indices = mesh.indices;
     vertexData.applyToMesh(this.groundMesh, true);
+    this.groundNormals = mesh.normals;
     this.groundQuadMaterials = mesh.quadMaterials;
     this.uv2GroundHeightMap = mesh.waterUv2;
     this.materialSubmeshes = [];

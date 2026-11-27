@@ -107,4 +107,37 @@ describe('AdaptiveResolution', () => {
   it('ignores the middle band', () => {
     expect(run(35, 60000)).toEqual([]);
   });
+
+  /** Frames for a while; whether the shadows were asked to go meanwhile. */
+  function shadowsOffWithin(frameMs: number, millis: number): boolean {
+    let off = false;
+    const end = now + millis;
+    while (now < end) {
+      now += frameMs;
+      adaptive.onFrame(now);
+      off = adaptive.takeShadowsOff() || off;
+    }
+    return off;
+  }
+
+  it('lets the shadows go below 40 fps, without touching the pixels', () => {
+    // 30 fps: the Pixel 7 in a fight, shadows on
+    expect(shadowsOffWithin(33, 3 * AdaptiveResolution.WINDOW_MS + 500)).toBeTrue();
+    expect(adaptive.getLevel()).toBe(1);
+  });
+
+  it('keeps the shadows at 40 fps and up', () => {
+    expect(shadowsOffWithin(22, 60000)).toBeFalse();
+  });
+
+  it('does not let the shadows go on one slow window', () => {
+    expect(shadowsOffWithin(33, AdaptiveResolution.WINDOW_MS + 200)).toBeFalse();
+    expect(shadowsOffWithin(16, 30000)).toBeFalse();
+  });
+
+  it('does not judge the shadows at the start', () => {
+    now = 1000;
+    adaptive = new AdaptiveResolution(1);
+    expect(shadowsOffWithin(33, AdaptiveResolution.WARMUP_MS - 100)).toBeFalse();
+  });
 });

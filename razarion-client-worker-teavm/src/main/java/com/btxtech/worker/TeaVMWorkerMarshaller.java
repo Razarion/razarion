@@ -626,7 +626,21 @@ public final class TeaVMWorkerMarshaller {
         // Ground relief (null when not computed) - last, so the indices above stay as they were
         array.push((JSObject) terrainTile.getGroundRelief());
 
+        // [7] Blocked-node mask of the terrain objects (Uint8Array or null) - after the relief, so the indices above stay
+        array.push(marshallBytes(terrainTile.getBlockedNodeMask()));
+
         return array;
+    }
+
+    private static JSObject marshallBytes(byte[] bytes) {
+        if (bytes == null) {
+            return null;
+        }
+        JSObject typedArray = createUint8Array(bytes.length);
+        for (int i = 0; i < bytes.length; i++) {
+            setUint8(typedArray, i, bytes[i] & 0xFF);
+        }
+        return typedArray;
     }
 
     private static JSObject marshallTerrainTypeOrdinals(int[] terrainTypeOrdinals) {

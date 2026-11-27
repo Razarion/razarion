@@ -27,5 +27,12 @@ public interface MainCockpit {
      */
     void techTreeHasNews();
 
+    /**
+     * The master refused to build this item type where the player placed it (the spot is not free for
+     * it). The builder never moves, so the player has to be told and the quest tip must not go on
+     * saying "On the way".
+     */
+    void buildRejected(int itemTypeId);
+
     void clean();
 }
