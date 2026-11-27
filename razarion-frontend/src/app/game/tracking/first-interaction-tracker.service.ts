@@ -296,7 +296,15 @@ export type InteractionKind =
  */
   | 'EMOTE_SENT'
   | 'EMOTE_SEEN'
-  | 'EMOTE_REPLY_OFFERED';
+  | 'EMOTE_REPLY_OFFERED'
+/**
+ * Greetings from the community ticker (CheerService), measured from 2026-11-27. SENT: the player
+ * greeted somebody, `emote=WAVE|GG,from=ticker|reply`. SEEN: a greeting reached this player,
+ * `emote=...,reply=yes|no,bonus=yes|no`. ISLAND_GOAL_SHOWN: the island goal was on screen.
+ */
+  | 'CHEER_SENT'
+  | 'CHEER_SEEN'
+  | 'ISLAND_GOAL_SHOWN';
 
 /**
  * How a group size is reported. Bucketed rather than exact: {@link

@@ -18,6 +18,12 @@
       </div>
     </p-scrollpanel>
   </div>
+  <!-- One tap instead of typing: 29 opened the chat with something new in it, 2 wrote (2026-11-25..27). -->
+  <div class="quick-replies flex gap-1">
+    @for (quick of quickReplies; track quick.key) {
+      <button type="button" class="quick-reply" [disabled]="sending" (click)="onQuick(quick)">{{ quick.text }}</button>
+    }
+  </div>
   <div class="chat-box flex bg-surface-800 p-2 rounded-xl border border-surface-500 items-center bg-surface-100 gap-1">
     <input pInputText [(ngModel)]="messageToSend" (keydown.enter)="onSend()" maxlength="300"
            placeholder="Message to all players" class="w-full"/>

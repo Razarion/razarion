@@ -47,6 +47,11 @@ export function chatTime(timestamp: number | null | undefined, now: Date = new D
   return date.toDateString() === now.toDateString() ? time : `${two(date.getDate())}.${two(date.getMonth() + 1)}. ${time}`;
 }
 
+export interface QuickReply {
+  key: string;
+  text: string;
+}
+
 @Component({
   selector: 'chat-cockpit',
   imports: [
@@ -67,6 +72,12 @@ export class ChatCockpitComponent implements ChatCockpit, AfterViewInit, OnDestr
   chatMessageDiv!: ElementRef<HTMLDivElement>;
   chatMessages: ChatMessage[] = [];
   messageToSend = ""
+  /** Sent as they are with one tap; the question is one the chat assistant answers. */
+  readonly quickReplies: QuickReply[] = [
+    {key: 'hi', text: 'Hi 👋'},
+    {key: 'gg', text: 'GG'},
+    {key: 'help', text: 'How do I play?'},
+  ];
   sending = false;
   sendError: string | null = null;
   /**
@@ -157,8 +168,15 @@ export class ChatCockpitComponent implements ChatCockpit, AfterViewInit, OnDestr
    * Everybody may write: a player without a name writes under their ticker call sign, e.g. "Falcon-42" (ChatService). It took an
    * account and a name before, and so the questions of the anonymous players never arrived.
    */
+  onQuick(quick: QuickReply) {
+    this.send(quick.text, quick.key);
+  }
+
   onSend() {
-    const text = this.messageToSend.trim();
+    this.send(this.messageToSend.trim(), null);
+  }
+
+  private send(text: string, quick: string | null) {
     if (!text || this.sending) {
       return;
     }
@@ -166,9 +184,11 @@ export class ChatCockpitComponent implements ChatCockpit, AfterViewInit, OnDestr
     this.sendError = null;
     this.chatControllerClient.send(text)
       .then(() => {
-        this.messageToSend = "";
+        if (!quick) {
+          this.messageToSend = "";
+        }
         this.scrollToBottom();
-        this.tracker.report('CHAT_SENT');
+        this.tracker.report('CHAT_SENT', quick ? 'quick=' + quick : undefined);
       })
       .catch(error => {
         this.sendError = error?.status === 429 ? 'Too many messages, please wait a moment' : 'Could not send, please try again';

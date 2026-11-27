@@ -8,13 +8,38 @@ export interface OnlinePlayer {
   baseId: number | null;
 }
 
+/** A greeting another player sent this one from the community ticker (CheerService on the server). */
+export interface Cheer {
+  id: number;
+  from: string;
+  /** WAVE or GG. */
+  emote: string;
+  /** It answers a greeting of this player. */
+  reply: boolean;
+  /** Razarion this player was paid for having welcomed the sender, who answered - else 0. */
+  bonus: number;
+}
+
+/** How many crossed from the noob island to the mainland today, shown to the players still on it. */
+export interface IslandGoal {
+  crossedToday: number;
+  goal: number;
+}
+
 export interface Presence {
   /** Everybody else with the game open - more than {@link players} lists once there are many. */
   count: number;
   players: OnlinePlayer[];
+  /** Handed out once: the next poll does not repeat them. */
+  cheers?: Cheer[];
+  /** Null for a player who has left the noob island. */
+  island?: IslandGoal | null;
+  /** This player's own name, as the others see it over the units and in the chat. */
+  me?: string | null;
 }
 
-const POLL_MILLIS = 20000;
+/** 12 s rather than 20: a greeting comes with the poll, and the answer to it should not wait long. */
+const POLL_MILLIS = 12000;
 
 /**
  * Who else is playing right now (PresenceController on the server): the count in the top bar and
@@ -27,6 +52,10 @@ const POLL_MILLIS = 20000;
 })
 export class PresenceService {
   readonly presence = signal<Presence>({count: 0, players: []});
+  readonly island = signal<IslandGoal | null>(null);
+  /** This player's own name - nothing else in the game shows it. */
+  readonly me = signal<string | null>(null);
+  private cheerListener: ((cheers: Cheer[]) => void) | null = null;
   private onlineBaseIds = new Map<number, string>();
   private timer: ReturnType<typeof setInterval> | null = null;
 
@@ -60,6 +89,11 @@ export class PresenceService {
     return shown.join(', ') + (more > 0 ? ' and ' + more + ' more' : '') + (count === 1 ? ' is playing right now' : ' are playing right now');
   }
 
+  /** Who is told of the greetings that come with a poll (the community ticker). */
+  onCheers(listener: ((cheers: Cheer[]) => void) | null): void {
+    this.cheerListener = listener;
+  }
+
   /** The name of the online player who owns this base, or undefined when nobody online does. */
   onlineName(baseId: number): string | undefined {
     return this.onlineBaseIds.get(baseId);
@@ -83,6 +117,14 @@ export class PresenceService {
       }
     }
     this.onlineBaseIds = ids;
-    this.zone.run(() => this.presence.set({count: presence?.count ?? 0, players}));
+    this.zone.run(() => {
+      this.presence.set({count: presence?.count ?? 0, players});
+      this.island.set(presence?.island ?? null);
+      this.me.set(presence?.me ?? null);
+      const cheers = presence?.cheers ?? [];
+      if (cheers.length > 0 && this.cheerListener) {
+        this.cheerListener(cheers);
+      }
+    });
   }
 }

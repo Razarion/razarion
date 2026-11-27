@@ -60,6 +60,7 @@ public class ChatService {
     private final ClientSystemConnectionService clientSystemConnectionService;
     private final Map<String, Deque<Long>> sentPerUser = new ConcurrentHashMap<>();
     private final Logger logger = LoggerFactory.getLogger(ChatService.class);
+    private OperatorAlertService operatorAlertService;
 
     public ChatService(ChatMessagesRepository chatMessagesRepository, UserService userService, ClientSystemConnectionService clientSystemConnectionService, CommunityTickerService communityTickerService) {
         this.chatMessagesRepository = chatMessagesRepository;
@@ -69,6 +70,12 @@ public class ChatService {
             // Off the game thread that writes the history row: a database write and a broadcast
             communityTickerService.addLeftNoobIslandListener(userId -> CompletableFuture.runAsync(() -> announceLeftNoobIsland(userId)));
         }
+    }
+
+    /** Set by Spring; a setter so the tests can build the service without it. */
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    public void setOperatorAlertService(OperatorAlertService operatorAlertService) {
+        this.operatorAlertService = operatorAlertService;
     }
 
     /** What a client joining the chat is shown: the latest messages, oldest first. */
@@ -97,6 +104,9 @@ public class ChatService {
                 .init(userContext.getUserId(), name, text));
 
         clientSystemConnectionService.sendChatMessage(chatMessageEntity.toChatMessage());
+        if (operatorAlertService != null) {
+            operatorAlertService.onChatMessage(userContext.getUserId(), name);
+        }
     }
 
     /** An answer of the chat assistant, written by the recorder. Belongs to no account. */

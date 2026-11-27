@@ -3,7 +3,7 @@ import {displayItemName, tickerAge, tickerText} from './community-ticker-text';
 
 describe('Community ticker text', () => {
   function entry(kind: CommunityTickerKind, extra: Partial<CommunityTickerEntry> = {}): CommunityTickerEntry {
-    return {seq: 1, timeMillis: 0, name: 'Falcon-42', kind, level: null as any, what: null as any, ...extra};
+    return {seq: 1, timeMillis: 0, name: 'Falcon-42', kind, level: null as any, what: null as any, cheer: null as any, cheerBonus: null as any, ...extra};
   }
 
   it('says what happened', () => {

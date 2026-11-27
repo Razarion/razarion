@@ -161,28 +161,23 @@
        * the player lands (LoadGameUiContextlTask), and the picker closes the moment that request
        * goes out. See LandingController.
        *
-       * Coin per browser, like the arms before it - count browsers (vid=), not sessions. Only for
-       * a visitor who can run the game and has no account token. ?land=pick|plain forces and
-       * stays, ?land=off forgets.
+       * DECIDED 2026-11-27, for the picker, over 603 / 626 browsers: pick ahead on every step -
+       * game started 78.1 / 74.9 %, base 69.0 / 66.5, Q358 60.5 / 57.3, Q392 9.5 / 8.0 - none of
+       * it significant alone (z 0.7..1.3), all of it the same way, phone and Meta alike. No sign
+       * of harm, so everybody gets it; land=pick stays in the capabilities line for the record.
+       * Only for a visitor who can run the game and has no account token, as in the test.
+       * ?land=plain shows the card alone for this one load, to compare by hand.
        */
       try {
-        var landQuery = new URLSearchParams(location.search).get('land');
-        if (landQuery === 'off') {
-          localStorage.removeItem('razLand');
-        } else if (landQuery === 'pick' || landQuery === 'plain') {
-          localStorage.setItem('razLand', landQuery);
-        }
-        var land = localStorage.getItem('razLand');
-        if (land !== 'pick' && land !== 'plain' && landQuery !== 'off'
+        // The coin of the test. Nothing reads it any more, and a stored "plain" would keep half
+        // the browsers out.
+        localStorage.removeItem('razLand');
+        if (new URLSearchParams(location.search).get('land') !== 'plain'
           && !localStorage.getItem('app.token') && hasWasmGc()) {
-          land = Math.random() < 0.5 ? 'pick' : 'plain';
-          localStorage.setItem('razLand', land);
-        }
-        if (land === 'pick' || land === 'plain') {
-          w.RAZ_landArm = land;
+          w.RAZ_landArm = 'pick';
         }
       } catch (ignored) {
-        // No storage, no arm: the plain card, unmarked.
+        // No storage: the plain card, unmarked.
       }
 
       /*
@@ -683,13 +678,17 @@
     opacity: 0.85;
   }
 
-  #raz-land.raz-land-locked .raz-land-cell {
-    opacity: 0.45;
-    cursor: default;
+  /* Once the start has asked where the player lands, the other zones go: dimmed they still looked
+     like buttons, and 53 of 598 browsers tapped them anyway, some 14 or 15 times (PROD 22.-27.11.).
+     The chosen zone stays as the answer; without one, the note alone says it is landing. */
+  #raz-land.raz-land-locked #raz-land-head,
+  #raz-land.raz-land-locked .raz-land-cell:not(.raz-land-chosen) {
+    display: none;
   }
 
   #raz-land.raz-land-locked .raz-land-cell.raz-land-chosen {
-    opacity: 1;
+    cursor: default;
+    max-width: 5em;
   }
 </style>
 <script>

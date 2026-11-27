@@ -102,6 +102,15 @@
        field, and the field is where the eye belongs. -->
   <div class="hud-topbar hud-frame">
     <div class="hud-frame-inner hud-topbar-inner">
+      <!-- The player's own name: the others see it over the units, in the chat and in greetings,
+           and without this the player did not know it. -->
+      @if (presenceService.me(); as me) {
+        <div class="hud-stat hud-me" pTooltip="Your name - the others see it over your units and in the chat" tooltipPosition="bottom">
+          <i class="pi pi-user hud-stat-icon"></i>
+          <span class="hud-stat-value">{{ me }}</span>
+        </div>
+        <span class="hud-sep"></span>
+      }
       <div class="hud-stat" pTooltip="Experience points towards the next level">
         <span class="hud-xp-badge" [attr.aria-label]="'Level ' + levelNumber">{{ levelNumber }}</span>
         <span class="hud-stat-label">XP</span>

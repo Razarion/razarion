@@ -146,6 +146,15 @@
     color: var(--p-amber-400, #fbbf24);
   }
 
+  /* A phone strip is narrow: a long name gives way before the numbers do. */
+  .compact-status-me {
+    max-width: 8em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    opacity: 0.85;
+  }
+
   .compact-bar-spacer {
     flex: 1 1 auto;
   }

@@ -121,6 +121,42 @@ public class StartPositionFinderService {
     }
 
     /**
+     * The landing cell nearest to one of {@code neighbours} (the bases of newcomers playing right
+     * now, see SpawnNearService), so a new player starts where another one is - or null when no
+     * cell lies within {@code maxDistance} of any of them with a spawn point free enough
+     * ({@code positionMaxItems}). Nearest by the cell's centre.
+     */
+    public Integer cellNear(SlavePlanetConfig slavePlanetConfig, List<DecimalPosition> neighbours, double maxDistance) {
+        if (neighbours.isEmpty() || slavePlanetConfig.getPositionPath() == null
+                || slavePlanetConfig.getPositionRadius() == null || slavePlanetConfig.getPositionMaxItems() == null) {
+            return null;
+        }
+        Integer best = null;
+        double bestDistance = Double.MAX_VALUE;
+        for (LandingCell cell : landingCells(slavePlanetConfig.getPositionPath())) {
+            double distance = Double.MAX_VALUE;
+            for (DecimalPosition neighbour : neighbours) {
+                distance = Math.min(distance, cell.center().getDistance(neighbour));
+            }
+            if (distance > maxDistance || distance >= bestDistance) {
+                continue;
+            }
+            boolean free = false;
+            for (DecimalPosition slot : cell.slots()) {
+                if (countBaseItems(slot, slavePlanetConfig.getPositionRadius()) <= slavePlanetConfig.getPositionMaxItems()) {
+                    free = true;
+                    break;
+                }
+            }
+            if (free) {
+                best = cell.index();
+                bestDistance = distance;
+            }
+        }
+        return best;
+    }
+
+    /**
      * What the loading screen offers: the landing cells of the spawn path, how many players have a
      * base in each, and the cell the server would send this player to if he chose nothing (the
      * cell of the first emptiest point - findFreePosition picks at random among the first few of

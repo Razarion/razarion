@@ -199,8 +199,14 @@ export class SelectionShortcutsService {
    * it, three in four never caught more than one unit (2026-09-16), and 65 group stalls on 379 in a
    * week resolved 6 times (2026-09-30). One tap cannot miss.
    * <p>
-   * Only rendered units can be selected. When some are not, the camera goes to the middle of them
-   * and the selection is retried until they are there - or takes what arrived by then.
+   * The units the camera does not show are selected by id - orders go by id, and the renderer
+   * highlights them when they come into view - and the camera goes to the middle of them all.
+   * <p>
+   * Until 2026-11-27 only rendered units could be taken: the camera went to the middle and after
+   * 1.2 s the selection took what had arrived. On 379 the Viper of quest 364 still stands at the
+   * Extractor it destroyed for 365, ~70 m from the two new ones at the factory, and stayed out of
+   * view: 184 of 327 players attacked the Tesla with two of their three Vipers, and 63 of those lost
+   * both (with three: 5 of 112).
    */
   selectAll(category: SelectionShortcutCategory): void {
     this.ensureKnownTypesPopulated();
@@ -213,35 +219,49 @@ export class SelectionShortcutsService {
       clearTimeout(this.pendingSelectionTimeout);
       this.pendingSelectionTimeout = null;
     }
-    const ids = entries.map(entry => entry.id);
-    if (this.trySelectAll(ids, true)) {
+    const wanted = new Set(entries.map(entry => entry.id));
+    const found = this.rendererService.getBabylonBaseItemsByDiplomacy(Diplomacy.OWN).filter(item => wanted.has(item.getId()));
+    if (found.length === entries.length) {
+      this.selectionService.selectOwnItems(found);
       return;
     }
     const x = entries.reduce((sum, entry) => sum + entry.x, 0) / entries.length;
     const y = entries.reduce((sum, entry) => sum + entry.y, 0) / entries.length;
     this.rendererService.setViewFieldCenter(x, y);
-    this.schedulePendingSelectAll(ids, 0);
-  }
-
-  private schedulePendingSelectAll(ids: number[], attempt: number): void {
-    this.pendingSelectionTimeout = setTimeout(() => {
-      this.pendingSelectionTimeout = null;
-      const last = attempt + 1 >= SelectionShortcutsService.PENDING_SELECTION_MAX_ATTEMPTS;
-      if (!this.trySelectAll(ids, !last) && !last) {
-        this.schedulePendingSelectAll(ids, attempt + 1);
-      }
-    }, SelectionShortcutsService.PENDING_SELECTION_INTERVAL_MS);
-  }
-
-  /** Selects the rendered ones of `ids`; with `requireAll` only when every one of them is there. */
-  private trySelectAll(ids: number[], requireAll: boolean): boolean {
-    const wanted = new Set(ids);
-    const found = this.rendererService.getBabylonBaseItemsByDiplomacy(Diplomacy.OWN).filter(item => wanted.has(item.getId()));
-    if (found.length === 0 || (requireAll && found.length < ids.length)) {
-      return false;
+    const unrendered = this.unrenderedUnits(entries, found.map(item => item.getId()));
+    if (unrendered.length === 0 && found.length === 0) {
+      return;
     }
-    this.selectionService.selectOwnItems(found);
-    return true;
+    this.selectionService.selectOwnItems(found, false, {
+      units: unrendered,
+      alive: () => {
+        const all = this.ownTickInfos();
+        return all ? new Set(all.map(info => info.id)) : null;
+      }
+    });
+  }
+
+  /**
+   * The entries not among `renderedIds`, with their type - only from the engine's list of own units:
+   * the fallback list is what the renderer once showed, and a unit in it may be long dead.
+   */
+  private unrenderedUnits(entries: { id: number, itemTypeId?: number }[], renderedIds: number[]): { id: number, type: BaseItemType }[] {
+    const itemTypeService = this.gwtAngularService.gwtAngularFacade?.itemTypeService;
+    if (!this.ownTickInfos() || !itemTypeService) {
+      return [];
+    }
+    const rendered = new Set(renderedIds);
+    const units: { id: number, type: BaseItemType }[] = [];
+    for (const entry of entries) {
+      if (rendered.has(entry.id) || entry.itemTypeId == null) {
+        continue;
+      }
+      const type = itemTypeService.getBaseItemTypeAngular(entry.itemTypeId);
+      if (type) {
+        units.push({id: entry.id, type});
+      }
+    }
+    return units;
   }
 
   private static readonly PENDING_SELECTION_MAX_ATTEMPTS = 8;
@@ -274,13 +294,13 @@ export class SelectionShortcutsService {
     return null;
   }
 
-  private collectOwnEntriesForCategory(category: SelectionShortcutCategory): { id: number, x: number, y: number }[] {
+  private collectOwnEntriesForCategory(category: SelectionShortcutCategory): { id: number, x: number, y: number, itemTypeId?: number }[] {
     const all = this.ownTickInfos();
     if (all) {
       const typeIds = this.knownTypeIds[category];
       return all
         .filter(info => typeIds.has(info.itemTypeId))
-        .map(info => ({id: info.id, x: info.x, y: info.y}))
+        .map(info => ({id: info.id, x: info.x, y: info.y, itemTypeId: info.itemTypeId}))
         .sort((a, b) => a.id - b.id);
     }
     // Fallback: only visible items

@@ -24,5 +24,9 @@ public enum UserActivityType {
     /** A saved player continues in another browser; detail EMAIL or FACEBOOK. */
     PROGRESS_SIGN_IN,
     /** A sign over one of the player's units (EmoteService); detail the emote, ":REPLY" when it answered one. */
-    EMOTE_SENT;
+    EMOTE_SENT,
+    /** A greeting from the ticker to a player (CheerService), detail WAVE|GG[:REPLY][:BONUS]. */
+    CHEER_SENT,
+    /** Where a new player was put down (StartPositionFinderService), detail arm:outcome. */
+    SPAWN_NEAR;
 }

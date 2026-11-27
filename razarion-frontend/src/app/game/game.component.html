@@ -189,6 +189,10 @@
          bar, out of the corner a thumb reaches worst and in with the other buttons. -->
     <div class="compact-status">
       <span class="compact-status-level">L{{ mainCockpit.levelNumber }}</span>
+      <!-- The own name, as the others see it (PresenceService#me). -->
+      @if (mainCockpit.presenceService.me(); as me) {
+        <span class="compact-status-me">{{ me }}</span>
+      }
       <!-- Empty and full are the two states in which the base stops responding without saying so.
            On the desktop the cockpit field carries that colour; here the strip is the only place
            the number appears at all, so it carries it. -->

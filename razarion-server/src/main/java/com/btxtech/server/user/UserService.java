@@ -165,6 +165,16 @@ public class UserService implements UserDetailsService {
         return !userEntity.isAdmin() && !isRecorderEmail(userEntity.getEmail());
     }
 
+    /** The admin or the recorder: the operator's own accounts, not a player - see NtfyService. */
+    public boolean isStaff(String userId) {
+        if (userId == null) {
+            return false;
+        }
+        return userRepository.findByUserId(userId)
+                .map(userEntity -> !isPlayerAccount(userEntity))
+                .orElse(false);
+    }
+
     private boolean isRecorderEmail(String email) {
         return recorderEmail != null && !recorderEmail.isBlank() && recorderEmail.trim().equalsIgnoreCase(email);
     }

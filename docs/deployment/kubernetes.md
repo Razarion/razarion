@@ -192,6 +192,11 @@ kubectl create secret generic grafana-loki-secrets \
 kubectl create secret generic recorder-secrets \
   --from-literal=email=recorder@example.com
 
+# Push to the operator's phone when a player writes in the chat (optional - OperatorAlertService).
+# The topic is a secret: anybody who knows it can read the pushes. Subscribe to it in the ntfy app.
+kubectl create secret generic ntfy-secrets \
+  --from-literal=topic=<long-random-topic>
+
 # "Continue with Facebook" in "Save progress" (optional - without it the button is not shown).
 # App id and secret of the Meta app with the Facebook Login product. In the app settings:
 #   Valid OAuth Redirect URI:  https://www.razarion.com/rest/progress/facebook/callback

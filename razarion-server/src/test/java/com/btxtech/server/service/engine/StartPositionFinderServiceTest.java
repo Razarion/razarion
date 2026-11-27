@@ -232,4 +232,18 @@ class StartPositionFinderServiceTest {
         assertEquals(0, overview.cells().get(1).emptiestItems());
         assertEquals(3, overview.cells().get(0).slots());
     }
+
+    /** Two cells of two points, 100 m apart: a newcomer by the second one draws the new player there. */
+    @Test
+    void cellNearTakesTheCellByTheNewcomerUnlessItIsFull() {
+        DecimalPosition a1 = new DecimalPosition(0, 0), a2 = new DecimalPosition(21, 0);
+        DecimalPosition b1 = new DecimalPosition(100, 0), b2 = new DecimalPosition(121, 0);
+        SlavePlanetConfig config = config(1, a1, a2, b1, b2);
+        DecimalPosition newcomer = new DecimalPosition(115, 10);
+
+        assertEquals(1, serviceWith(Map.of()).cellNear(config, List.of(newcomer), 250));
+        assertEquals(0, serviceWith(Map.of(b1, 3, b2, 2)).cellNear(config, List.of(newcomer), 250), "full: the next nearest");
+        assertNull(serviceWith(Map.of()).cellNear(config, List.of(new DecimalPosition(900, 0)), 250), "too far");
+        assertNull(serviceWith(Map.of()).cellNear(config, List.of(), 250));
+    }
 }

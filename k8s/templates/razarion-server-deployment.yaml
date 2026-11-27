@@ -320,6 +320,13 @@ spec:
                   name: recorder-secrets
                   key: email
                   optional: true
+            # The operator's ntfy topic: a push to his phone when a player writes in the chat (OperatorAlertService).
+            - name: RAZARION_NTFY_TOPIC
+              valueFrom:
+                secretKeyRef:
+                  name: ntfy-secrets
+                  key: topic
+                  optional: true
       volumes:
       - name: keystore
         secret:

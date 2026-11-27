@@ -1,5 +1,6 @@
 package com.btxtech.server.service.ui;
 
+import com.btxtech.server.service.SpawnNearService;
 import com.btxtech.server.gameengine.ServerUnlockService;
 import com.btxtech.server.model.ui.GameUiContextEntity;
 import com.btxtech.server.repository.ui.GameUiContextRepository;
@@ -49,6 +50,13 @@ public class GameUiContextService extends AbstractConfigCrudService<GameUiContex
     /** Audio and quest-visualisation ids from the db properties, see {@link #cachedProperties()}. */
     private volatile CachedProperties cachedProperties;
     private static final long PROPERTIES_TTL_MILLIS = 60_000;
+    private SpawnNearService spawnNearService;
+
+    /** Set by Spring, lazily: it reaches the open connections, which reach far. */
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    public void setSpawnNearService(@org.springframework.context.annotation.Lazy SpawnNearService spawnNearService) {
+        this.spawnNearService = spawnNearService;
+    }
 
     public GameUiContextService(GameUiContextRepository gameUiContextRepository,
                                 StaticGameConfigService staticGameConfigService,
@@ -135,7 +143,11 @@ public class GameUiContextService extends AbstractConfigCrudService<GameUiContex
             var slavePlanetConfig = serverGameEngineCrudPersistence.readSlavePlanetConfig(userContext.getLevelId());
             if (slavePlanetConfig.isFindFreePosition() && baseItemService.getPlayerBase4UserId(userContext.getUserId()) == null) {
                 try {
-                    slavePlanetConfig.setNoBaseViewPosition(startPositionFinderService.findFreePosition(slavePlanetConfig, landingCell));
+                    Integer cell = landingCell;
+                    if (cell == null && spawnNearService != null) {
+                        cell = spawnNearService.chooseCell(userContext.getUserId(), slavePlanetConfig);
+                    }
+                    slavePlanetConfig.setNoBaseViewPosition(startPositionFinderService.findFreePosition(slavePlanetConfig, cell));
                 } catch (Exception e) {
                     logger.warn(e.getMessage(), e);
                 }

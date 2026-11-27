@@ -180,7 +180,8 @@ export class ItemCockpitService {
         this.ownItemCockpit = this.createOwnItemCockpit(baseItemType, items);
         this.ownMultipleItems = null;
         this.otherItemCockpit = null;
-        this.count = items.length;
+        // Units selected off screen ("All") are in the selection but have no rendered instance yet.
+        this.count = Math.max(items.length, this.selectionService.getSelectedOwnItemIdsOfType(typeId).length);
         this.watchBuildup(items);
         this.watchHealth(items, this.ownItemCockpit);
       } else {
@@ -188,7 +189,7 @@ export class ItemCockpitService {
         this.ownItemCockpit = null;
         this.ownMultipleItems = this.createOwnMultipleInfo(groupedByType);
         this.otherItemCockpit = null;
-        this.count = selectedItems.length;
+        this.count = Math.max(selectedItems.length, this.selectionService.getSelectedOwnItemIds().length);
       }
       this.cockpitDisplayService.showItemCockpit = true;
       // On a phone the panel is a collapsed overlay, and selecting something the panel has buttons

@@ -16,6 +16,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +41,7 @@ public class CommunityTickerService {
     private static final int MAX_EVENTS = 300;
     // As far back as a new player is shown on the first poll
     private static final long WARM_UP_MILLIS = KEEP_MILLIS;
+    private static final long DAY_MILLIS = 24 * 60 * 60 * 1000L;
     /*
      * Everything a player builds and destroys is told while there are few players (10/2026), but a
      * factory turning out Vipers or a group of them clearing a bot base would be all the ticker ever
@@ -59,6 +61,9 @@ public class CommunityTickerService {
     private long nextSeq = 1;
     /** Told the userId of a player who just left the noob island - live only, never on warm-up. */
     private final List<Consumer<String>> leftNoobIslandListeners = new CopyOnWriteArrayList<>();
+    /** Who crossed to the mainland today (UTC) - the island goal, see #crossedToday. */
+    private final Set<String> crossedToday = new HashSet<>();
+    private long crossedDay = -1;
 
     public record Event(long seq, long timeMillis, String userId, CommunityTickerKind kind, Integer level, String what) {
     }
@@ -88,6 +93,7 @@ public class CommunityTickerService {
                     trim(event.timeMillis());
                 }
                 if (event.kind() == CommunityTickerKind.LEFT_NOOB_ISLAND) {
+                    noteCrossed(event.userId(), event.timeMillis());
                     leftNoobIslandListeners.forEach(listener -> listener.accept(event.userId()));
                 }
             }
@@ -114,6 +120,46 @@ public class CommunityTickerService {
                 }
             });
             return result;
+        }
+    }
+
+    /** The event of this number while it is still kept, or null. */
+    public Event find(long seq) {
+        synchronized (events) {
+            for (Event event : events) {
+                if (event.seq() == seq) {
+                    return event;
+                }
+            }
+            return null;
+        }
+    }
+
+    /**
+     * How many players crossed from the noob island to the mainland today (UTC) - the island goal
+     * the newcomers are shown: one count they all add to.
+     */
+    public int crossedToday() {
+        synchronized (crossedToday) {
+            rollDay(System.currentTimeMillis());
+            return crossedToday.size();
+        }
+    }
+
+    private void noteCrossed(String userId, long timeMillis) {
+        synchronized (crossedToday) {
+            rollDay(System.currentTimeMillis());
+            if (timeMillis / DAY_MILLIS == crossedDay) {
+                crossedToday.add(userId);
+            }
+        }
+    }
+
+    private void rollDay(long now) {
+        long day = now / DAY_MILLIS;
+        if (day != crossedDay) {
+            crossedDay = day;
+            crossedToday.clear();
         }
     }
 
@@ -249,9 +295,25 @@ public class CommunityTickerService {
                 }
                 trim(System.currentTimeMillis());
             }
-            logger.info("Community ticker warmed up with {} events from {} history rows", warm.size(), rows.size());
+            warmUpCrossedToday();
+            logger.info("Community ticker warmed up with {} events from {} history rows, {} crossed today", warm.size(), rows.size(), crossedToday());
         } catch (Exception e) {
             logger.warn("Community ticker warm-up failed: {}", e.getMessage());
+        }
+    }
+
+    /** Today's crossings from before the start - midnight UTC may be more than the six hours above. */
+    private void warmUpCrossedToday() {
+        long now = System.currentTimeMillis();
+        Query query = new Query(Criteria.where("serverTime").gte(new Date(now / DAY_MILLIS * DAY_MILLIS))
+                .and("source").is(GameHistorySource.HUMAN)
+                .and("type").is(GameHistoryType.QUEST_PASSED)
+                .and("questId").is(LEFT_NOOB_ISLAND_QUEST_ID));
+        query.fields().include("userId", "serverTime");
+        for (GameHistory row : mongoTemplate.find(query, GameHistory.class, HistoryService.GAME_HISTORY)) {
+            if (row.getUserId() != null && row.getServerTime() != null) {
+                noteCrossed(row.getUserId(), row.getServerTime().getTime());
+            }
         }
     }
 }

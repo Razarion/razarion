@@ -14,6 +14,10 @@ public class CommunityTickerEntry {
     private Integer level;
     /** DESTROYED and FIRST_UNIT: the item type, DEFEATED_BOT_BASE: the bot base. */
     private String what;
+    /** The greeting this line offers (WAVE or GG) while the player has the game open, else null. */
+    private String cheer;
+    /** Razarion the asking player may earn when the newcomer greets back, else null (CheerService). */
+    private Integer cheerBonus;
 
     public long getSeq() {
         return seq;
@@ -66,6 +70,24 @@ public class CommunityTickerEntry {
 
     public CommunityTickerEntry setWhat(String what) {
         this.what = what;
+        return this;
+    }
+
+    public String getCheer() {
+        return cheer;
+    }
+
+    public CommunityTickerEntry setCheer(String cheer) {
+        this.cheer = cheer;
+        return this;
+    }
+
+    public Integer getCheerBonus() {
+        return cheerBonus;
+    }
+
+    public CommunityTickerEntry setCheerBonus(Integer cheerBonus) {
+        this.cheerBonus = cheerBonus;
         return this;
     }
 }

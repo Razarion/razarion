@@ -89,3 +89,21 @@
   cursor: pointer;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
 }
+
+.quick-replies {
+  flex-wrap: wrap;
+}
+
+.quick-reply {
+  padding: 3px 10px;
+  border: 1px solid var(--p-surface-500, #64748b);
+  border-radius: 12px;
+  background: var(--p-surface-800, #1e293b);
+  color: #e5e7eb;
+  font-size: 12px;
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    background: var(--p-surface-700, #334155);
+  }
+}

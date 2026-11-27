@@ -1,10 +1,45 @@
 <div class="community-ticker" aria-live="polite">
+  @if (island(); as goal) {
+    @if (islandShown()) {
+      <!-- The island goal: one number all newcomers add to (CommunityTickerService#crossedToday). -->
+      <div class="community-ticker-goal" [class.reached]="goal.crossedToday >= goal.goal">
+        <span>🏝 Island goal: {{ goal.crossedToday }}/{{ goal.goal }} reached the mainland today</span>
+        <span class="community-ticker-goal-bar"><span [style.width.%]="islandPercent(goal)"></span></span>
+      </div>
+    }
+  }
+  @for (line of cheers(); track line.key) {
+    <div class="community-ticker-line community-ticker-cheer" [class.leaving]="line.leaving">
+      <span class="community-ticker-glyph">{{ glyph(line.cheer.emote) }}</span>
+      <span class="community-ticker-text">{{ text(line.cheer) }}</span>
+      @if (!line.cheer.reply) {
+        <button type="button" class="community-ticker-greet" [disabled]="line.answered" (click)="answer(line)">
+          {{ line.answered ? '✓' : glyph(line.cheer.emote) + ' back' }}
+        </button>
+      }
+    </div>
+  }
   @for (line of lines(); track line.seq) {
     <div class="community-ticker-line" [class.leaving]="line.leaving">
       <i class="pi pi-globe"></i>
-      <span>{{ line.text }}</span>
+      <span class="community-ticker-text">{{ line.text }}</span>
       @if (line.age) {
         <span class="community-ticker-age">· {{ line.age }}</span>
+      }
+      @if (line.cheer) {
+        <button type="button" class="community-ticker-greet" [disabled]="line.cheerState !== 'none'" (click)="greet(line)"
+                [title]="line.cheerBonus ? '+' + line.cheerBonus + ' Razarion if they answer' : ''">
+          @switch (line.cheerState) {
+            @case ('sent') { ✓ }
+            @case ('failed') { – }
+            @default {
+              {{ glyph(line.cheer) }}
+              @if (line.cheerBonus) {
+                <span class="community-ticker-bonus">+{{ line.cheerBonus }}</span>
+              }
+            }
+          }
+        </button>
       }
     </div>
   }

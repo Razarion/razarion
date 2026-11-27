@@ -153,6 +153,27 @@ public class UserActivityService {
         }
     }
 
+    public void onCheerSent(String userId, String detail) {
+        save(UserActivityType.CHEER_SENT, userId, detail);
+    }
+
+    public void onSpawnNear(String userId, String detail) {
+        save(UserActivityType.SPAWN_NEAR, userId, detail);
+    }
+
+    private void save(UserActivityType type, String userId, String detail) {
+        try {
+            var userActivity = new UserActivity()
+                    .userActivityType(type)
+                    .serverTime(new Date())
+                    .userId(userId)
+                    .detail(detail);
+            mongoTemplate.save(userActivity, USER_ACTIVITY);
+        } catch (Exception e) {
+            logger.warn(e.getMessage(), e);
+        }
+    }
+
     public void onProgressLinkSent(String userId, String detail) {
         try {
             var userActivity = new UserActivity()

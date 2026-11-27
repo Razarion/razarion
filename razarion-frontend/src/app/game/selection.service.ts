@@ -17,6 +17,17 @@ export class SelectionService {
   private selectedOtherBaseId: number | null = null;
   private selectedOtherItem: BabylonItem | null = null;
   private selectionListeners: (() => void)[] = [];
+  /**
+   * Own units in the selection that were never rendered - picked by id, see selectOwnItems().
+   * A unit that was rendered once is watched by the engine when it leaves the view (it reports
+   * disposeOutOfViewItem() if it dies out there); one that never was is not, so a dead one would
+   * stay in the selection and every order to it would fail on its id. These are checked against
+   * the living units instead, until they come into view.
+   */
+  private unseenOwnIds = new Set<number>();
+  private unseenAlive: (() => ReadonlySet<number> | null) | null = null;
+  private unseenCheckedAt = 0;
+  private static readonly UNSEEN_CHECK_MILLIS = 100;
 
   constructor(private babylonAudioService: BabylonAudioService,
               private firstInteractionTrackerService: FirstInteractionTrackerService) {
@@ -37,26 +48,41 @@ export class SelectionService {
   /**
    * @param byGame the game picked them, not the player - not counted as a SELECT, which measures
    *               whether players find their units (see StartBuilderSelectService).
+   * @param unrendered own units selected by id alone, because the camera does not show them - they
+   *               take orders like the others and are highlighted once they come into view. With
+   *               them goes `alive`: the ids of the living own units, or null when not known.
    */
-  selectOwnItems(items: BabylonBaseItemImpl[], byGame = false): void {
+  selectOwnItems(items: BabylonBaseItemImpl[], byGame = false,
+                 unrendered?: { units: { id: number, type: BaseItemType }[], alive: () => ReadonlySet<number> | null }): void {
     this.ownSelectionCount++;
-    if (items.length && !byGame) {
+    const unrenderedUnits = (unrendered?.units ?? []).filter(unit => !items.some(item => item.getId() === unit.id));
+    const total = items.length + unrenderedUnits.length;
+    if (total && !byGame) {
       this.reportSelected();
     }
-    if (items.length > 1) {
+    if (total > 1) {
       // However it came about - the marquee, the touch box, or a tap that happened to catch two.
       // What this answers is whether a player ever holds more than one unit at once, which is the
       // thing the quest chain never asks him to do and quest 379 needs him to have learned.
-      this.firstInteractionTrackerService.report('SELECT_GROUP', groupSizeDetail(items.length));
+      this.firstInteractionTrackerService.report('SELECT_GROUP', groupSizeDetail(total));
     }
     this.deselectCurrent();
     this.selectedOwnItems = [...items];
     this.selectedOwnItemIds.clear();
     this.selectedOwnItemTypes.clear();
+    this.clearUnseen();
     items.forEach(item => {
       this.selectedOwnItemIds.add(item.getId());
       this.selectedOwnItemTypes.set(item.getId(), item.getBaseItemType());
     });
+    unrenderedUnits.forEach(unit => {
+      this.selectedOwnItemIds.add(unit.id);
+      this.selectedOwnItemTypes.set(unit.id, unit.type);
+      this.unseenOwnIds.add(unit.id);
+    });
+    if (this.unseenOwnIds.size) {
+      this.unseenAlive = unrendered!.alive;
+    }
     this.selectedOtherId = null;
     this.selectedOtherDiplomacy = null;
     this.selectedOtherItemTypeId = null;
@@ -72,6 +98,7 @@ export class SelectionService {
     this.selectedOwnItems = [];
     this.selectedOwnItemIds.clear();
     this.selectedOwnItemTypes.clear();
+    this.clearUnseen();
     this.selectedOtherId = id;
     this.selectedOtherDiplomacy = diplomacy;
     this.selectedOtherItemTypeId = itemTypeId ?? null;
@@ -89,6 +116,7 @@ export class SelectionService {
     this.selectedOwnItems = [];
     this.selectedOwnItemIds.clear();
     this.selectedOwnItemTypes.clear();
+    this.clearUnseen();
     this.selectedOtherId = null;
     this.selectedOtherDiplomacy = null;
     this.selectedOtherItemTypeId = null;
@@ -113,6 +141,7 @@ export class SelectionService {
       this.selectedOwnItems.splice(idx, 1);
     }
     this.selectedOwnItemTypes.delete(id);
+    this.unseenOwnIds.delete(id);
     if (this.selectedOwnItemIds.delete(id)) {
       this.fireSelectionChanged();
     }
@@ -127,6 +156,11 @@ export class SelectionService {
       if (!this.selectedOwnItems.some(i => i.getId() === item.getId())) {
         this.selectedOwnItems.push(item);
         item.select(true);
+      }
+      // Seen for the first time: from now on the engine reports its death (disposeItem), and the
+      // cockpit, built from the rendered units, has one more to show.
+      if (this.unseenOwnIds.delete(item.getId())) {
+        this.fireSelectionChanged();
       }
     }
   }
@@ -167,17 +201,24 @@ export class SelectionService {
         removed.push(item);
       }
     }
-    if (removed.length === 0) return;
+    const removedUnseen = [...this.unseenOwnIds].filter(id => this.selectedOwnItemTypes.get(id)?.getId() !== baseItemTypeId);
+    if (removed.length === 0 && removedUnseen.length === 0) return;
     removed.forEach(item => {
       item.select(false);
       this.selectedOwnItemIds.delete(item.getId());
       this.selectedOwnItemTypes.delete(item.getId());
+    });
+    removedUnseen.forEach(id => {
+      this.unseenOwnIds.delete(id);
+      this.selectedOwnItemIds.delete(id);
+      this.selectedOwnItemTypes.delete(id);
     });
     this.selectedOwnItems = kept;
     this.fireSelectionChanged();
   }
 
   hasOwnSelection(): boolean {
+    this.pruneUnseen(false);
     return this.selectedOwnItemIds.size > 0;
   }
 
@@ -186,6 +227,7 @@ export class SelectionService {
   }
 
   getSelectedOwnItemIds(): number[] {
+    this.pruneUnseen(true);
     return Array.from(this.selectedOwnItemIds);
   }
 
@@ -196,6 +238,7 @@ export class SelectionService {
    * screen is missing from it although it is still selected and still takes orders.
    */
   getSelectedOwnItemIdsOfType(itemTypeId: number): number[] {
+    this.pruneUnseen(true);
     const ids: number[] = [];
     for (const [id, type] of this.selectedOwnItemTypes) {
       if (type.getId() === itemTypeId) {
@@ -230,6 +273,7 @@ export class SelectionService {
   }
 
   getMovableIds(): number[] {
+    this.pruneUnseen(true);
     const ids: number[] = [];
     for (const [id, type] of this.selectedOwnItemTypes) {
       if (type.getPhysicalAreaConfig().fulfilledMovable()) {
@@ -240,6 +284,7 @@ export class SelectionService {
   }
 
   getAttackerIds(targetItemTypeId: number): number[] {
+    this.pruneUnseen(true);
     const ids: number[] = [];
     for (const [id, type] of this.selectedOwnItemTypes) {
       const weapon = type.getWeaponType();
@@ -251,6 +296,7 @@ export class SelectionService {
   }
 
   getHarvesterIds(): number[] {
+    this.pruneUnseen(true);
     const ids: number[] = [];
     for (const [id, type] of this.selectedOwnItemTypes) {
       if (type.getHarvesterType() != null) {
@@ -261,6 +307,7 @@ export class SelectionService {
   }
 
   getBuilderIds(itemTypeId: number): number[] {
+    this.pruneUnseen(true);
     const ids: number[] = [];
     for (const [id, type] of this.selectedOwnItemTypes) {
       const builder = type.getBuilderType();
@@ -274,6 +321,7 @@ export class SelectionService {
   getContainableIds(containerItemType: BaseItemType): number[] {
     const containerType = containerItemType.getItemContainerType();
     if (containerType == null) return [];
+    this.pruneUnseen(true);
     const ids: number[] = [];
     for (const [id, type] of this.selectedOwnItemTypes) {
       if (containerType.isAbleToContain(type.getId())) {
@@ -284,6 +332,7 @@ export class SelectionService {
   }
 
   hasMovables(): boolean {
+    this.pruneUnseen(false);
     for (const type of this.selectedOwnItemTypes.values()) {
       if (type.getPhysicalAreaConfig().fulfilledMovable()) return true;
     }
@@ -291,6 +340,7 @@ export class SelectionService {
   }
 
   hasAttackers(): boolean {
+    this.pruneUnseen(false);
     for (const type of this.selectedOwnItemTypes.values()) {
       if (type.getWeaponType() != null) return true;
     }
@@ -298,6 +348,7 @@ export class SelectionService {
   }
 
   hasHarvesters(): boolean {
+    this.pruneUnseen(false);
     for (const type of this.selectedOwnItemTypes.values()) {
       if (type.getHarvesterType() != null) return true;
     }
@@ -354,6 +405,42 @@ export class SelectionService {
     if (this.selectedOtherItem) {
       this.selectedOtherItem.select(false);
       this.selectedOtherItem = null;
+    }
+  }
+
+  private clearUnseen(): void {
+    this.unseenOwnIds.clear();
+    this.unseenAlive = null;
+  }
+
+  /**
+   * Drops the never rendered units that died. Before an order always - one dead id fails the whole
+   * order - and for the questions asked every frame at most every UNSEEN_CHECK_MILLIS.
+   */
+  private pruneUnseen(always: boolean): void {
+    if (this.unseenOwnIds.size === 0 || !this.unseenAlive) {
+      return;
+    }
+    const now = performance.now();
+    if (!always && now - this.unseenCheckedAt < SelectionService.UNSEEN_CHECK_MILLIS) {
+      return;
+    }
+    this.unseenCheckedAt = now;
+    const alive = this.unseenAlive();
+    if (!alive) {
+      return;
+    }
+    let changed = false;
+    for (const id of [...this.unseenOwnIds]) {
+      if (!alive.has(id)) {
+        this.unseenOwnIds.delete(id);
+        this.selectedOwnItemIds.delete(id);
+        this.selectedOwnItemTypes.delete(id);
+        changed = true;
+      }
+    }
+    if (changed) {
+      this.fireSelectionChanged();
     }
   }
 
